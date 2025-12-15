@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module-Kit de Maîtrise : EtherChannel</title>
+    <style>
+        /* ===== VARIABLES ET RESET ===== */
+        :root {
+            --primary-blue: #1a237e;
+            --secondary-blue: #283593;
+            --accent-blue: #3949ab;
+            --light-blue: #bbdefb;
+            --critical-red: #f44336;
+            --warning-orange: #ff9800;
+            --success-green: #4caf50;
+            --info-blue: #2196f3;
+            --concept-purple: #9c27b0;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --background: #ffffff;
+            --surface: #f5f5f5;
+            --border: #e0e0e0;
+            --code-bg: #f8f9fa;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--background);
+            padding-top: 0;
+        }
+
+        /* ===== HEADER STYLES ===== */
+        .mastery-kit-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, var(--accent-blue) 100%);
+            color: white;
+            padding: 50px 20px 40px;
+            text-align: center;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 8px 32px rgba(26, 35, 126, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mastery-kit-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff9800, #ff5722, #e91e63);
+        }
+
+        .header-title {
+            font-family: 'Arial Black', 'Segoe UI', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+        }
+
+        .header-subtitle {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin: 0 0 25px 0;
+            color: var(--light-blue);
+            letter-spacing: 0.8px;
+        }
+
+        .header-tagline {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 35px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            color: #e3f2fd;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-badge {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: #ff9800;
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .network-icon {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            font-size: 2.5rem;
+            opacity: 0.25;
+        }
+
+        /* ===== MAIN CONTENT CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== SECTION CARDS ===== */
+        .section-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 6px 20px var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--border);
+        }
+
+        .section-icon {
+            font-size: 2.2em;
+            margin-right: 15px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            color: var(--concept-purple);
+            font-size: 1.9em;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        /* ===== COLOR CODED SECTIONS ===== */
+        .critical {
+            color: var(--critical-red);
+            border-left: 6px solid var(--critical-red);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #ffebee;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .critical::before {
+            content: '🔴 ';
+            font-size: 1.3em;
+        }
+
+        .warning {
+            color: var(--warning-orange);
+            border-left: 6px solid var(--warning-orange);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #fff3e0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning::before {
+            content: '⚠️ ';
+            font-size: 1.3em;
+        }
+
+        .success {
+            color: var(--success-green);
+            border-left: 6px solid var(--success-green);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #e8f5e9;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success::before {
+            content: '✅ ';
+            font-size: 1.3em;
+        }
+
+        .info {
+            color: var(--info-blue);
+            border-left: 6px solid var(--info-blue);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #e3f2fd;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info::before {
+            content: '🔵 ';
+            font-size: 1.3em;
+        }
+
+        .concept {
+            color: var(--concept-purple);
+            border-left: 6px solid var(--concept-purple);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #f3e5f5;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .concept::before {
+            content: '🧠 ';
+            font-size: 1.3em;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: var(--code-bg);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid var(--border);
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+            font-size: 1em;
+        }
+
+        /* ===== TAB SYSTEM ===== */
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            background-color: var(--surface);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 2px solid transparent;
+            color: var(--text-light);
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .nav-tab:hover {
+            background-color: #e3f2fd;
+            border-color: var(--info-blue);
+            color: var(--info-blue);
+        }
+
+        .nav-tab.active {
+            background-color: var(--info-blue);
+            color: white;
+            border-color: var(--info-blue);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== QUIZ SYSTEM ===== */
+        .quiz-container {
+            background-color: var(--surface);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 6px solid var(--concept-purple);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .quiz-question {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--concept-purple);
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quiz-option {
+            padding: 15px 20px;
+            background-color: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1em;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--info-blue);
+            background-color: #f0f7ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--success-green);
+            background-color: #e8f5e9;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-green);
+            background-color: #e8f5e9;
+            animation: pulse 0.5s ease;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--critical-red);
+            background-color: #ffebee;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            font-size: 1.1em;
+        }
+
+        .quiz-feedback.correct {
+            background-color: #e8f5e9;
+            border-left: 6px solid var(--success-green);
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background-color: var(--info-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            margin: 8px;
+            font-size: 1em;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: #1976d2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background-color: var(--success-green);
+        }
+
+        .btn-success:hover {
+            background-color: #388e3c;
+            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-orange);
+        }
+
+        .btn-warning:hover {
+            background-color: #f57c00;
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.3);
+        }
+
+        /* ===== MERMAID CONTAINER ===== */
+        .mermaid-container {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .mermaid-container svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* ===== MICRO-KIT ===== */
+        .micro-kit {
+            background-color: white;
+            border: 3px solid var(--info-blue);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fdff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .micro-kit::before {
+            content: '📘';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 4rem;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .micro-kit-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid var(--info-blue);
+            position: relative;
+            z-index: 1;
+        }
+
+        .micro-kit-header h2 {
+            color: var(--info-blue);
+            font-size: 2.2em;
+            margin-bottom: 15px;
+        }
+
+        .micro-kit-header p {
+            color: var(--text-light);
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .micro-kit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .micro-kit-card {
+            background-color: var(--surface);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .micro-kit-card:hover {
+            border-color: var(--info-blue);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+
+        .micro-kit-card h4 {
+            color: var(--info-blue);
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== META INFO ===== */
+        .meta-info {
+            background-color: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 0.95em;
+            color: var(--text-light);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        /* ===== NOTE ===== */
+        .note {
+            background-color: #fff3e0;
+            border-left: 6px solid var(--warning-orange);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.1em;
+        }
+
+        .note::before {
+            content: '📝 Note Pédagogique : ';
+            font-weight: bold;
+            color: var(--warning-orange);
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        /* ===== LISTS ===== */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h3 {
+            color: var(--warning-orange);
+            font-size: 1.5em;
+            margin: 1.2em 0 0.8em;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #fff3e0;
+        }
+
+        h4 {
+            color: var(--success-green);
+            font-size: 1.3em;
+            margin: 1em 0 0.5em;
+        }
+
+        p {
+            margin: 1em 0;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        strong {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 2.8rem;
+            }
+            
+            .header-subtitle {
+                font-size: 1.8rem;
+            }
+            
+            .header-tagline {
+                font-size: 1.4rem;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mastery-kit-header {
+                padding: 40px 15px 30px;
+                border-radius: 0 0 20px 20px;
+            }
+            
+            .header-title {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+            }
+            
+            .header-subtitle {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            .header-tagline {
+                font-size: 1.1rem;
+                padding: 12px 24px;
+            }
+            
+            .module-badge {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 0 auto 20px;
+                display: inline-block;
+                width: auto;
+            }
+            
+            .section-card {
+                padding: 20px;
+                margin: 25px 0;
+            }
+            
+            .section-header h2 {
+                font-size: 1.6em;
+            }
+            
+            .micro-kit {
+                padding: 25px;
+            }
+            
+            .micro-kit-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .header-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .header-tagline {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+            
+            .section-card {
+                padding: 15px;
+            }
+            
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+            
+            .micro-kit {
+                padding: 20px;
+            }
+            
+            .meta-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .mastery-kit-header {
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border-bottom: 3px solid black;
+            }
+            
+            .header-title, .header-subtitle, .header-tagline {
+                color: black !important;
+                text-shadow: none !important;
+            }
+            
+            .section-card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+            
+            .btn {
+                display: none !important;
+            }
+            
+            .quiz-container {
+                break-inside: avoid;
+            }
+            
+            .micro-kit {
+                border: 2px solid black !important;
+                break-inside: avoid;
+            }
+        }
+
+        /* ===== ACCESSIBILITY ===== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--info-blue);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-blue);
+        }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--info-blue);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5em;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-5px);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header class="mastery-kit-header" id="top">
+        <div class="module-badge">
+            <i class="fas fa-graduation-cap"></i> MODULE KIT
+        </div>
+        <div class="network-icon">
+            <i class="fas fa-network-wired"></i>
+        </div>
+        
+        <h1 class="header-title">Module-Kit de Maîtrise : EtherChannel</h1>
+        <h2 class="header-subtitle">Agrégation de Liens & Redondance</h2>
+        <div class="header-tagline">
+            <i class="fas fa-chart-line"></i> Reconstruction Pédagogique 200%
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="container">
+        
+        </div>
+
+        <!-- Note Pédagogique -->
+        
+
+        <!-- Section 1: Analogie Systémique -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">📍</span>
+                <h2>ANALOGIE SYSTÉMIQUE</h2>
+            </div>
+            
+            <div class="concept">
+                <p><strong>Thème_central:</strong> "L'ART DE LA SYMPHONIE RÉSEAU"</p>
+                <p><strong>Métaphore:</strong> "Un EtherChannel, c'est comme un orchestre symphonique. Chaque musicien (lien physique) peut jouer seul, mais c'est le chef d'orchestre (Port-Channel) qui les synchronise pour créer une œuvre unique, plus puissante et résiliente."</p>
+                <p><strong>Éléments_clés:</strong></p>
+                <ul>
+                    <li><strong>Chef d'orchestre (Port-Channel)</strong> : Interface logique unique qui dirige l'ensemble</li>
+                    <li><strong>Musiciens (Liens physiques)</strong> : Ports individuels (Fa0/1, Fa0/2) qui exécutent</li>
+                    <li><strong>Partition (Configuration)</strong> : Doit être identique pour tous les musiciens</li>
+                    <li><strong>Tempo (Vitesse/Duplex)</strong> : Tous doivent jouer à la même vitesse (1Gbps) et en harmonie (full-duplex)</li>
+                    <li><strong>Protocole de répétition (PAgP/LACP)</strong> : Comment l'orchestre se met d'accord pour jouer ensemble</li>
+                </ul>
+                <p><strong>Risque_analogique:</strong> "Un musicien qui joue hors tempo (mauvaise vitesse) ou une partition différente (VLAN mismatch) fait fausser tout l'orchestre → panne de l'EtherChannel."</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Modèle Mental -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">🧠</span>
+                <h2>MODÈLE MENTAL (Diagramme Flowchart)</h2>
+            </div>
+            
+            <div class="mermaid-container">
+                <!-- Diagramme injecté par JavaScript -->
+                <div id="mermaid-diagram"></div>
+            </div>
+        </section>
+
+        <!-- Section 3: Noyau Dur -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">⚡</span>
+                <h2>NOYAU DUR (Les lois Immuables)</h2>
+            </div>
+            
+            <div class="critical">
+                <h3>1. Loi #1 : LA CONFIGURATION DOIT ÊTRE IDENTIQUE SUR TOUS LES PORTS.</h3>
+                <p><strong>Preuve/Pourquoi :</strong> L'EtherChannel échoue si un seul paramètre diffère (VLAN, vitesse, duplex, mode trunk/access). Le Port-Channel applique une configuration unique à tous les membres.</p>
+            </div>
+            
+            <div class="critical">
+                <h3>2. Loi #2 : LES MODES DE NÉGOCIATION DOIVENT ÊTRE COMPATIBLES.</h3>
+                <p><strong>Preuve/Pourquoi :</strong></p>
+                <ul>
+                    <li>PAgP: <code>desirable</code> ↔ <code>desirable</code> ou <code>auto</code> ✓ | <code>auto</code> ↔ <code>auto</code> ✗ (tous deux passifs)</li>
+                    <li>LACP: <code>active</code> ↔ <code>active</code> ou <code>passive</code> ✓ | <code>passive</code> ↔ <code>passive</code> ✗</li>
+                    <li>Mode <code>on</code> ne fonctionne qu'avec <code>on</code> (aucun paquet de négociation échangé)</li>
+                </ul>
+            </div>
+            
+            <div class="critical">
+                <h3>3. Loi #3 : ETHERCHANNEL EST UNE INTERFACE LOGIQUE, PAS PHYSIQUE.</h3>
+                <p><strong>Preuve/Pourquoi :</strong> STP voit un EtherChannel comme UN seul lien logique. Tous les ports membres sont soit TOUS bloqués, soit TOUS forwarding. Jamais partiellement.</p>
+            </div>
+            
+            <div class="critical">
+                <h3>4. Loi #4 : 8 PORTS MAXIMUM PAR ETHERCHANNEL (LIMITE MATÉRIELLE).</h3>
+                <p><strong>Preuve/Pourquoi :</strong> Spécification IEEE/Cisco. Au-delà, le commutateur rejette l'ajout. La plupart des plates-formes supportent 8 liens actifs en LACP, avec 8 supplémentaires en standby.</p>
+            </div>
+            
+            <div class="critical">
+                <h3>5. Loi #5 : TOUTE CONFIGURATION SE FAIT SUR LE PORT-CHANNEL, PAS LES PORTS INDIVIDUELS.</h3>
+                <p><strong>Preuve/Pourquoi :</strong> Configurer individuellement un port membre rompt la cohérence. Toujours utiliser <code>interface port-channel X</code>.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Sécurité & Métier -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">🔐</span>
+                <h2>PROFONDEUR SÉCURITÉ & MÉTIER</h2>
+            </div>
+            
+            <div class="warning">
+                <h3>🚨 RISQUE PRINCIPAL</h3>
+                <p><strong>Risque Principal :</strong> Échec silencieux de l'EtherChannel → Perte de redondance et de bande passante sans alerte.</p>
+            </div>
+            
+            <div class="warning">
+                <p><strong>Attaque Type :</strong> Pas une attaque directe, mais une dégradation de service due à une configuration incorrecte.</p>
+            </div>
+            
+            <div class="success">
+                <p><strong>Détection :</strong></p>
+                <pre><code># Surveillance proactive avec SNMP/Monitoring
+show etherchannel summary
+show interfaces port-channel 1 counters</code></pre>
+            </div>
+            
+            <div class="info">
+                <p><strong>Script de monitoring Python (à exécuter toutes les 5 minutes) :</strong></p>
+                <pre><code>import netmiko, time
+device = {'device_type': 'cisco_ios', 'host': 'switch1', 'username': 'admin', 'password': 'password'}
+conn = netmiko.ConnectHandler(**device)
+output = conn.send_command('show etherchannel summary')
+if 'D' in output or 'I' in output:  # D=Down, I=Inactive
+    send_email_alert("EtherChannel Degraded!")</code></pre>
+            </div>
+            
+            <div class="critical">
+                <p><strong>Mitigation Immédiate :</strong></p>
+                <pre><code>! Vérifier et corriger la cohérence
+interface range fa0/1 - 2
+ switchport mode trunk
+ switchport trunk allowed vlan 1,10,20
+ channel-group 1 mode active
+exit
+interface port-channel 1
+ description TRUNK_TO_CORE
+!</code></pre>
+            </div>
+            
+            <div class="concept">
+                <p><strong>Intégration Entreprise :</strong></p>
+                <p>- <strong>Ansible Playbook</strong> pour déployer des EtherChannels standardisés :</p>
+                <pre><code>- name: Configure EtherChannel LACP
+  cisco.ios.ios_lag_interfaces:
+    config:
+      - name: Port-channel1
+        members:
+          - member: FastEthernet0/1
+            mode: active
+          - member: FastEthernet0/2
+            mode: active
+        mode: "lacp"
+    state: merged</code></pre>
+                <p>- <strong>SIEM Alerting</strong> : Monitorer les logs pour les messages <code>%EC-5-L3DONTBNDL2</code> (incompatibilité couche 2)</p>
+            </div>
+        </section>
+
+        <!-- Section 5: Examen CCNA -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">📚</span>
+                <h2>PROFONDEUR EXAMEN CCNA</h2>
+            </div>
+            
+            <div class="warning">
+                <p><strong>Détail Oublié #1 :</strong> "PAgP et LACP utilisent des multicast différents : PAgP = 01-00-0C-CC-CC-CC, LACP = 01-80-C2-00-00-02. Ce détail est crucial pour l'analyse Wireshark."</p>
+            </div>
+            
+            <div class="warning">
+                <p><strong>Piège Fréquent #2 :</strong> "Un Port-Channel peut être en mode <code>trunk</code> alors que ses membres physiques sont en mode <code>access</code>. La configuration sur le Port-Channel prime toujours."</p>
+            </div>
+            
+            <div class="warning">
+                <p><strong>Piège Fréquent #3 :</strong> "La commande <code>channel-group 1 mode active</code> crée automatiquement <code>interface port-channel 1</code> si elle n'existe pas. Ne pas la créer manuellement d'abord."</p>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question"><i class="fas fa-question-circle"></i> Question Type CCNA :</div>
+                <p>"Switch A a <code>channel-group 1 mode desirable</code> sur Fa0/1-2. Switch B a <code>channel-group 1 mode auto</code> sur Fa0/1-2. L'EtherChannel se formera-t-il ? Pourquoi ?"</p>
+                
+                <div class="quiz-options">
+                    <div class="quiz-option" data-correct="false">Non, car les modes sont différents</div>
+                    <div class="quiz-option" data-correct="true">Oui, car desirable (actif) initie et auto (passif) répond</div>
+                    <div class="quiz-option" data-correct="false">Non, car il faut utiliser LACP pour interopérabilité</div>
+                    <div class="quiz-option" data-correct="false">Oui, mais seulement si STP est désactivé</div>
+                </div>
+                
+                <div class="quiz-feedback" id="feedback1">
+                    <p><strong>Réponse :</strong> Oui, car <code>desirable</code> (actif) initie la négociation et <code>auto</code> (passif) répond. Résultat : <code>SU</code> dans <code>show etherchannel summary</code>.</p>
+                </div>
+                
+                <button class="btn btn-success" onclick="checkQuiz(1)">
+                    <i class="fas fa-check"></i> Vérifier la réponse
+                </button>
+                <button class="btn" onclick="resetQuiz(1)">
+                    <i class="fas fa-redo"></i> Réessayer
+                </button>
+            </div>
+        </section>
+
+        <!-- Section 6: Lab Complet -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">⚙️</span>
+                <h2>LAB COMPLET : DE LA CONFIG À L'AUTOMATISATION</h2>
+            </div>
+            
+            <ul class="nav-tabs">
+                <li class="nav-tab active" data-tab="lab1">
+                    <i class="fas fa-layer-group"></i> Niveau 1 (CCNA)
+                </li>
+                <li class="nav-tab" data-tab="lab2">
+                    <i class="fas fa-shield-alt"></i> Niveau 2 (Production)
+                </li>
+                <li class="nav-tab" data-tab="lab3">
+                    <i class="fas fa-robot"></i> Niveau 3 (Expert)
+                </li>
+            </ul>
+            
+            <div id="lab1" class="tab-content active">
+                <h3>Niveau 1 (CCNA) : Configuration Fondamentale</h3>
+                <pre><code>! Configuration LACP de base
+Switch(config)# interface range fastEthernet 0/1 - 4
+Switch(config-if-range)# channel-group 1 mode active
+Creating a port-channel interface Port-channel 1  *Message système important*
+Switch(config-if-range)# exit
+Switch(config)# interface port-channel 1
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 1,10,20,99</code></pre>
+                <div class="info">
+                    <p><strong>Objectif :</strong> Créer un EtherChannel 4 liens avec LACP</p>
+                    <p><strong>Vérification :</strong> <code>show etherchannel summary</code></p>
+                    <p><strong>Sortie attendue :</strong></p>
+                    <pre><code>Group  Port-channel  Protocol    Ports
+------+-------------+-----------+-----------------------------------------------
+1      Po1(SU)         LACP      Fa0/1(P)    Fa0/2(P)    Fa0/3(P)    Fa0/4(P)</code></pre>
+                    <p><code>SU</code> = Layer2, Up | <code>P</code> = Port en mode Active dans le bundle</p>
+                </div>
+            </div>
+            
+            <div id="lab2" class="tab-content">
+                <h3>Niveau 2 (Production Sécurisée) : Hardening</h3>
+                <pre><code>! Best practices production
+interface Port-channel1
+ description TRUNK_TO_CORE_SWITCH
+ switchport mode trunk
+ switchport trunk native vlan 999  ! VLAN dédié non utilisé
+ switchport trunk allowed vlan 10,20,30
+ switchport nonegotiate  ! Désactive DTP sur le trunk
+ load-balance src-dst-ip  ! Optimise la répartition du trafic
+ spanning-tree guard root  ! Protection STP
+!
+interface range fa0/1 - 4
+ channel-group 1 mode active
+ lacp max-bundle 4  ! Limite à 4 liens actifs maximum
+ spanning-tree portfast disable  ! Important pour les ports de trunk</code></pre>
+                <div class="warning">
+                    <p><strong>Risque si omis :</strong> Sans <code>switchport nonego</code>, risque de négociation DTP non désirée. Sans <code>lacp max-bundle</code>, tous les liens tentent d'être actifs, pouvant saturer la capacité.</p>
+                </div>
+            </div>
+            
+            <div id="lab3" class="tab-content">
+                <h3>Niveau 3 (Expert/Automatisation) : Script & Scale</h3>
+                <pre><code># Script Python pour déployer des EtherChannels sur plusieurs switches
+from netmiko import ConnectHandler
+import yaml
+
+devices = yaml.safe_load("""
+switches:
+  - name: switch1
+    ip: 192.168.1.1
+    bundles:
+      - id: 1
+        ports: ['Fa0/1', 'Fa0/2', 'Fa0/3', 'Fa0/4']
+        mode: 'active'
+        vlans: '10,20,30'
+  - name: switch2
+    ip: 192.168.1.2
+    bundles: [...]
+""")
+
+for switch in devices['switches']:
+    conn = ConnectHandler(device_type='cisco_ios', host=switch['ip'], 
+                         username='admin', password='Cisco123')
+    
+    for bundle in switch['bundles']:
+        commands = [
+            f"interface range {','.join(bundle['ports'])}",
+            f"channel-group {bundle['id']} mode {bundle['mode']}",
+            "exit",
+            f"interface port-channel {bundle['id']}",
+            "switchport mode trunk",
+            f"switchport trunk allowed vlan {bundle['vlans']}",
+            "switchport nonegotiate"
+        ]
+        output = conn.send_config_set(commands)
+        print(f"Configuré {switch['name']} - Bundle {bundle['id']}")</code></pre>
+                <div class="success">
+                    <p><strong>Avantage :</strong> Déploiement cohérent sur 50 switches en 2 minutes vs 2 heures manuellement. Élimination des erreurs de frappe.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Scénario de Dépannage -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">🚨</span>
+                <h2>SCÉNARIO DE DÉPANNAGE AVANCÉ</h2>
+            </div>
+            
+            <div class="critical">
+                <p><strong>Symptôme Complexe :</strong> "Les liens physiques sont up/up, le Port-Channel est créé, mais le trafic ne passe pas. <code>show etherchannel summary</code> montre <code>D</code> (down) pour le Port-Channel."</p>
+            </div>
+            
+            <div class="info">
+                <h3>Processus de Diagnostic (Arbre Décisionnel) :</h3>
+                
+                <p><strong>1. Vérifier la cohérence VLAN native :</strong></p>
+                <pre><code>show interfaces trunk | include Native</code></pre>
+                <p><em>Si différent sur les ports membres →</em> Corriger avec :</p>
+                <pre><code>interface range fa0/1-2
+ switchport trunk native vlan 999</code></pre>
+                
+                <p><strong>2. Vérifier les erreurs sur les interfaces physiques :</strong></p>
+                <pre><code>show interfaces fa0/1 counters errors
+show interfaces fa0/2 counters errors</code></pre>
+                <p><em>Si CRC/alignment errors →</em> Problème de câblage ou de carte réseau.</p>
+                
+                <p><strong>3. Vérifier la compatibilité PAgP/LACP :</strong></p>
+                <pre><code>show etherchannel port-channel</code></pre>
+                <p><em>Regarder "Flags:"</em> - <code>D</code> = désactivé par le protocole.</p>
+                
+                <p><strong>4. Vérifier STP :</strong></p>
+                <pre><code>show spanning-tree interface port-channel 1</code></pre>
+                <p><em>Si bloqué (BLK) →</em> Vérifier la priorité STP ou les boucles.</p>
+            </div>
+            
+            <div class="warning">
+                <p><strong>Root Cause Probable :</strong> Mismatch de VLAN natif entre les ports membres. Très courant en production.</p>
+            </div>
+            
+            <div class="success">
+                <p><strong>Fix et Rollback :</strong></p>
+                <pre><code>! Fix
+interface range fa0/1 - 2
+ switchport trunk native vlan 999
+end
+clear etherchannel 1 force  ! Force la re-négociation
+
+! Vérification du fix
+show etherchannel summary
+show interfaces port-channel 1
+
+! Rollback au cas où
+configure terminal
+interface range fa0/1 - 2
+ switchport trunk native vlan 1
+end</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 8: Connections Systémiques -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">🔗</span>
+                <h2>CONNECTIONS SYSTÉMIQUES</h2>
+            </div>
+            
+            <div class="info">
+                <p><strong>← Module Précédent (STP) :</strong> STP bloquait les liens redondants pour éviter les boucles, gaspillant la bande passante. EtherChannel résout ce dilemme en faisant apparaître plusieurs liens physiques comme UN lien logique aux yeux de STP.</p>
+            </div>
+            
+            <div class="success">
+                <p><strong>→ Module Suivant (FHRP - HSRP/VRRP) :</strong> Avec EtherChannel, vous avez maintenant un lien trunk haute disponibilité entre switches. La prochaine étape est d'assurer la redondance de la gateway par défaut avec HSRP/VRRP. Un EtherChannel défaillant rendrait inutile la redondance FHRP.</p>
+            </div>
+            
+            <div class="concept">
+                <p><strong>Écosystème Réel :</strong></p>
+                <ul>
+                    <li><strong>Avec les Firewalls :</strong> Certains firewalls (ASA, Palo Alto) supportent l'agrégation de liens avec les switches.</li>
+                    <li><strong>Avec les Serveurs :</strong> NIC Teaming (Windows/Linux) ↔ LACP sur le switch.</li>
+                    <li><strong>Avec SDN (ACI) :</strong> vPC (Virtual Port-Channel) étend le concept entre deux switches Nexus.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 9: Validation par Exercice Mental -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-icon">❓</span>
+                <h2>VALIDATION PAR EXERCICE MENTAL</h2>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question"><i class="fas fa-brain"></i> Question de Concept :</div>
+                <p>"Si EtherChannel est un orchestre, que se passe-t-il si un violoniste (port Fa0/1) décide de jouer une partition de jazz (VLAN 30) alors que l'orchestre joue du classique (VLAN 10) ?"</p>
+                
+                <div class="quiz-options">
+                    <div class="quiz-option" data-correct="true">L'EtherChannel entier tombe</div>
+                    <div class="quiz-option" data-correct="false">Seul ce port est isolé, les autres continuent</div>
+                    <div class="quiz-option" data-correct="false">Le trafic est filtré automatiquement</div>
+                    <div class="quiz-option" data-correct="false">STP bloque uniquement ce port</div>
+                </div>
+                
+                <div class="quiz-feedback" id="feedback2">
+                    <p><strong>Réponse :</strong> L'EtherChannel entier tombe. Le chef d'orchestre (Port-Channel) exige l'uniformité.</p>
+                </div>
+                
+                <button class="btn btn-success" onclick="checkQuiz(2)">
+                    <i class="fas fa-check"></i> Vérifier la réponse
+                </button>
+                <button class="btn" onclick="resetQuiz(2)">
+                    <i class="fas fa-redo"></i> Réessayer
+                </button>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question"><i class="fas fa-exclamation-triangle"></i> Question de Piège :</div>
+                <p>"Un EtherChannel entre deux switches a été configuré avec <code>channel-group 1 mode on</code> des deux côtés. Le technicien ajoute un troisième lien Fa0/3 avec <code>channel-group 1 mode active</code>. Que se passe-t-il ?"</p>
+                
+                <div class="quiz-options">
+                    <div class="quiz-option" data-correct="false">Seul Fa0/3 est ajouté, les autres restent en mode on</div>
+                    <div class="quiz-option" data-correct="false">L'EtherChannel fonctionne en mode mixte</div>
+                    <div class="quiz-option" data-correct="true">L'EtherChannel entier tombe</div>
+                    <div class="quiz-option" data-correct="false">Fa0/3 est ignoré car incompatible</div>
+                </div>
+                
+                <div class="quiz-feedback" id="feedback3">
+                    <p><strong>Réponse :</strong> L'EtherChannel entier tombe. Mode <code>on</code> ≠ Mode <code>active</code>. Ils sont incompatibles. Tous les ports doivent avoir le même mode.</p>
+                </div>
+                
+                <button class="btn btn-success" onclick="checkQuiz(3)">
+                    <i class="fas fa-check"></i> Vérifier la réponse
+                </button>
+                <button class="btn" onclick="resetQuiz(3)">
+                    <i class="fas fa-redo"></i> Réessayer
+                </button>
+            </div>
+            
+            <div class="info">
+                <div class="quiz-question"><i class="fas fa-fire"></i> Question de Crise :</div>
+                <p>"Il est 3h du matin, tous les utilisateurs du VLAN 10 se plaignent d'une connexion réseau lente. Vous voyez que l'EtherChannel Po1 vers le core switch montre 4 liens, mais seulement 1 avec <code>(P)</code> et 3 avec <code>(s)</code> en LACP. Votre première commande, votre première hypothèse, et votre plan d'action en 3 étapes ?"</p>
+                
+                <p><strong>Première commande :</strong></p>
+                <pre><code>show lacp internal  ! Voir l'état LACP détaillé</code></pre>
+                
+                <p><strong>Première hypothèse :</strong> Limite <code>lacp max-bundle</code> mal configurée ou différente des deux côtés, forçant des liens en standby.</p>
+                
+                <p><strong>Plan d'action :</strong></p>
+                <ol>
+                    <li><code>show run interface port-channel1</code> sur les deux switches pour vérifier <code>lacp max-bundle</code></li>
+                    <li>Uniformiser à la même valeur (ex: 4) des deux côtés</li>
+                    <li><code>clear lacp counters</code> et surveiller la reconvergence avec <code>show etherchannel summary</code></li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 10: Micro-Kit Essentiel -->
+        <section class="micro-kit">
+            <div class="micro-kit-header">
+                <h2><i class="fas fa-puzzle-piece"></i> MICRO-KIT ESSENTIEL (SYNTHÈSE 1 PAGE A4)</h2>
+                <p>Version imprimable pour révision accélérée avant l'examen</p>
+                <button class="btn btn-success" onclick="printMicroKit()">
+                    <i class="fas fa-print"></i> Imprimer ce Micro-Kit
+                </button>
+            </div>
+            
+            <div class="micro-kit-grid">
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-gem"></i> LES 5 LOIS IMMUABLES</h4>
+                    <ol>
+                        <li><strong>Uniformité obligatoire</strong> : Tous les ports = même VLAN/trunk, vitesse, duplex.</li>
+                        <li><strong>Compatibilité des modes</strong> : PAgP: D↔D ou D↔A ✓ | LACP: A↔A ou A↔P ✓</li>
+                        <li><strong>Port-Channel = Interface maître</strong> : Configurez TOUT sur <code>interface port-channel X</code>.</li>
+                        <li><strong>8 liens max</strong> : Limite matérielle absolue par EtherChannel.</li>
+                        <li><strong>STP voit UN lien</strong> : Tout ou rien - tous les liens sont bloqués ou forwarding ensemble.</li>
+                    </ol>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-project-diagram"></i> MINI-MODÈLE MENTAL</h4>
+                    <div class="mermaid-container" style="padding: 10px; min-height: 150px;">
+                        <div id="mini-mermaid"></div>
+                    </div>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-terminal"></i> 6 COMMANDES CLI</h4>
+                    <pre style="font-size: 0.85em; margin: 10px 0;"><code>show etherchannel summary
+show interfaces port-channel 1
+show etherchannel port-channel
+show run interface port-channel 1
+show lacp neighbor
+show pagp neighbor</code></pre>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-traffic-light"></i> 3 PIÈGES CCNA</h4>
+                    <ol>
+                        <li><code>auto</code> ↔ <code>auto</code> (PAgP) = ❌ Échec</li>
+                        <li>VLAN natif différent = ❌ Échec silencieux</li>
+                        <li>Configurer ports physiques après création = ❌ Rompt l'agrégation</li>
+                    </ol>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-tools"></i> DÉPANNAGE 3 ÉTAPES</h4>
+                    <ol>
+                        <li><strong>Vérifier :</strong> <code>show etherchannel summary</code> → Chercher <code>D</code> ou <code>I</code></li>
+                        <li><strong>Diagnostiquer :</strong> <code>show interfaces trunk</code> → Vérifier VLAN natif/match</li>
+                        <li><strong>Corriger :</strong> Uniformiser config sur <code>interface port-channel X</code></li>
+                    </ol>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-shield-alt"></i> RISQUE + MITIGATION</h4>
+                    <p><strong>Risque :</strong> VLAN Hopping via trunk auto-négociation</p>
+                    <p><strong>Mitigation :</strong> <code>switchport nonego</code> + VLAN natif dédié non routé</p>
+                </div>
+                
+                <div class="micro-kit-card">
+                    <h4><i class="fas fa-calculator"></i> ÉQUATION MENTALE</h4>
+                    <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 8px; margin-top: 10px;">
+                        <p style="font-size: 1.2em; font-weight: bold; color: var(--primary-blue); margin: 0;">
+                            EtherChannel Réussi = (Config_identique × Protocole_compatible) + Port_Channel_config
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer style="background: var(--surface); padding: 30px; text-align: center; margin-top: 50px; border-top: 3px solid var(--border);">
+        <div class="container">
+            <p style="color: var(--text-light); margin-bottom: 20px;">
+                <i class="fas fa-certificate"></i> Module-Kit de Maîtrise EtherChannel - CCNA/CCNP 
+                <span style="margin: 0 10px">•</span>
+                Transcription HTML fidèle 1:1
+                <span style="margin: 0 10px">•</span>
+                Validé pour production pédagogique
+            </p>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <button class="btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <i class="fas fa-arrow-up"></i> Retour en haut
+                </button>
+                <button class="btn btn-success" onclick="printPage()">
+                    <i class="fas fa-print"></i> Imprimer la page
+                </button>
+                <button class="btn btn-warning" onclick="toggleDarkMode()">
+                    <i class="fas fa-adjust"></i> Mode Nuit
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== BACK TO TOP BUTTON ===== -->
+    <a href="#top" class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        // Initialisation Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e3f2fd',
+                primaryBorderColor: '#2196f3',
+                primaryTextColor: '#212121',
+                lineColor: '#2196f3',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#ffffff',
+                fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Diagrammes Mermaid
+        const mainDiagram = `flowchart TD
+    A[Besoin: Plus de bande passante/Redondance] --> B{Choix Technologique}
+    B --> C[EtherChannel]
+    B --> D[Single Link + STP Blocked]
+    
+    C --> E{Protocole de Négociation}
+    E --> F[PAgP - Cisco Propriétaire]
+    E --> G[LACP - Standard IEEE]
+    E --> H[Mode On - Statique]
+    
+    F --> I[Modes: On/Desirable/Auto]
+    G --> J[Modes: On/Active/Passive]
+    H --> K[Aucune négociation]
+    
+    I --> L{Compatibilité des Modes}
+    J --> L
+    K --> M[Requiert Mode On des deux côtés]
+    
+    L --> N[✅ EtherChannel Établi]
+    M --> N
+    
+    N --> O[Configuration Port-Channel]
+    O --> P[Vérification: show etherchannel summary]
+    P --> Q[Résultat: Agrégation Logique Opérationnelle]
+    
+    style A fill:#e1f5fe
+    style N fill:#c8e6c9
+    style Q fill:#ffecb3`;
+
+        const miniDiagram = `flowchart LR
+    A[Liens Physiques] --> B{Protocole Compatible?}
+    B -->|Oui| C[Port-Channel Logique]
+    B -->|Non| D[❌ Échec]
+    C --> E[STP: 1 lien logique]
+    E --> F[Bande passante agrégée]`;
+
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            // Injecter les diagrammes Mermaid
+            const mainContainer = document.getElementById('mermaid-diagram');
+            if (mainContainer) {
+                mainContainer.innerHTML = mainDiagram;
+                mermaid.init(undefined, mainContainer);
+            }
+            
+            const miniContainer = document.getElementById('mini-mermaid');
+            if (miniContainer) {
+                miniContainer.innerHTML = miniDiagram;
+                mermaid.init(undefined, miniContainer);
+            }
+            
+            // Initialiser les systèmes interactifs
+            initTabs();
+            initQuizzes();
+            initBackToTop();
+            initPrintButtons();
+            
+            // Afficher un message de bienvenue
+            console.log('Module-Kit EtherChannel chargé avec succès!');
+        });
+
+        // ===== FONCTIONS UTILITAIRES =====
+
+        // Système de tabs
+        function initTabs() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Retirer active de tous
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Ajouter active au tab cliqué
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // Système de quiz
+        function initQuizzes() {
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const parent = this.closest('.quiz-container');
+                    parent.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+        }
+
+        function checkQuiz(quizNumber) {
+            const quizContainer = document.querySelector(`.quiz-container:nth-of-type(${quizNumber})`);
+            if (!quizContainer) return;
+            
+            const options = quizContainer.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`feedback${quizNumber}`);
+            
+            let selectedOption = null;
+            options.forEach(option => {
+                if (option.classList.contains('selected')) {
+                    selectedOption = option;
+                }
+                option.classList.remove('correct', 'incorrect');
+            });
+            
+            if (!selectedOption) {
+                alert('Veuillez sélectionner une réponse avant de vérifier.');
+                return;
+            }
+            
+            // Marquer toutes les réponses correctes
+            options.forEach(option => {
+                if (option.getAttribute('data-correct') === 'true') {
+                    option.classList.add('correct');
+                }
+            });
+            
+            // Marquer la réponse sélectionnée
+            if (selectedOption.getAttribute('data-correct') === 'true') {
+                selectedOption.classList.add('correct');
+            } else {
+                selectedOption.classList.add('incorrect');
+            }
+            
+            feedback.classList.add('correct');
+            
+            // Faire défiler vers le feedback
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function resetQuiz(quizNumber) {
+            const quizContainer = document.querySelector(`.quiz-container:nth-of-type(${quizNumber})`);
+            if (!quizContainer) return;
+            
+            const options = quizContainer.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`feedback${quizNumber}`);
+            
+            options.forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            feedback.classList.remove('correct');
+        }
+
+        // Bouton retour en haut
+        function initBackToTop() {
+            const backToTopBtn = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+            
+            backToTopBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Impression
+        function initPrintButtons() {
+            // La fonction printMicroKit est déjà définie plus bas
+            // Ajoutons seulement le bouton d'impression de page
+            window.printPage = function() {
+                window.print();
+            };
+        }
+
+        // Impression du Micro-Kit
+        function printMicroKit() {
+            const originalContent = document.body.innerHTML;
+            const microKitContent = document.querySelector('.micro-kit').outerHTML;
+            
+            document.body.innerHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Micro-Kit EtherChannel - Révision CCNA</title>
+                    <meta charset="UTF-8">
+                    <style>
+                        @page { margin: 1cm; }
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 20px; 
+                            max-width: 800px; 
+                            margin: 0 auto;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        .micro-kit { border: 2px solid #1a237e; padding: 25px; }
+                        .micro-kit-header { text-align: center; margin-bottom: 30px; }
+                        .micro-kit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+                        .micro-kit-card { border: 1px solid #ddd; padding: 15px; break-inside: avoid; }
+                        pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+                        code { background: #f5f5f5; padding: 2px 4px; }
+                        @media print {
+                            .micro-kit-grid { grid-template-columns: repeat(2, 1fr) !important; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #1a237e; margin-bottom: 10px;">Micro-Kit EtherChannel</h1>
+                        <p style="color: #666;">Révision accélérée CCNA/CCNP - Version imprimable</p>
+                        <hr style="margin: 20px 0; border: 1px solid #ddd;">
+                    </div>
+                    ${microKitContent}
+                    <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9em;">
+                        <p>Module-Kit de Maîtrise EtherChannel • Généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            setTimeout(function() {
+                                document.body.innerHTML = \`${originalContent.replace(/`/g, '\\`')}\`;
+                                location.reload();
+                            }, 1000);
+                        };
+                    <\/script>
+                </body>
+                </html>`;
+            
+            window.onload = function() {
+                window.print();
+                setTimeout(function() {
+                    document.body.innerHTML = originalContent;
+                    location.reload();
+                }, 1000);
+            };
+        }
+
+        // Mode sombre/clair
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            
+            if (isDark) {
+                document.body.style.backgroundColor = '#121212';
+                document.body.style.color = '#ffffff';
+                
+                // Mettre à jour les couleurs des sections
+                document.querySelectorAll('.section-card').forEach(card => {
+                    card.style.backgroundColor = '#1e1e1e';
+                    card.style.color = '#ffffff';
+                });
+                
+                // Mettre à jour le header
+                const header = document.querySelector('.mastery-kit-header');
+                if (header) {
+                    header.style.background = 'linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #2c3e50 100%)';
+                }
+            } else {
+                document.body.style.backgroundColor = '';
+                document.body.style.color = '';
+                
+                document.querySelectorAll('.section-card').forEach(card => {
+                    card.style.backgroundColor = '';
+                    card.style.color = '';
+                });
+                
+                const header = document.querySelector('.mastery-kit-header');
+                if (header) {
+                    header.style.background = 'linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, var(--accent-blue) 100%)';
+                }
+            }
+        }
+
+        // Export PDF (fonctionnalité avancée)
+        function exportToPDF() {
+            alert('Fonctionnalité PDF en cours de développement. Utilisez "Imprimer" puis "Enregistrer au format PDF" dans le dialogue d\'impression.');
+        }
+    </script>
+</body>
+</html>

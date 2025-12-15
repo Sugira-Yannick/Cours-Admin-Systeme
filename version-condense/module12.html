@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module-Kit CCNA-2 : Concepts WLAN</title>
+    <style>
+        :root {
+            --red: #e74c3c;
+            --orange: #e67e22;
+            --green: #27ae60;
+            --blue: #3498db;
+            --purple: #9b59b6;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3, h4 {
+            color: var(--dark);
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h1 { border-color: var(--purple); color: var(--purple); }
+        h2 { border-color: var(--blue); }
+        h3 { border-color: var(--green); }
+        h4 { border-color: var(--orange); }
+        
+        .red { color: var(--red); font-weight: bold; }
+        .orange { color: var(--orange); font-weight: bold; }
+        .green { color: var(--green); font-weight: bold; }
+        .blue { color: var(--blue); font-weight: bold; }
+        .purple { color: var(--purple); font-weight: bold; }
+        
+        .box {
+            border-left: 4px solid;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 0 8px 8px 0;
+        }
+        .critical { border-left-color: var(--red); }
+        .warning { border-left-color: var(--orange); }
+        .best-practice { border-left-color: var(--green); }
+        .config { border-left-color: var(--blue); }
+        .concept { border-left-color: var(--purple); }
+        
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #2c3e50;
+            color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .mermaid-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+        
+        .section-icon {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+        
+        .quick-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .ref-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 4px solid var(--blue);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background-color: var(--dark);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--dark);
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1><span class="section-icon">🔷</span> MODULE-KIT DE MAÎTRISE : CONCEPTS WLAN</h1>
+    <p class="purple"><strong>Reconstruction Pédagogique Complète - CCNA-2</strong></p>
+    
+    <div class="box concept">
+        <h2>🟣 ANALOGIE SYSTÉMIQUE : LE SYSTÈME DE TRANSPORT INTELLIGENT</h2>
+        <p>Imaginez un réseau WLAN comme un <span class="blue">système de transport urbain intelligent</span> :</p>
+        <ul>
+            <li><span class="blue">Le SSID</span> est la <strong>destination affichée</strong> sur les panneaux</li>
+            <li><span class="blue">Les Points d'Accès</span> sont des <strong>stations de métro</strong> avec leurs zones de couverture</li>
+            <li><span class="blue">Le BSS</span> = une station isolée</li>
+            <li><span class="blue">L'ESS</span> = plusieurs stations connectées par des tunnels (Ethernet) permettant aux voyageurs (clients) de circuler sans interruption</li>
+            <li><span class="blue">CAPWAP</span> = le <strong>centre de contrôle centralisé</strong> qui gère la signalisation, la sécurité et l'optimisation du trafic entre toutes les stations</li>
+            <li><span class="blue">Les trames Beacon</span> = les annonces sonores régulières "Prochain train pour..."</li>
+            <li><span class="blue">Le mode Ad hoc</span> = un covoiturage spontané entre deux personnes</li>
+            <li><span class="orange">Les interférences</span> = des travaux sur la voie qui ralentissent le trafic</li>
+        </ul>
+    </div>
+
+    <h2>🔵 MODÈLE MENTAL : ARCHITECTURE WLAN HIÉRARCHIQUE</h2>
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    A[Wi-Fi Ecosystem] --> B[Topologies]
+    A --> C[Architectures]
+    A --> D[Sécurité]
+    A --> E[Technologies]
+    
+    B --> B1[Ad Hoc IBSS]
+    B --> B2[Infrastructure BSS]
+    B --> B3[ESS Multiple APs]
+    
+    C --> C1[Autonome]
+    C --> C2[CAPWAP]
+    C2 --> C2a[Split MAC]
+    C2 --> C2b[Local MAC]
+    C2 --> C2c[FlexConnect Modes]
+    
+    D --> D1[Authentification]
+    D --> D2[Chiffrement]
+    D --> D3[Attaques]
+    
+    E --> E1[2.4GHz 13 canaux]
+    E --> E2[5GHz 24 canaux]
+    E --> E3[Modulations]
+        </div>
+    </div>
+
+    <h2>🔴 NOYAU DUR : CONCEPTS FONDAMENTAUX</h2>
+
+    <h3>1. COMPOSANTS PHYSIQUES WLAN</h3>
+    
+    <div class="box config">
+        <p><span class="blue">Routeur Domestique Sans Fil</span> = <strong>Routeur + Point d'Accès + Commutateur</strong> intégrés</p>
+        <ul>
+            <li><span class="blue">Routeur</span> : fonction de routage IP (couche 3)</li>
+            <li><span class="blue">Point d'Accès</span> : conversion Wi-Fi ↔ Ethernet (couche 2)</li>
+            <li><span class="blue">Commutateur</span> : ports Ethernet pour connexions filaires (couche 2)</li>
+        </ul>
+    </div>
+
+    <div class="box warning">
+        <p><span class="orange">ATTENTION</span> : Un prolongateur de portée (Range Extender) <span class="red"><strong>N'EST PAS</strong></span> intégré par défaut dans un routeur domestique. C'est un appareil séparé souvent problématique.</p>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Antennes</span> :</p>
+        <ul>
+            <li><span class="blue">Omnidirectionnelle</span> : Couverture à <strong>360°</strong> - comme un haut-parleur diffusant dans toutes les directions</li>
+            <li><span class="blue">Directionnelle</span> : Couverture focalisée - comme un projecteur</li>
+            <li><span class="green">MIMO</span> : Multiple Input Multiple Output - <span class="green">BEST PRACTICE</span> pour 802.11n et supérieur</li>
+        </ul>
+    </div>
+
+    <h3>2. TOPOLOGIES WLAN</h3>
+
+    <div class="box concept">
+        <p><span class="purple">IBSS (Ad Hoc)</span> :</p>
+        <ul>
+            <li>Mode <strong>poste à poste</strong> sans AP</li>
+            <li>Directement entre deux appareils</li>
+            <li><span class="purple">Analogique</span> : Conversation directe entre deux personnes sans intermédiaire</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">BSS (Basic Service Set)</span> :</p>
+        <ul>
+            <li>Un <strong>seul AP</strong> avec ses clients associés</li>
+            <li>Couverture cellulaire de base</li>
+        </ul>
+    </div>
+
+    <div class="box best-practice">
+        <p><span class="green">ESS (Extended Service Set)</span> :</p>
+        <ul>
+            <li><strong>Deux ou plusieurs BSS</strong> interconnectés par Ethernet</li>
+            <li>Permet le <strong>roaming</strong> (itinérance) des clients</li>
+            <li><span class="green">CRITIQUE POUR LES ENTREPRISES</span> : couverture étendue sans interruption</li>
+        </ul>
+    </div>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart LR
+    IBSS[IBSS Ad-Hoc] -->|Direct Client-to-Client| Client1
+    IBSS -->|No AP Needed| Client2
+    
+    BSS[BSS Infrastructure] --> AP1[AP]
+    AP1 -->|Association| C1[Client 1]
+    AP1 -->|Association| C2[Client 2]
+    
+    ESS[ESS Extended] --> AP2[AP 1]
+    ESS --> AP3[AP 2]
+    AP2 -->|Same SSID| C3[Client]
+    AP3 -->|Roaming| C3
+    AP2 &lt;->|Ethernet Backbone| AP3
+        </div>
+    </div>
+
+    <h3>3. ARCHITECTURES D'ACCÈS</h3>
+
+    <div class="box config">
+        <p><span class="blue">Points d'Accès Autonomes</span> :</p>
+        <ul>
+            <li>Configuration <strong>locale</strong> sur l'appareil</li>
+            <li>Pas de dépendance à un contrôleur</li>
+            <li><span class="purple">Analogique</span> : Bureau de poste indépendant</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Points d'Accès Basés sur Contrôleur (CAPWAP)</span> :</p>
+        <ul>
+            <li><span class="blue">CAPWAP = Control and Provisioning of Wireless Access Points</span></li>
+            <li><span class="green">IPv4 par défaut</span>, configurable en IPv6</li>
+            <li><span class="blue">Ports UDP 5246</span> (contrôle) et <span class="blue">5247</span> (données)</li>
+            <li>Protocole IP : <span class="blue">17 (UDP)</span> pour IPv4 et IPv6</li>
+        </ul>
+    </div>
+
+    <h2>🔴 ARCHITECTURE CAPWAP : MODÈLE MENTAL DES RÔLES</h2>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    CAPWAP[Architecture CAPWAP] --> SplitMAC
+    CAPWAP --> LocalMAC
+    
+    SplitMAC[Split MAC Architecture&lt;br/&gt;Fonctions DIVISÉES] --> WLC_F[WLC Responsabilités]
+    SplitMAC --> AP_F[AP Responsabilités]
+    
+    WLC_F --> W1[Mise en file d'attente&lt;br/&gt;et priorisation QoS]
+    WLC_F --> W2[Traduction de trames&lt;br/&gt;Wi-Fi → Ethernet]
+    WLC_F --> W3[Arrêt du trafic 802.11&lt;br/&gt;sur interface filaire]
+    WLC_F --> W4[Authentification]
+    
+    AP_F --> A1[Balises Beacon&lt;br/&gt;et réponses Probe]
+    AP_F --> A2[Cryptage/Décryptage&lt;br/&gt;couche MAC]
+    AP_F --> A3[ACK et Retransmissions]
+    AP_F --> A4[Association/Réassociation&lt;br/&gt;des clients]
+    
+    LocalMAC[Local MAC Architecture] --> L1[Toutes fonctions MAC&lt;br/&gt;sur l'AP]
+    LocalMAC --> L2[WLC gère seulement&lt;br/&gt;la gestion et config]
+        </div>
+    </div>
+
+    <h3>4. MODES FLEXCONNECT</h3>
+
+    <div class="box config">
+        <p><span class="blue">Mode Connecté</span> :</p>
+        <ul>
+            <li>WLC <strong>accessible</strong></li>
+            <li>Toutes les fonctions CAPWAP actives</li>
+            <li><span class="green">BEST PRACTICE</span> : fonctionnement normal</li>
+        </ul>
+    </div>
+
+    <div class="box warning">
+        <p><span class="blue">Mode Autonome</span> :</p>
+        <ul>
+            <li>WLC <strong>inaccessible</strong></li>
+            <li>AP commute le trafic <strong>localement</strong></li>
+            <li>Authentification des clients <strong>localement</strong></li>
+            <li><span class="orange">ATTENTION</span> : mode dégradé mais résilient</li>
+        </ul>
+    </div>
+
+    <div class="box critical">
+        <p><span class="red">DTLS (Datagram Transport Layer Security)</span> :</p>
+        <ul>
+            <li><span class="red">NON activé par défaut</span> sur les tunnels CAPWAP</li>
+            <li><span class="green">MUST CONFIGURE</span> pour sécuriser contrôle et données</li>
+        </ul>
+    </div>
+
+    <h2>🟠 PROFONDEUR EXAMEN : DÉTAILS TECHNIQUES CRITIQUES</h2>
+
+    <h3>1. MODES DE DÉCOUVERTE</h3>
+
+    <div class="box config">
+        <p><span class="blue">Mode Passif</span> :</p>
+        <ul>
+            <li>AP envoie des <strong>trames Beacon</strong> périodiquement</li>
+            <li>Clients écoutent passivement</li>
+            <li><span class="purple">Analogique</span> : Radio qui émet régulièrement</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Mode Actif</span> :</p>
+        <ul>
+            <li>AP <strong>n'envoie PAS de Beacon</strong></li>
+            <li>Clients envoient des <strong>Probe Requests</strong></li>
+            <li><span class="orange">PIÈGE EXAMEN</span> : Ne pas confondre qui envoie quoi</li>
+        </ul>
+    </div>
+
+    <h3>2. TRAMES 802.11</h3>
+
+    <div class="box config">
+        <p><span class="blue">Structure</span> : <strong>4 champs d'adresse</strong> (vs 2 pour Ethernet)</p>
+        <ul>
+            <li>Adresse 1 : Destination (récepteur final)</li>
+            <li>Adresse 2 : Source (émetteur initial)</li>
+            <li>Adresse 3 : Adresse de filtrage (BSSID)</li>
+            <li>Adresse 4 : Utilisé uniquement en mode ad hoc</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Trames de Gestion</span> :</p>
+        <ul>
+            <li><span class="blue">Beacon</span> : Annonce périodique du SSID/capacités</li>
+            <li><span class="blue">Probe Request/Response</span> : Découverte active</li>
+            <li><span class="blue">Authentication</span> : Première étape de connexion</li>
+            <li><span class="blue">Association</span> : Établissement final de connexion</li>
+        </ul>
+    </div>
+
+    <h2>🟣 TECHNOLOGIES DE MODULATION</h2>
+
+    <h3>MODÈLE MENTAL DES MODULATIONS</h3>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    Mod[Techniques de Modulation] --> SS[Spread Spectrum]
+    Mod --> OF[OFDM Technologies]
+    
+    SS --> FHSS[FHSS&lt;br/&gt;Frequency Hopping&lt;br/&gt;Saut de fréquences]
+    SS --> DSSS[DSSS&lt;br/&gt;Direct Sequence&lt;br/&gt;Étalement sur large bande]
+    
+    OF --> OFDM[OFDM&lt;br/&gt;Division fréquentielle]
+    OF --> OFDMA[OFDMA&lt;br/&gt;802.11ax Wi-Fi 6&lt;br/&gt;Multi-utilisateurs]
+        </div>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">FHSS (Frequency Hopping Spread Spectrum)</span> :</p>
+        <ul>
+            <li><strong>Saut rapide</strong> entre fréquences</li>
+            <li><span class="purple">Analogie</span> : <strong>Changement constant de canal radio</strong></li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">DSSS (Direct Sequence Spread Spectrum)</span> :</p>
+        <ul>
+            <li><strong>Étalement</strong> du signal sur large bande</li>
+            <li><span class="purple">Analogie</span> : <strong>Diffuser un message sur plusieurs fréquences simultanément</strong></li>
+        </ul>
+    </div>
+
+    <div class="box best-practice">
+        <p><span class="green">OFDMA (802.11ax Wi-Fi 6)</span> :</p>
+        <ul>
+            <li><strong>Nouvelle norme</strong> 802.11ax</li>
+            <li>Division du canal pour <strong>multiples utilisateurs simultanés</strong></li>
+            <li><span class="green">BEST PRACTICE</span> pour les environnements denses</li>
+        </ul>
+    </div>
+
+    <h3>3. BANDES DE FRÉQUENCES</h3>
+
+    <div class="box config">
+        <p><span class="blue">2.4 GHz</span> :</p>
+        <ul>
+            <li><strong>Europe</strong> : <span class="blue">13 canaux</span> (1-13)</li>
+            <li><strong>USA</strong> : 11 canaux (1-11)</li>
+            <li><strong>Japon</strong> : 14 canaux (1-14)</li>
+            <li><span class="green">CANAUX NON-CHEVAUCHANTS</span> : 1, 6, 11</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">5 GHz</span> :</p>
+        <ul>
+            <li><strong>~24 canaux</strong> disponibles</li>
+            <li>Canaux 20, 40, 80, 160 MHz</li>
+            <li><strong>DFS (Dynamic Frequency Selection)</strong> requis pour certains canaux</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Règles de déploiement</span> :</p>
+    </div>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    Deploy[Déploiement Multi-AP] --> AP3[3 APs Proches]
+    Deploy --> AP2[2 APs Proches]
+    
+    AP3 --> Ch3[Canaux 1, 6, 11]
+    AP2 --> Ch2[Canaux 1 et 11&lt;br/&gt;ou 6 et 11]
+    
+    Ch3 --> NonChev[Évite les interférences]
+    Ch2 --> NonChev
+        </div>
+    </div>
+
+    <h2>🔴 SÉCURITÉ WLAN : MODÈLE MENTAL COMPLET</h2>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    Sec[Security Framework] --> Auth[Authentification]
+    Sec --> Enc[Chiffrement]
+    Sec --> Attacks[Attaques &amp; Mitigation]
+    
+    Auth --> Open[Ouverte&lt;br/&gt;Pas de mot de passe]
+    Auth --> PSK[PSK/Personnel&lt;br/&gt;Mot de passe partagé]
+    Auth --> Ent[Entreprise&lt;br/&gt;RADIUS Server]
+    
+    Enc --> WEP[WEP - RC4&lt;br/&gt;VULNÉRABLE]
+    Enc --> WPA[TKIP - WPA1&lt;br/&gt;Transition]
+    Enc --> WPA2[AES-CCMP - WPA2&lt;br/&gt;BEST PRACTICE]
+    Enc --> WPA3[WPA3&lt;br/&gt;Futur Standard]
+    
+    Attacks --> Rogue[Rogue AP&lt;br/&gt;AP non autorisé]
+    Attacks --> EvilTwin[Evil Twin AP&lt;br/&gt;MITM Attack]
+    Attacks --> DoS[Denial of Service]
+    Attacks --> Interf[Interférences Radio&lt;br/&gt;Non intentionnel]
+        </div>
+    </div>
+
+    <h3>4. MÉTHODES DE SÉCURITÉ</h3>
+
+    <div class="box critical">
+        <p><span class="red">NE PAS UTILISER</span> :</p>
+        <ul>
+            <li><span class="red">Masquage SSID</span> : Facile à contourner</li>
+            <li><span class="red">Filtrage MAC</span> : Spoofing possible</li>
+        </ul>
+    </div>
+
+    <div class="box best-practice">
+        <p><span class="green">BEST PRACTICES</span> :</p>
+        <ol>
+            <li><strong>Authentification forte</strong> (WPA2/WPA3 Enterprise)</li>
+            <li><strong>Chiffrement robuste</strong> (AES-CCMP)</li>
+            <li><span class="orange">WPA2 Personnel</span> = PSK (Pre-Shared Key)</li>
+        </ol>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Évolution des standards</span> :</p>
+        <ul>
+            <li><strong>802.11 original</strong> : <span class="red">WEP avec RC4</span> (VULNÉRABLE)</li>
+            <li><strong>WPA</strong> : TKIP comme solution temporaire</li>
+            <li><strong>WPA2</strong> : <span class="green">AES-CCMP</span> (standard actuel)</li>
+            <li><strong>CCMP</strong> = Counter Mode with CBC-MAC Protocol</li>
+        </ul>
+    </div>
+
+    <h2>🟠 ATTENTION : PIÈGES ET ATTENTES</h2>
+
+    <h3>1. ATTENTES D'EXAMEN CCNA</h3>
+
+    <div class="quick-ref">
+        <div class="ref-card">
+            <h4><span class="orange">Piège #1</span></h4>
+            <p><strong>"Meilleure solution pour étendre la couverture"</strong></p>
+            <p><span class="red">FAUX</span> : Range Extender (réduit bande passante de moitié)</p>
+            <p><span class="green">VRAI</span> : Point d'accès supplémentaire avec connexion Ethernet</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4><span class="orange">Piège #2</span></h4>
+            <p><strong>"Source d'attaque DoS"</strong></p>
+            <p><span class="blue">Attaque</span> = intentionnel (Rogue AP, utilisateur malveillant)</p>
+            <p><span class="blue">Non-attaque</span> = accidentel (interférences radio)</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4><span class="orange">Piège #3</span></h4>
+            <p><strong>"Mode actif vs passif"</strong></p>
+            <p><span class="blue">Passif</span> : AP envoie Beacon</p>
+            <p><span class="blue">Actif</span> : Client envoie Probe Request</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4><span class="orange">Piège #4</span></h4>
+            <p><strong>"Authentification sans mot de passe"</strong></p>
+            <p><span class="green">Ouvert</span> = aucune authentification</p>
+            <p>Tous les autres (WEP, WPA, WPA2, WPA3) utilisent un secret</p>
+        </div>
+    </div>
+
+    <h3>2. SCÉNARIOS DE PRODUCTION</h3>
+
+    <table>
+        <tr>
+            <th>Scénario</th>
+            <th>Solution</th>
+            <th>Sécurité</th>
+            <th>Canaux</th>
+        </tr>
+        <tr>
+            <td><strong>Petit Bureau</strong></td>
+            <td>Routeur domestique (AP + Switch + Routeur)</td>
+            <td>WPA2 Personnel avec PSK complexe</td>
+            <td>1, 6, ou 11 (éviter les chevauchements)</td>
+        </tr>
+        <tr>
+            <td><strong>Entreprise Moyenne</strong></td>
+            <td>CAPWAP avec contrôleur</td>
+            <td>WPA2 Enterprise avec RADIUS</td>
+            <td>ESS pour roaming entre étages</td>
+        </tr>
+        <tr>
+            <td><strong>Environnement Dense</strong></td>
+            <td>802.11ax (OFDMA) pour efficacité</td>
+            <td>5 GHz pour plus de canaux</td>
+            <td>Puissance réduite, petites cellules</td>
+        </tr>
+    </table>
+
+    <h2>🔵 CONNEXIONS SYSTÉMIQUES</h2>
+
+    <h3>1. COUCHE OSI WLAN</h3>
+
+    <div class="box config">
+        <p><span class="blue">Couche 1 (Physique)</span> :</p>
+        <ul>
+            <li>Modulations : DSSS, FHSS, OFDM, OFDMA</li>
+            <li>Antennes : Omnidirectionnelle, Directionnelle, MIMO</li>
+            <li>Bandes : 2.4 GHz, 5 GHz</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Couche 2 (Liaison)</span> :</p>
+        <ul>
+            <li>Adressage MAC (4 adresses)</li>
+            <li>Trames 802.11 (Beacon, Probe, Auth, Assoc)</li>
+            <li>Topologies : BSS, ESS, IBSS</li>
+        </ul>
+    </div>
+
+    <div class="box config">
+        <p><span class="blue">Couche 3+ (via AP)</span> :</p>
+        <ul>
+            <li>Conversion 802.11 ↔ Ethernet</li>
+            <li>Routage (si routeur intégré)</li>
+            <li>CAPWAP tunnels (UDP 5246/5247)</li>
+        </ul>
+    </div>
+
+    <h3>2. INTÉGRATION AVEC RÉSEAU FILAIRE</h3>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart LR
+    WLAN[Réseau Sans Fil] --> AP[Point d'Accès]
+    AP -->|CAPWAP Tunnel| WLC[Wireless LAN Controller]
+    AP -->|Direct| Switch[Commutateur Ethernet]
+    
+    WLC -->|Management| Network[Réseau d'Entreprise]
+    Switch -->|802.3 Ethernet| Network
+    
+    Client[Client Wi-Fi] -->|802.11| AP
+        </div>
+    </div>
+
+    <h2>🟢 LAB COMPLET : CONFIGURATION WLC/AP</h2>
+
+    <h3>Commandes CLI Critiques</h3>
+
+    <pre>
+# Configuration AP Autonome (Cisco)
+configure terminal
+hostname AP-Office
+dot11 ssid Corporate
+   vlan 10
+   authentication open
+   authentication key-management wpa version 2
+   wpa-psk ascii MyStrongPass123!
+interface Dot11Radio0
+   ssid Corporate
+   channel 6
+   power local 15
+exit</pre>
+
+    <pre>
+# Vérification WLAN
+show dot11 associations
+show dot11 statistics
+show running-config | section dot11</pre>
+
+    <h3>Dépannage WLAN</h3>
+
+    <div class="box critical">
+        <p><span class="red">Symptôme : Clients ne se connectent pas</span></p>
+        <ol>
+            <li>Vérifier les Beacons : <code>show dot11 beacon</code></li>
+            <li>Vérifier l'authentification : <code>debug dot11 authentication</code></li>
+            <li>Vérifier les canaux : <code>show controllers dot11radio0</code></li>
+        </ol>
+    </div>
+
+    <div class="box warning">
+        <p><span class="orange">Symptôme : Performance médiocre</span></p>
+        <ol>
+            <li>Scanner les interférences : <code>show dot11 adjacent</code></li>
+            <li>Vérifier la charge : <code>show dot11 load</code></li>
+            <li>Optimiser les canaux : <code>channel least-congested</code></li>
+        </ol>
+    </div>
+
+    <h2>🔵 VALIDATION MENTALE</h2>
+
+    <div class="quick-ref">
+        <div class="ref-card">
+            <h4>Question 1</h4>
+            <p><strong>Un client en mode actif envoie-t-il des Beacons ou des Probes?</strong></p>
+            <p class="green">Réponse : <strong>Probe Requests</strong> (mode actif = client initie)</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4>Question 2</h4>
+            <p><strong>Combien de canaux non-chevauchent en 2.4GHz?</strong></p>
+            <p class="green">Réponse : <strong>3</strong> (1, 6, 11)</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4>Question 3</h4>
+            <p><strong>Quel port UDP pour le contrôle CAPWAP?</strong></p>
+            <p class="green">Réponse : <strong>5246</strong> (données = 5247)</p>
+        </div>
+        
+        <div class="ref-card">
+            <h4>Question 4</h4>
+            <p><strong>WPA2 Personnel utilise-t-il RADIUS?</strong></p>
+            <p class="red">Réponse : <strong>NON</strong> (Personnel = PSK, Enterprise = RADIUS)</p>
+        </div>
+    </div>
+
+    <h2>🟣 MICRO-KIT DE RÉVISION RAPIDE</h2>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+flowchart TD
+    Micro[WLAN Micro-Kit] --> C1[Topologies]
+    Micro --> C2[Architectures]
+    Micro --> C3[Sécurité]
+    
+    C1 --> T1[Ad-Hoc: Direct]
+    C1 --> T2[BSS: 1 AP]
+    C1 --> T3[ESS: Multi-AP Roaming]
+    
+    C2 --> A1[Autonome: Config locale]
+    C2 --> A2[CAPWAP: UDP 5246/5247]
+    A2 --> A2a[Split MAC]
+    A2 --> A2b[FlexConnect]
+    
+    C3 --> S1[Chiffrement: AES-CCMP]
+    C3 --> S2[Authent: WPA2 Pers/Ent]
+    C3 --> S3[Attaques: Evil Twin=MITT]
+    
+    Canaux --> CH1[2.4GHz: 1,6,11]
+    Canaux --> CH2[5GHz: ~24 canaux]
+    
+    Modulation --> M1[FHSS: Saut fréquentiel]
+    M1 --> M2[DSSS: Étale bande]
+    M2 --> M3[OFDMA: 802.11ax]
+        </div>
+    </div>
+
+    <h2>🔴 SCÉNARIO DE DÉPANNAGE COMPLET</h2>
+
+    <div class="box critical">
+        <p><strong>Contexte</strong> : Entreprise avec 3 APs CAPWAP, clients signalent déconnexions fréquentes.</p>
+        
+        <p><span class="green">PROCÉDURE SYSTÉMATIQUE</span> :</p>
+        
+        <ol>
+            <li><strong>Vérifier la connectivité CAPWAP</strong>
+                <pre>show capwap client config
+show capwap client stats</pre>
+            </li>
+            <li><strong>Analyser le roaming</strong>
+                <pre>debug client &lt;MAC&gt;
+show client summary</pre>
+            </li>
+            <li><strong>Vérifier les interférences</strong>
+                <pre>show controllers dot11radio0
+show dot11 adjacent</pre>
+            </li>
+            <li><strong>Valider la configuration ESS</strong>
+                <ul>
+                    <li>Mêmes SSID sur tous APs</li>
+                    <li>Canaux non-chevauchent (1, 6, 11)</li>
+                    <li>Puissance ajustée pour couverture optimale</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <p><span class="blue">SOLUTION TYPIQUE</span> : Chevauchement de canaux → Reconfigurer APs sur canaux 1, 6, 11.</p>
+    </div>
+
+    <h2>🟢 SYNTHÈSE FINALE : L'ADMINISTRATEUR WLAN EXCEPTIONNEL</h2>
+
+    <div class="box best-practice">
+        <p><strong>Pensez comme le réseau</strong> :</p>
+        <ul>
+            <li>Les <span class="blue">trames Beacon</span> sont le pouls du WLAN</li>
+            <li>Le <span class="blue">roaming</span> dans un ESS = changement de cellule sans perdre la connexion</li>
+            <li><span class="blue">CAPWAP</span> = système nerveux centralisé</li>
+            <li><span class="green">Sécurité</span> = couches (authentification + chiffrement)</li>
+        </ul>
+    </div>
+
+    <div class="box critical">
+        <p><strong>Actions critiques</strong> :</p>
+        <ol>
+            <li><span class="green">Toujours</span> utiliser canaux non-chevauchent (1, 6, 11 en 2.4GHz)</li>
+            <li><span class="green">Toujours</span> préférer WPA2 avec AES-CCMP</li>
+            <li><span class="red">Jamais</span> utiliser Range Extender comme solution permanente</li>
+            <li><span class="green">Toujours</span> planifier l'ESS pour les environnements d'entreprise</li>
+        </ol>
+    </div>
+
+    <div class="box concept">
+        <p><strong>Vision systémique</strong> : Un WLAN n'est pas "du Wi-Fi", c'est un <span class="purple">système de couche 2</span> qui doit s'intégrer parfaitement avec le réseau filaire, avec sa propre sécurité, gestion, et optimisation.</p>
+    </div>
+
+    <footer>
+        <p>Module-kit reconstruit à partir des questions CCNA-2 - WLAN Concepts</p>
+        <p>© Format pédagogique haute densité - Tous droits réservés</p>
+        <p>Validation : <span class="green">✓ Module validé par l'utilisateur</span></p>
+    </footer>
+</body>
+</html>

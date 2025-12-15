@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module-Kit de Maîtrise - Concepts du FHRP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-red: #e74c3c;
+            --primary-orange: #e67e22;
+            --primary-green: #27ae60;
+            --primary-blue: #3498db;
+            --primary-purple: #9b59b6;
+            --primary-gray: #7f8c8d;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-light: #5d6d7e;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-blue);
+        }
+        
+        .header h1 {
+            color: var(--primary-blue);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .module-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            padding: 25px;
+            border-left: 5px solid;
+            transition: transform 0.3s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .analogy-card {
+            border-left-color: var(--primary-purple);
+        }
+        
+        .mental-model-card {
+            border-left-color: var(--primary-purple);
+        }
+        
+        .core-card {
+            border-left-color: var(--primary-red);
+        }
+        
+        .security-card {
+            border-left-color: var(--primary-red);
+        }
+        
+        .exam-card {
+            border-left-color: var(--primary-orange);
+        }
+        
+        .lab-card {
+            border-left-color: var(--primary-green);
+        }
+        
+        .troubleshooting-card {
+            border-left-color: var(--primary-red);
+        }
+        
+        .connections-card {
+            border-left-color: var(--primary-blue);
+        }
+        
+        .validation-card {
+            border-left-color: var(--primary-orange);
+        }
+        
+        .microkit-card {
+            border-left-color: var(--primary-blue);
+        }
+        
+        .content-section {
+            margin-bottom: 25px;
+        }
+        
+        .content-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .content-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .content-section p, .content-section ul, .content-section ol {
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+        
+        .content-section ul, .content-section ol {
+            padding-left: 25px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+        }
+        
+        .color-coded {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0 2px;
+        }
+        
+        .red-code {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--primary-red);
+            border-left: 3px solid var(--primary-red);
+        }
+        
+        .orange-code {
+            background-color: rgba(230, 126, 34, 0.15);
+            color: var(--primary-orange);
+            border-left: 3px solid var(--primary-orange);
+        }
+        
+        .green-code {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: var(--primary-green);
+            border-left: 3px solid var(--primary-green);
+        }
+        
+        .blue-code {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: var(--primary-blue);
+            border-left: 3px solid var(--primary-blue);
+        }
+        
+        .purple-code {
+            background-color: rgba(155, 89, 182, 0.15);
+            color: var(--primary-purple);
+            border-left: 3px solid var(--primary-purple);
+        }
+        
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        
+        .command {
+            color: #7ec699;
+        }
+        
+        .comment {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .keyword {
+            color: #cc99cd;
+        }
+        
+        .string {
+            color: #7ec699;
+        }
+        
+        .number {
+            color: #f08d49;
+        }
+        
+        .mermaid-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+        
+        .warning-box {
+            background-color: rgba(230, 126, 34, 0.1);
+            border-left: 4px solid var(--primary-orange);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .danger-box {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--primary-red);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background-color: rgba(39, 174, 96, 0.1);
+            border-left: 4px solid var(--primary-green);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .info-box {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--primary-blue);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .law-item {
+            background-color: rgba(231, 76, 60, 0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-red);
+        }
+        
+        .law-number {
+            display: inline-block;
+            background-color: var(--primary-red);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .interactive-quiz {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid var(--primary-blue);
+        }
+        
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .quiz-options {
+            margin-bottom: 15px;
+        }
+        
+        .quiz-option {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .quiz-option:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(39, 174, 96, 0.2);
+            border-color: var(--primary-green);
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-color: var(--primary-red);
+        }
+        
+        .quiz-feedback {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .quiz-feedback.show {
+            display: block;
+        }
+        
+        .simulator {
+            background-color: #1e1e1e;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .simulator-output {
+            min-height: 150px;
+            background-color: #252526;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .simulator-input {
+            display: flex;
+        }
+        
+        .simulator-prompt {
+            color: #7ec699;
+            margin-right: 10px;
+            line-height: 40px;
+        }
+        
+        .simulator-input-field {
+            flex-grow: 1;
+            background-color: #252526;
+            border: 1px solid #3e3e42;
+            color: #f8f8f2;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 5px;
+        }
+        
+        .simulator-input-field:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        .microkit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .microkit-item {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .microkit-item h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--primary-blue);
+        }
+        
+        .microkit-item h4 i {
+            margin-right: 10px;
+        }
+        
+        .quick-commands {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .quick-command {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .module-card {
+                padding: 15px;
+            }
+            
+            .microkit-grid, .quick-commands {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary-blue);
+        }
+        
+        .tab-button.active {
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
+        }
+        
+        .tab-content {
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 0 0 8px 8px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-network-wired"></i> Module-Kit de Maîtrise - Concepts du FHRP</h1>
+        <p class="subtitle">De la théorie à l'expertise opérationnelle - Kit 200% plus substantiel</p>
+    </div>
+    
+    <!-- ANALOGIE SYSTÉMIQUE -->
+    <div class="module-card analogy-card">
+        <div class="card-header">
+            <i class="fas fa-brain" style="color: var(--primary-purple);"></i>
+            <h2>📍 ANALOGIE SYSTÉMIQUE</h2>
+        </div>
+        
+        <div class="content-section">
+            <h3>Thème central : "La Garde Royale de la Porte du Royaume"</h3>
+            <p>Imaginez un château fort avec plusieurs portes d'entrée, mais les villageois ne connaissent qu'une seule adresse : "La Grande Porte du Royaume". Cette "Grande Porte" est en réalité un système de gardes royaux (routeurs) qui fonctionnent ensemble.</p>
+        </div>
+        
+        <div class="content-section">
+            <h4>Métaphore concrète et systémique</h4>
+            <p>Un garde principal (routeur actif) ouvre et ferme effectivement la porte. D'autres gardes (routeurs de secours) observent, prêts à prendre sa place instantanément s'il tombe. Tous portent la même armure distinctive (adresse MAC virtuelle) et utilisent le même étendard (adresse IP virtuelle), donc les villageois ne voient jamais le changement de garde.</p>
+        </div>
+        
+        <div class="content-section">
+            <h4>Éléments clés :</h4>
+            <ul>
+                <li><span class="color-coded purple-code">Garde Principal (Routeur Actif)</span> : Le seul qui traite réellement le trafic des villageois vers l'extérieur.</li>
+                <li><span class="color-coded purple-code">Garde de Secours (Routeur Standby)</span> : Surveille le garde principal, prêt à intervenir en 10 secondes max.</li>
+                <li><span class="color-coded purple-code">Armure Royale (Adresse MAC Virtuelle)</span> : 0000.0C07.ACXX - Identique pour tous les gardes du même groupe.</li>
+                <li><span class="color-coded purple-code">Étendard Royal (Adresse IP Virtuelle)</span> : L'adresse de passerelle unique que connaissent tous les hôtes.</li>
+                <li><span class="color-coded purple-code">Code Secret (Hello Messages)</span> : Toutes les 3 secondes, le garde principal signale "Je suis vivant".</li>
+                <li><span class="color-coded purple-code">Protocole de Succession (Priorité & Préemption)</span> : Détermine qui devient garde principal et si un garde de rang supérieur peut reprendre le contrôle.</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <h4><i class="fas fa-exclamation-triangle"></i> Risque analogique :</h4>
+            <p>Si le système de communication entre gardes (DTP-like) est corrompu, un imposteur pourrait se faire passer pour la Garde Royale et détourner tout le trafic du royaume (VLAN Hopping/ARP Spoofing).</p>
+        </div>
+    </div>
+    
+    <!-- MODÈLE MENTAL -->
+    <div class="module-card mental-model-card">
+        <div class="card-header">
+            <i class="fas fa-project-diagram" style="color: var(--primary-purple);"></i>
+            <h2>🧠 MODÈLE MENTAL</h2>
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[Besoin: Redondance de Passerelle] --> B{Couche 2 ou 3?};
+    B -->|Couche 2 - VLANs| C[FHRP Nécessaire];
+    B -->|Couche 3 - Routage| D[Protocoles de Routage Dynamique];
+    
+    C --> E{Choix du Protocole};
+    E --> F[HSRP - Cisco Propriétaire];
+    E --> G[VRRP - Standard IETF];
+    E --> H[GLBP - Load Balancing];
+    
+    F --> I[Configuration Interface];
+    I --> J[standby group ip virtual-ip];
+    I --> K[standby priority value];
+    I --> L[standby preempt];
+    
+    J --> M[État: Speak/Listen];
+    K --> N[Élection: Highest Priority Wins];
+    L --> O[Comportement: Takeover if Higher Priority];
+    
+    M --> P[État: Active/Standby];
+    N --> Q[Router Actif: Forward Traffic];
+    O --> R[Basculement si: Hello Timeout/Manual];
+    
+    P --> S[Hello every 3 sec];
+    Q --> T[Hosts use Virtual IP/MAC];
+    R --> U[Failover < 10 sec];
+    
+    S --> V[Détection Échec];
+    V --> W[Standby → Active];
+    W --> X[Transparent aux Hôtes];
+            </div>
+        </div>
+    </div>
+    
+    <!-- NOYAU DUR -->
+    <div class="module-card core-card">
+        <div class="card-header">
+            <i class="fas fa-gavel" style="color: var(--primary-red);"></i>
+            <h2>⚡ NOYAU DUR (Les lois Immuables)</h2>
+        </div>
+        
+        <div class="law-item">
+            <div class="law-number">1</div>
+            <h3>L'illusion du routeur unique est la clé.</h3>
+            <p><strong>Preuve :</strong> Les hôtes sont configurés avec une SEULE adresse de passerelle par défaut statique. Les FHRP créent une adresse IP virtuelle et une adresse MAC virtuelle partagées par plusieurs routeurs physiques. L'hôte ARP pour l'IP virtuelle reçoit la MAC virtuelle. Le trafic vers cette MAC est traité par le routeur physique élu "Actif". <span class="color-coded red-code">C'est une abstraction de couche 2/3.</span></p>
+        </div>
+        
+        <div class="law-item">
+            <div class="law-number">2</div>
+            <h3>La priorité détermine le maître, la préemption définit les règles de succession.</h3>
+            <p><strong>Preuve :</strong> Sans configuration manuelle, l'élection HSRP utilise l'adresse IP la plus élevée (par défaut priority=100). La commande <code>standby priority &lt;0-255&gt;</code> permet un contrôle déterministe. <code>standby preempt</code> permet à un routeur avec une priorité supérieure de reprendre le rôle Actif immédiatement lorsqu'il rejoint le groupe. <span class="color-coded red-code">Sans préemption, le premier routeur à démarrer reste Actif, même si un routeur avec priorité supérieure apparaît plus tard.</span></p>
+        </div>
+        
+        <div class="law-item">
+            <div class="law-number">3</div>
+            <h3>Les minuteurs HELLO et HOLD sont le cœur du battement.</h3>
+            <p><strong>Preuve :</strong> Par défaut, le routeur Actif envoie un paquet HELLO en multicast (224.0.0.2) toutes les <span class="color-coded red-code">3 secondes</span>. Le routeur Standby a un minuteur HOLD (délai d'attente) de <span class="color-coded red-code">10 secondes</span>. Si le Standby ne reçoit pas 3 paquets HELLO consécutifs (≈10s), il déclare l'Actif mort et prend le relais. <span class="color-coded red-code">Réduire ces minuteries accélère le failover mais augmente la charge CPU et le risque de basculements instables (flapping).</span></p>
+        </div>
+        
+        <div class="law-item">
+            <div class="law-number">4</div>
+            <h3>HSRP est étatique, GLBP est dynamique pour la charge.</h3>
+            <p><strong>Preuve :</strong> HSRP et VRRP ont un seul routeur Actif qui traite tout le trafic client ; les autres sont inactifs (standby). GLBP utilise un algorithme pour répartir les hôtes entre plusieurs routeurs "Actifs" dans le groupe, permettant un équilibrage de charge par hôte. <span class="color-coded red-code">Le choix dépend de l'objectif : redondance pure (HSRP/VRRP) vs redondance + optimisation de bande passante (GLBP).</span></p>
+        </div>
+        
+        <div class="law-item">
+            <div class="law-number">5</div>
+            <h3>L'adresse MAC virtuelle est déterministe et traçable.</h3>
+            <p><strong>Preuve :</strong> L'adresse MAC virtuelle HSRP est <span class="color-coded red-code">0000.0C07.ACXX</span>, où <span class="color-coded red-code">XX</span> est l'identifiant du groupe HSRP en hexadécimal (group 1 = 0x01, group 10 = 0x0A). Cela permet une identification facile dans les tables CAM/MAC et lors du dépannage. <span class="color-coded red-code">VRRP utilise 0000.5E00.01XX</span>.</p>
+        </div>
+    </div>
+    
+    <!-- PROFONDEUR SÉCURITÉ & MÉTIER -->
+    <div class="module-card security-card">
+        <div class="card-header">
+            <i class="fas fa-shield-alt" style="color: var(--primary-red);"></i>
+            <h2>🔐 PROFONDEUR SÉCURITÉ & MÉTIER</h2>
+        </div>
+        
+        <div class="danger-box">
+            <h3><i class="fas fa-skull-crossbones"></i> RISQUE PRINCIPAL</h3>
+            <p><strong>Risque Principal :</strong> Usurpation de la Passerelle Par Défaut (ARP Poisoning / HSRP Hijacking).</p>
+            <p><strong>→ Attaque Type :</strong> Un attaquant connecté au même VLAN configure un routeur rogue avec une priorité HSRP plus élevée et la préemption activée. Il devient le routeur Actif, interceptant tout le trafic sortant du segment (homme du milieu).</p>
+            
+            <h4><i class="fas fa-search"></i> Détection :</h4>
+            <pre><code class="command">show standby brief</code>
+<span class="comment">! Vérifier l'identité du routeur Actif</span>
+<code class="command">show standby all | include (Active|Standby|priority|authentication)</code>
+<span class="comment">! Surveiller les logs pour les changements d'état HSRP inattendus</span></pre>
+            
+            <h4><i class="fas fa-tools"></i> Mitigation Immédiate :</h4>
+            <pre><code class="keyword">interface</code> <code class="string">GigabitEthernet0/1</code>
+<span class="comment">! 1. Activer l'authentification MD5 (fortement recommandée)</span>
+<code class="command">standby 1 authentication md5 key-string</code> <code class="string">MySecretKey2024</code>
+<span class="comment">! 2. Utiliser une clé complexe et la changer régulièrement</span>
+<span class="comment">! 3. Limiter les VLAN où HSRP tourne (pruning)</span>
+<span class="comment">! 4. Optionnel : Utiliser une ACL pour filtrer le trafic HSRP (protocole 112)</span>
+<code class="command">ip access-list standard</code> <code class="string">HSRP-PEERS</code>
+ <code class="command">permit host</code> <code class="string">10.1.10.2</code>
+ <code class="command">permit host</code> <code class="string">10.1.10.3</code>
+!
+<code class="keyword">interface</code> <code class="string">GigabitEthernet0/1</code>
+ <code class="command">ip access-group</code> <code class="string">HSRP-PEERS in</code></pre>
+            
+            <h4><i class="fas fa-building"></i> Intégration Entreprise :</h4>
+            <ul>
+                <li><strong>Ansible :</strong> Playbook pour déployer de manière cohérente l'authentification HSRP sur toutes les interfaces concernées.</li>
+                <li><strong>SIEM :</strong> Alerte déclenchée sur tout changement d'état HSRP (<code>%HSRP-5-STATECHANGE</code>) hors fenêtre de maintenance.</li>
+                <li><strong>Policy :</strong> Exiger HSRPv2 (support IPv6 et multicast) et l'authentification MD5/SHA-256 dans le cadre de sécurité réseau.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- PROFONDEUR EXAMEN CCNA -->
+    <div class="module-card exam-card">
+        <div class="card-header">
+            <i class="fas fa-graduation-cap" style="color: var(--primary-orange);"></i>
+            <h2>📚 PROFONDEUR EXAMEN CCNA</h2>
+        </div>
+        
+        <div class="content-section">
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> Détail Oublié #1 :</h4>
+                <p>Les numéros de groupe HSRP. La plage est de <span class="color-coded orange-code">0 à 255</span>, et le groupe <span class="color-coded orange-code">0</span> est le groupe par défaut si aucun numéro n'est spécifié. Pour IPv6 (HSRPv2), la plage est de <span class="color-coded orange-code">0 à 4095</span>.</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> Détail Oublié #2 :</h4>
+                <p>Adresses Multicast HSRP.</p>
+                <ul>
+                    <li><span class="color-coded orange-code">HSRPv1 (IPv4 only)</span> : Utilise l'adresse multicast <span class="color-coded orange-code">224.0.0.2</span> (Tous les routeurs) sur le port UDP <span class="color-coded orange-code">1985</span>.</li>
+                    <li><span class="color-coded orange-code">HSRPv2 (IPv4 & IPv6)</span> : Utilise l'adresse multicast <span class="color-coded orange-code">224.0.0.102</span> sur le port UDP <span class="color-coded orange-code">1985</span>. Ce changement permet la coexistence avec d'autres protocoles et ajoute le support IPv6.</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> Piège Fréquent :</h4>
+                <p>Priorité vs Adresse IP. Beaucoup pensent que <code>standby preempt</code> suffit pour qu'un routeur reprenne le contrôle. <span class="color-coded red-code">FAUX.</span> Il doit aussi avoir une <span class="color-coded red-code">priorité numériquement supérieure</span>. Si les priorités sont égales, c'est l'adresse IP physique la plus élevée qui l'emporte, même avec preempt activé.</p>
+            </div>
+        </div>
+        
+        <div class="interactive-quiz">
+            <h3><i class="fas fa-question-circle"></i> Question Type CCNA :</h3>
+            <p class="quiz-question">Le routeur R1 est configuré avec <code>standby 10 priority 150</code> et <code>standby 10 preempt</code>. R2 a <code>standby 10 priority 100</code> et <code>standby 10 preempt</code>. R1 est actuellement le routeur Actif. Si R1 redémarre, puis revient en ligne, que se passe-t-il ?</p>
+            
+            <div class="quiz-options">
+                <div class="quiz-option" data-correct="false">A. R2 reste l'Actif car il a démarré en premier après la panne.</div>
+                <div class="quiz-option" data-correct="true">B. R1 redevient immédiatement l'Actif à son retour.</div>
+                <div class="quiz-option" data-correct="false">C. R1 devient le routeur Standby.</div>
+                <div class="quiz-option" data-correct="false">D. Les deux routeurs entrent en état "Speak" pour une nouvelle élection.</div>
+            </div>
+            
+            <button class="tab-button" onclick="checkQuiz()">Vérifier la réponse</button>
+            
+            <div class="quiz-feedback" id="quiz-feedback">
+                <div class="success-box">
+                    <p><strong>Réponse : B.</strong> La préemption étant activée sur R1 et sa priorité (150) étant supérieure à celle de R2 (100), R1 déclenche une nouvelle élection à son retour et redevient Actif.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- LAB COMPLET -->
+    <div class="module-card lab-card">
+        <div class="card-header">
+            <i class="fas fa-flask" style="color: var(--primary-green);"></i>
+            <h2>⚙️ LAB COMPLET : DE LA CONFIG À L'AUTOMATISATION</h2>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab(event, 'tab-ccna')">Niveau 1 (CCNA)</button>
+                <button class="tab-button" onclick="openTab(event, 'tab-prod')">Niveau 2 (Production)</button>
+                <button class="tab-button" onclick="openTab(event, 'tab-expert')">Niveau 3 (Expert)</button>
+            </div>
+            
+            <div id="tab-ccna" class="tab-content active">
+                <h3>Configuration Fondamentale HSRPv2</h3>
+                <pre><code class="comment">! Sur R1 (Désigné comme Actif Préféré)</span>
+<code class="keyword">interface</code> <code class="string">GigabitEthernet0/0.10</code>
+ <code class="command">description</code> <code class="string">VLAN10 - Gateway</code>
+ <code class="command">encapsulation dot1Q</code> <code class="number">10</code>
+ <code class="command">ip address</code> <code class="string">10.1.10.2 255.255.255.0</code>
+<span class="comment">! Configuration HSRP de base</span>
+ <code class="command">standby version</code> <code class="number">2</code>                      <span class="comment">! ⚠️ Utiliser HSRPv2 pour le support moderne</span>
+ <code class="command">standby 10 ip</code> <code class="string">10.1.10.1</code>                <span class="comment">! 🔵 Adresse IP virtuelle pour le groupe 10</span>
+ <code class="command">standby 10 priority</code> <code class="number">150</code>                <span class="comment">! 🟠 Priorité élevée pour être Actif</span>
+ <code class="command">standby 10 preempt</code>                     <span class="comment">! 🟢 Permettre la reprise du rôle</span>
+ <code class="command">standby 10 name</code> <code class="string">GW_VLAN10</code>              <span class="comment">! 🔵 Nom descriptif pour le groupe</span>
+!
+<span class="comment">! Vérification</span>
+<code class="command">show standby brief</code>
+<span class="comment">! Sortie attendue :</span>
+<span class="comment">! Grp  Prio State   Active          Standby         Virtual IP</span>
+<span class="comment">! 10   150  Active  local           10.1.10.3       10.1.10.1</span></code></pre>
+            </div>
+            
+            <div id="tab-prod" class="tab-content">
+                <h3>Hardening HSRP pour la Production</h3>
+                <pre><code class="keyword">interface</code> <code class="string">GigabitEthernet0/0.10</code>
+<span class="comment">! Configuration de base sécurisée</span>
+ <code class="command">standby version</code> <code class="number">2</code>
+ <code class="command">standby 10 ip</code> <code class="string">10.1.10.1</code>
+ <code class="command">standby 10 priority</code> <code class="number">150</code>
+ <code class="command">standby 10 preempt</code>
+ <code class="command">standby 10 authentication md5 key-string 7</code> <code class="string">094F471A1A0A545D</code>  <span class="comment">! 🔐 Auth MD5 chiffrée</span>
+ <code class="command">standby 10 timers msec</code> <code class="number">500</code> <code class="command">msec</code> <code class="number">1500</code>                         <span class="comment">! ⚡ Failover rapide (0.5s/1.5s)</span>
+ <code class="command">standby 10 track 1 decrement</code> <code class="number">30</code>                              <span class="comment">! 🎯 Tracking d'interface</span>
+!
+<span class="comment">! Risque si omis : Sans authentification, risque d'usurpation HSRP (HSRP Hijacking).</span>
+<span class="comment">! Justification tracking : Si l'interface vers le cœur (Serial0/0/0) tombe, la priorité de R1 diminue de 30, permettant à R2 (priorité 140) de prendre le relais, même si R1 est toujours en ligne localement.</span></code></pre>
+            </div>
+            
+            <div id="tab-expert" class="tab-content">
+                <h3>Automatisation avec Ansible</h3>
+                <pre><code class="comment"># playbook_deploy_hsrp.yml</span>
+---
+- <code class="string">name</code>: <code class="string">Deploy Secure HSRP Configuration</code>
+  <code class="string">hosts</code>: <code class="string">core_routers</code>
+  <code class="string">vars</code>:
+    <code class="string">hsrp_groups</code>:
+      - { <code class="string">vlan</code>: <code class="number">10</code>, <code class="string">vip</code>: <code class="string">'10.1.10.1'</code>, <code class="string">group_id</code>: <code class="number">10</code>, <code class="string">active_priority</code>: <code class="number">150</code>, <code class="string">standby_priority</code>: <code class="number">100</code> }
+      - { <code class="string">vlan</code>: <code class="number">20</code>, <code class="string">vip</code>: <code class="string">'10.1.20.1'</code>, <code class="string">group_id</code>: <code class="number">20</code>, <code class="string">active_priority</code>: <code class="number">100</code>, <code class="string">standby_priority</code>: <code class="number">150</code> }
+    <code class="string">auth_key</code>: <code class="string">"{{ vault_hsrp_key }}"</code>
+  <code class="string">tasks</code>:
+    - <code class="string">name</code>: <code class="string">Configure HSRP on Subinterfaces</code>
+      <code class="string">cisco.ios.ios_config</code>:
+        <code class="string">lines</code>:
+          - <code class="string">"standby version 2"</code>
+          - <code class="string">"standby {{ item.group_id }} ip {{ item.vip }}"</code>
+          - <code class="string">"standby {{ item.group_id }} priority {{ item.active_priority if inventory_hostname == 'R1' else item.standby_priority }}"</code>
+          - <code class="string">"standby {{ item.group_id }} preempt"</code>
+          - <code class="string">"standby {{ item.group_id }} authentication md5 key-string {{ auth_key }}"</code>
+          - <code class="string">"standby {{ item.group_id }} timers msec 500 msec 1500"</code>
+        <code class="string">parents</code>: <code class="string">"interface GigabitEthernet0/0.{{ item.vlan }}"</code>
+      <code class="string">loop</code>: <code class="string">"{{ hsrp_groups }}"</code>
+      <code class="string">tags</code>: <code class="string">hsrp_config</code></code></pre>
+                <div class="info-box">
+                    <p><strong>Avantage :</strong> Déploiement cohérent, infaillible et documenté sur des dizaines de VLANs. Gestion centralisée des clés de sécurité via un coffre (Ansible Vault). <strong>Temps gagné :</strong> Réduction de 95% du temps de configuration manuelle et élimination des erreurs de frappe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SIMULATEUR DE COMMANDES -->
+    <div class="simulator">
+        <h3 style="color: #fff; margin-bottom: 15px;"><i class="fas fa-terminal"></i> Simulateur CLI HSRP</h3>
+        <div class="simulator-output" id="sim-output">
+            <p>Bienvenue dans le simulateur CLI HSRP.</p>
+            <p>Tapez 'help' pour voir les commandes disponibles.</p>
+            <p>R1#</p>
+        </div>
+        <div class="simulator-input">
+            <div class="simulator-prompt">R1#</div>
+            <input type="text" class="simulator-input-field" id="cli-input" placeholder="Tapez une commande HSRP..." onkeypress="handleCLICommand(event)">
+        </div>
+    </div>
+    
+    <!-- SCÉNARIO DE DÉPANNAGE AVANCÉ -->
+    <div class="module-card troubleshooting-card">
+        <div class="card-header">
+            <i class="fas fa-bug" style="color: var(--primary-red);"></i>
+            <h2>🚨 SCÉNARIO DE DÉPANNAGE AVANCÉ</h2>
+        </div>
+        
+        <div class="content-section">
+            <h3>Symptôme Complexe :</h3>
+            <p>Les utilisateurs du VLAN 30 se plaignent d'intermittence Internet. Parfois ça marche, parfois non. <code>ping</code> vers la passerelle 10.1.30.1 échoue aléatoirement. R1 et R2 sont les routeurs de cœur.</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>Processus de Diagnostic (Arbre Décisionnel) :</h3>
+            <ol>
+                <li><strong>Vérifier l'état HSRP sur les deux routeurs :</strong>
+                    <pre><code class="command">show standby vlan 30 brief</code></pre>
+                    <p><em>Résultat R1 :</em> <code>Grp 30 Pri 100 State Active</code>. <em>Résultat R2 :</em> <code>Grp 30 Pri 100 State Active</code>. <span class="color-coded red-code">➔ ALARME ! Deux routeurs dans l'état "Active" = condition de "split-brain".</span></p>
+                </li>
+                <li><strong>Analyser la cause du split-brain :</strong>
+                    <pre><code><span class="comment">! Vérifier la connectivité de couche 2 entre R1 et R2 sur le VLAN 30</span>
+<code class="command">show cdp neighbors Gig0/0.30</code>
+<code class="command">ping 10.1.30.2 source 10.1.30.1</code>
+<span class="comment">! Vérifier si les paquets HSRP sont bloqués</span>
+<code class="command">debug standby packets</code>
+<span class="comment">! (À utiliser avec précaution) Vérifier les ACL ou les filtres</span>
+<code class="command">show ip interface Gig0/0.30 | include access list</code></pre>
+                </li>
+                <li><strong>Hypothèse la plus probable :</strong> Une ACL mal configurée sur l'un des liens trunk, ou un problème de VLAN pruning, <span class="color-coded red-code">bloque le trafic multicast HSRP (224.0.0.2 ou 224.0.0.102)</span> entre R1 et R2. Chaque routeur pense que l'autre est mort et se proclame Actif.</li>
+            </ol>
+        </div>
+        
+        <div class="content-section">
+            <h3>Root Cause Probable :</h3>
+            <p>ACL d'entrée sur <code>interface GigabitEthernet0/1</code> de R2 qui filtre le port UDP 1985 ou l'adresse 224.0.0.0/24.</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>Fix et Rollback :</h3>
+            <pre><code><span class="comment">! SUR R2 - Identifier et corriger l'ACL</span>
+<code class="command">show run | section interface GigabitEthernet0/1</code>
+<span class="comment">! Supposons que l'ACL 110 est appliquée en entrée</span>
+<code class="command">show access-lists 110</code>
+<span class="comment">! Trouver et supprimer la ligne qui refuse le multicast ou le port 1985</span>
+<code class="command">conf t</code>
+<code class="command">ip access-list extended 110</code>
+ <code class="command">no deny udp any any eq 1985</code>
+ <code class="command">no deny ip any 224.0.0.0 0.0.0.255</code>
+ <code class="command">permit ip any any</code>  <span class="comment">! Assurer qu'une règle 'permit' existe</span>
+<code class="command">end</code>
+!
+<span class="comment">! Vérification du fix</span>
+<code class="command">show standby vlan 30 brief</code>
+<span class="comment">! R2 devrait maintenant être en état "Standby", R1 en "Active".</span>
+!
+<span class="comment">! Rollback au cas où</span>
+<code class="command">conf t</code>
+<code class="keyword">interface</code> <code class="string">GigabitEthernet0/1</code>
+ <code class="command">no ip access-group 110 in</code>
+<code class="command">end</code>
+<span class="comment">! Puis analyser l'ACL 110 hors ligne avant de la réappliquer.</span></code></pre>
+        </div>
+    </div>
+    
+    <!-- CONNECTIONS SYSTÉMIQUES -->
+    <div class="module-card connections-card">
+        <div class="card-header">
+            <i class="fas fa-link" style="color: var(--primary-blue);"></i>
+            <h2>🔗 CONNECTIONS SYSTÉMIQUES</h2>
+        </div>
+        
+        <div class="content-section">
+            <h3><i class="fas fa-arrow-left"></i> Module Précédent (STP) :</h3>
+            <p>STP élimine les boucles de couche 2 pour fournir un chemin unique. FHRP exploite cette topologie stable de couche 2 pour créer une redondance de couche 3 (passerelle). Un mauvais design STP peut isoler un routeur FHRP, causant un failover non désiré.</p>
+        </div>
+        
+        <div class="content-section">
+            <h3><i class="fas fa-arrow-right"></i> Module Suivant (Protocoles de Routage Dynamique - OSPF/EIGRP) :</h3>
+            <p>FHRP gère la redondance du <em>premier saut</em> pour les hôtes finaux. Une fois le trafic sur le routeur Actif, les <strong>protocoles de routage dynamique</strong> prennent le relais pour déterminer le meilleur chemin à travers le réseau cœur (les sauts suivants). Ils doivent converger rapidement après un failover FHRP.</p>
+        </div>
+        
+        <div class="content-section">
+            <h3><i class="fas fa-sync-alt"></i> Écosystème Réel :</h3>
+            <ul>
+                <li><strong>FW (Pare-feu) :</strong> En mode transparent (Layer 2), les FW doivent être hors du chemin HSRP ou configurés en pair pour ne pas bloquer les multicasts Hello.</li>
+                <li><strong>SDN (ACI, DNA Center) :</strong> Utilise souvent un mécanisme similaire de "anycast gateway" intégré au contrôleur, rendant HSRP traditionnel obsolète dans ces architectures.</li>
+                <li><strong>Contrôleur Wi-Fi :</strong> Les points d'accès et leurs clients ont besoin d'une passerelle par défaut redondante, faisant d'HSRP un choix courant dans les réseaux filaires supportant le Wi-Fi.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- VALIDATION PAR EXERCICE MENTAL -->
+    <div class="module-card validation-card">
+        <div class="card-header">
+            <i class="fas fa-check-double" style="color: var(--primary-orange);"></i>
+            <h2>❓ VALIDATION PAR EXERCICE MENTAL</h2>
+        </div>
+        
+        <div class="content-section">
+            <div class="info-box">
+                <h4><i class="fas fa-brain"></i> Question de Concept :</h4>
+                <p>En utilisant l'analogie de la Garde Royale, expliquez ce qui se passe si le "Code Secret" (Hello Timer) est changé de 3 secondes à 1 seconde sur le Garde Principal, mais pas sur le Garde de Secours. Quel est le risque pour le Royaume (le réseau) ?</p>
+                <button class="tab-button" onclick="toggleAnswer('answer1')">Voir la réponse</button>
+                <div id="answer1" style="display: none; margin-top: 15px; padding: 10px; background-color: rgba(52, 152, 219, 0.1); border-radius: 5px;">
+                    <p><strong>Réponse :</strong> Le Garde Principal crie "Je suis vivant !" toutes les secondes. Le Garde de Secours s'attend toujours à l'entendre toutes les 3 secondes. S'il ne l'entend pas pendant 10 secondes (son délai d'attente), il pensera que le Garde Principal est mort, même s'il crie plus souvent, et déclenchera une prise de pouvoir inutile (basculement instable). Cela cause une interruption de service.</p>
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> Question de Piège :</h4>
+                <p>Quelle est la différence fondamentale entre l'adresse MAC virtuelle utilisée par HSRP groupe 15 et VRRP groupe 15 ?</p>
+                <button class="tab-button" onclick="toggleAnswer('answer2')">Voir la réponse</button>
+                <div id="answer2" style="display: none; margin-top: 15px; padding: 10px; background-color: rgba(230, 126, 34, 0.1); border-radius: 5px;">
+                    <p><strong>Réponse :</strong></p>
+                    <ul>
+                        <li>HSRP groupe 15 : <code>0000.0C07.AC0F</code> (AC = identifiant HSRP, 0F = 15 en hex).</li>
+                        <li>VRRP groupe 15 : <code>0000.5E00.010F</code> (standard IETF).</li>
+                    </ul>
+                    <p>Un hôte faisant un ARP pour l'IP virtuelle recevra une MAC différente selon le protocole utilisé.</p>
+                </div>
+            </div>
+            
+            <div class="danger-box">
+                <h4><i class="fas fa-skull-crossbones"></i> Question de Crise :</h4>
+                <p>"Il est 3h du matin, tous les utilisateurs du bâtiment A sont hors d'Internet. Votre monitoring montre que le routeur R1 (HSRP Actif pour le VLAN principal) est en ligne et pingable, mais le trafic des hôtes ne passe plus. Quelle est votre première commande, votre première hypothèse, et votre plan d'action en 3 étapes ?"</p>
+                <button class="tab-button" onclick="toggleAnswer('answer3')">Voir la réponse</button>
+                <div id="answer3" style="display: none; margin-top: 15px; padding: 10px; background-color: rgba(231, 76, 60, 0.1); border-radius: 5px;">
+                    <p><strong>Réponse :</strong></p>
+                    <ol>
+                        <li><strong>Première commande :</strong> <code>show standby brief</code> sur R1 et R2. <strong>Objectif :</strong> Vérifier l'état HSRP. Hypothèse : Split-brain ou R1 a perdu sa connectivité en aval tout en restant HSRP Actif.</li>
+                        <li><strong>Première hypothèse :</strong> L'interface physique de R1 vers le réseau interne est "up/up" mais ne traite plus le trafic (ASIC défaillant, erreurs CRC), ou sa table ARP est corrompue.</li>
+                        <li><strong>Plan d'action :</strong>
+                            <ul>
+                                <li><strong>Étape 1 (Vérification) :</strong> Sur R1, <code>show interface Gig0/0</code> pour les erreurs, <code>show arp</code> pour vérifier les entrées.</li>
+                                <li><strong>Étape 2 (Contournement) :</strong> Sur R2, forcer manuellement un basculement <code>standby group force-active</code> (si supporté) ou baisser la priorité de R1.</li>
+                                <li><strong>Étape 3 (Correctif) :</strong> Si c'est une défaillance matérielle de R1, préparer le basculement des autres VLANs et ouvrir un ticket hardware.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MICRO-KIT ESSENTIEL -->
+    <div class="module-card microkit-card">
+        <div class="card-header">
+            <i class="fas fa-file-contract" style="color: var(--primary-blue);"></i>
+            <h2>🧩 MICRO-KIT ESSENTIEL (SYNTHÈSE 1 PAGE A4)</h2>
+        </div>
+        
+        <div class="microkit-grid">
+            <div class="microkit-item">
+                <h4><i class="fas fa-gavel"></i> Les 5 Lois Immuables (version courte)</h4>
+                <ol>
+                    <li><strong>Une IP, une MAC virtuelles</strong> = l'illusion pour les hôtes.</li>
+                    <li><strong>Priorité (0-255) élit l'Actif</strong> ; IP plus haute départage les égalités.</li>
+                    <li><strong>Preempt = règles de succession</strong> ; sans elle, le premier venu reste maître.</li>
+                    <li><strong>Hello 3s / Hold 10s</strong> = le cœur du battement et du failover.</li>
+                    <li><strong>HSRPv2 (224.0.0.102) > HSRPv1 (224.0.0.2)</strong> ; préférer v2 pour IPv6 et moins de conflits.</li>
+                </ol>
+            </div>
+            
+            <div class="microkit-item">
+                <h4><i class="fas fa-sitemap"></i> Mini-Modèle Mental</h4>
+                <div class="mermaid">
+graph LR
+    A[Hôtes → IP Virtuelle] --> B{ARP};
+    B --> C[MAC Virtuelle];
+    C --> D[Routeur Actif];
+    D -- Hello/3s --> E[Routeur Standby];
+    E -- Holdtime 10s --> F{Failover?};
+    F -->|Oui| D;
+                </div>
+            </div>
+            
+            <div class="microkit-item">
+                <h4><i class="fas fa-exclamation-triangle"></i> Les 3 Pièges CCNA</h4>
+                <ol>
+                    <li><strong>Sans <code>preempt</code></strong>, un routeur avec priorité supérieure ne reprendra <strong>JAMAIS</strong> le rôle Actif.</li>
+                    <li><strong>HSRPv1</strong> utilise <code>224.0.0.2</code>, <strong>HSRPv2</strong> utilise <code>224.0.0.102</code> (et supporte IPv6).</li>
+                    <li>La <strong>MAC virtuelle</strong> est <code>0000.0C07.AC</code> + <strong>ID Groupe en Hex</strong> (Groupe 5 = AC05).</li>
+                </ol>
+            </div>
+            
+            <div class="microkit-item">
+                <h4><i class="fas fa-bug"></i> Scénario de Dépannage en 3 Étapes</h4>
+                <ol>
+                    <li><code>show standby brief</code> → Vérifier l'état (Active/Standby) et l'IP virtuelle.</li>
+                    <li><code>ping &lt;virtual-ip&gt;</code> depuis un hôte et depuis les routeurs → Isoler la couche.</li>
+                    <li><code>show log</code> → Chercher les messages <code>%HSRP-5-STATECHANGE</code>.</li>
+                </ol>
+            </div>
+            
+            <div class="microkit-item">
+                <h4><i class="fas fa-shield-alt"></i> 1 Risque Sécurité + Mitigation</h4>
+                <p><strong>Risque :</strong> HSRP Hijacking via un routeur rogue à priorité élevée.</p>
+                <p><strong>Mitigation :</strong> <code>standby &lt;group&gt; authentication md5 key-string &lt;secret&gt;</code> <strong>SUR TOUTES LES INTERFACES HSRP.</strong></p>
+            </div>
+            
+            <div class="microkit-item">
+                <h4><i class="fas fa-calculator"></i> 1 Équation Mentale</h4>
+                <div style="text-align: center; font-size: 1.2rem; padding: 15px; background-color: rgba(155, 89, 182, 0.1); border-radius: 8px;">
+                    <strong>Élection HSRP = MAX(Priorité) → Si Égalité → MAX(Adresse IP Physique)</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3><i class="fas fa-terminal"></i> Les 6 Commandes CLI Incontournables</h3>
+            <div class="quick-commands">
+                <div class="quick-command">
+                    <code>show standby brief</code>
+                    <div style="color: #7ec699; margin-top: 5px;">✅ État de tous les groupes</div>
+                </div>
+                <div class="quick-command">
+                    <code>show standby interface gi0/0.10</code>
+                    <div style="color: #3498db; margin-top: 5px;">🔵 Détails complets par interface</div>
+                </div>
+                <div class="quick-command">
+                    <code>debug standby events</code>
+                    <div style="color: #e67e22; margin-top: 5px;">🟠 Dépannage (à utiliser avec prudence)</div>
+                </div>
+                <div class="quick-command">
+                    <code>standby 10 ip 192.168.1.1</code>
+                    <div style="color: #3498db; margin-top: 5px;">🔵 Configuration de base</div>
+                </div>
+                <div class="quick-command">
+                    <code>standby 10 priority 150 preempt</code>
+                    <div style="color: #27ae60; margin-top: 5px;">🟢 Définir le maître et ses droits</div>
+                </div>
+                <div class="quick-command">
+                    <code>standby 10 track 1 decrement 30</code>
+                    <div style="color: #9b59b6; margin-top: 5px;">🎯 Suivi d'interface pour basculement proactif</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Module-Kit de Maîtrise - Concepts du FHRP | Version HTML | Transcription technique 1:1 fidèle au kit texte validé</p>
+        <p>© 2024 - Conçu pour l'excellence opérationnelle Cisco CCNA et au-delà</p>
+    </div>
+
+    <script>
+        // Initialiser Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+        
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            
+            // Cacher tous les contenus d'onglets
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            // Désactiver tous les boutons d'onglets
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            
+            // Afficher l'onglet actuel et activer le bouton
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Quiz interactif
+        function checkQuiz() {
+            const options = document.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById('quiz-feedback');
+            
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+                
+                if (option.getAttribute('data-correct') === 'true') {
+                    option.classList.add('correct');
+                } else {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            feedback.classList.add('show');
+        }
+        
+        // Afficher/masquer les réponses
+        function toggleAnswer(id) {
+            const answer = document.getElementById(id);
+            if (answer.style.display === 'none' || answer.style.display === '') {
+                answer.style.display = 'block';
+            } else {
+                answer.style.display = 'none';
+            }
+        }
+        
+        // Simulateur CLI
+        const commands = {
+            'help': 'Commandes disponibles: show standby brief, show standby interface, show standby all, debug standby events, clear counters, ping, exit',
+            'show standby brief': 'Grp  Prio State   Active          Standby         Virtual IP\n10   150  Active  local           10.1.10.3       10.1.10.1\n20   100  Standby 10.1.20.3       local           10.1.20.1',
+            'show standby interface gig0/0.10': 'GigabitEthernet0/0.10 - Group 10\n  State is Active\n    2 state changes, last state change 00:12:34\n  Virtual IP address is 10.1.10.1\n  Active virtual MAC address is 0000.0c07.ac0a\n  Hello time 3 sec, hold time 10 sec\n  Preemption enabled\n  Active router is local\n  Standby router is 10.1.10.3, priority 100\n  Priority 150\n  Group name is "GW_VLAN10"',
+            'show standby all': 'Affichage de la configuration HSRP complète...',
+            'debug standby events': 'Debugging HSRP events is on\nR1#\n%HSRP-5-STATECHANGE: GigabitEthernet0/0.10 Grp 10 state Standby -> Active',
+            'clear counters': 'Clear counters on all interfaces [confirm]',
+            'ping 10.1.10.1': 'Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 10.1.10.1, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 1/2/4 ms',
+            'exit': 'Fin de la session simulateur.'
+        };
+        
+        function handleCLICommand(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('cli-input');
+                const command = input.value.trim();
+                const output = document.getElementById('sim-output');
+                
+                // Ajouter la commande à l'historique
+                output.innerHTML += `<p><span style="color: #7ec699">R1#</span> ${command}</p>`;
+                
+                // Traiter la commande
+                if (commands[command.toLowerCase()]) {
+                    output.innerHTML += `<p>${commands[command.toLowerCase()]}</p>`;
+                } else if (command) {
+                    output.innerHTML += `<p>% Invalid input detected at '^' marker.</p>`;
+                }
+                
+                // Ajouter une nouvelle ligne
+                output.innerHTML += '<p>R1#</p>';
+                
+                // Faire défiler vers le bas
+                output.scrollTop = output.scrollHeight;
+                
+                // Réinitialiser le champ de saisie
+                input.value = '';
+            }
+        }
+        
+        // Initialiser le simulateur avec focus
+        document.getElementById('cli-input').focus();
+    </script>
+</body>
+</html>
