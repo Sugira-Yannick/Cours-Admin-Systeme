@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Kit de Maîtrise Cisco – Sécurité LAN</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #f6f8fb;
+  color: #1c1c1c;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 80px 20px 100px;
+  text-align: center;
+}
+
+/* ===== HEADER ===== */
+h1 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: #555;
+  max-width: 900px;
+  margin: 0 auto 60px;
+}
+
+/* ===== CARDS ===== */
+.versions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 35px;
+}
+
+/* ===== CARD BASE ===== */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 35px 28px 40px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  transition: transform 0.35s, box-shadow 0.35s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 22px 45px rgba(0,0,0,0.12);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.55;
+}
+
+/* ===== ICON ===== */
+.icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: white;
+}
+
+/* ===== BOUTON ===== */
+.card a {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 12px 30px;
+  border-radius: 30px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.card a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+
+/* ===== COULEURS PAR VERSION ===== */
+.filtre .icon { background: #2e7d32; }
+.filtre a { background: #2e7d32; }
+
+.condense .icon { background: #ef6c00; }
+.condense a { background: #ef6c00; }
+
+.complet .icon { background: #6a1b9a; }
+.complet a { background: #6a1b9a; }
+
+/* ===== FOOT NOTE ===== */
+.note {
+  margin-top: 70px;
+  font-size: 0.9rem;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Kit de Maîtrise Cisco – Sécurité LAN</h1>
+  <p class="subtitle">
+    Parcours d’apprentissage orienté <strong>maîtrise métier</strong> pour
+    administrateurs et ingénieurs réseau.  
+    Chaque version correspond à un niveau de profondeur pédagogique.
+  </p>
+
+  <div class="versions">
+
+    <!-- VERSION FILTRÉE -->
+    <div class="card filtre">
+      <div class="icon">F</div>
+      <h2>Version Filtrée</h2>
+      <p>
+        Essentiel opérationnel.  
+        Idéal pour les révisions rapides, la mémorisation et la préparation aux examens.
+      </p>
+      <p>
+        • Commandes clés<br>
+        • Lois fondamentales<br>
+        • Pièges CCNA<br>
+        • Synthèse métier
+      </p>
+      <a href="version-filtre/index.html">Entrer</a>
+    </div>
+
+    <!-- VERSION CONDENSÉE -->
+    <div class="card condense">
+      <div class="icon">C</div>
+      <h2>Version Condensée</h2>
+      <p>
+        Apprentissage équilibré et structuré.  
+        Conçue pour comprendre, pratiquer et consolider.
+      </p>
+      <p>
+        • Modèles mentaux<br>
+        • Explications structurées<br>
+        • Labs pratiques<br>
+        • Scénarios métier
+      </p>
+      <a href="version-condense/index.html">Entrer</a>
+    </div>
+
+    <!-- VERSION COMPLÈTE -->
+    <div class="card complet">
+      <div class="icon">+</div>
+      <h2>Version Complète</h2>
+      <p>
+        Parcours exhaustif basé sur la structure Cisco officielle.  
+        Pour une maîtrise approfondie et durable.
+      </p>
+      <p>
+        • Toutes les sous-sections<br>
+        • Navigation hiérarchique<br>
+        • Étude détaillée<br>
+        • Référentiel complet
+      </p>
+      <a href="version-complet/index.html">Entrer</a>
+    </div>
+
+  </div>
+
+  <p class="note">
+    Conseil pédagogique : commencez par la version filtrée ou condensée avant d’aborder
+    la version complète pour une montée en compétence progressive.
+  </p>
+
+</div>
+
+</body>
+</html>
