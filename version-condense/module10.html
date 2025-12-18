@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Académique : Principes et Pratiques de la Sécurité des Réseaux Locaux (LAN)</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 Module Académique : Principes et Pratiques de la Sécurité des Réseaux Locaux (LAN)</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">LAN SecExpert</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Essentielle</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-switch">Transfert par Commutateur</a></li>
+                        <li><a href="#mecanisme-arp">Résolution ARP</a></li>
+                        <li><a href="#mecanisme-802.1x">Contrôle d'Accès 802.1X</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Illusions Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Ultra-Mémorisable</a></li>
+                <li><a href="#extension">7️⃣ Extension Contrôlée</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Château Fort Moderne</h2>
+                </div>
+                <p>Imaginez votre réseau local (LAN) comme un <strong>château fort médiéval</strong> entourant une cité précieuse (vos données et services). Cette analogie n'est pas décorative ; elle structure toute votre compréhension de la sécurité réseau.</p>
+                <div class="analogy-box">
+                    <p><strong>🔶 La Muraille d'enceinte (Couche 2)</strong> : C'est la première et la plus fondamentale des protections, matérialisée par les <span class="concept-key">commutateurs (switches)</span>. Comme une muraille en pierre, elle définit le périmètre et contrôle les entrées/sorties principales (les ports). C'est aussi le <strong>maillon le plus faible</strong>, car une brèche ici permet l'accès à toute la cour intérieure.</p>
+                    <p><strong>🛡️ Le Pont-levis et la Garde (Contrôle d'Accès)</strong> : Représentés par les mécanismes <span class="concept-key">AAA (Authentification, Autorisation, Traçabilité)</span> et <span class="concept-key">802.1X</span>. Ils vérifient l'identité de chaque visiteur (authentification) et déterminent où il peut aller dans la cour (autorisation), tout en notant ses allées et venues (traçabilité).</p>
+                    <p><strong>🚨 Les Gardes Mobiles et les Pièges (Sécurité Appliances)</strong> : Ce sont les dispositifs spécialisés comme les <span class="concept-key">Pare-feu de Nouvelle Génération (NGFW)</span>, les <span class="concept-key">IPS</span> et les <span class="concept-key">appliances de sécurité (ESA, WSA)</span>. Ils patrouillent des zones spécifiques (le courrier, le web) pour détecter et neutraliser les menaces sophistiquées.</p>
+                    <p><strong>🎭 Les Ennemis et leurs Ruses (Menaces de Couche 2)</strong> : Les attaquants n'essaient pas de défoncer la grande porte. Ils utilisent des ruses pour tromper la garde ou saturer les défenses : se faire passer pour le capitaine (usurpation), noyer les gardes sous de fausses alertes (inondation), ou tirer une corde par-dessus le mur pour accéder à une autre cour (saut).</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Muraille & Portes</span> → Commutateur & Ports. Définir le domaine de collision/broadcast, transférer les trames. <strong>Défaillance :</strong> Port ouvert à tous = porte du château entrebâillée.</li>
+                    <li><span class="concept-key">Table des Habitants</span> → Table d'adresses MAC (CAM). Connaître quel habitant (MAC) loge à quelle porte (port). <strong>Défaillance :</strong> Table saturée de faux noms = garde confus qui crie à tous.</li>
+                    <li><span class="concept-key">Héraut qui annonce</span> → Protocole ARP. Crier "Qui a l'IP X ?" pour trouver son adresse MAC. <strong>Défaillance :</strong> Un imposteur crie "C'est moi !" = usurpation ARP.</li>
+                    <li><span class="concept-key">Architecte du Pont</span> → Protocole STP (Spanning Tree). Éviter les boucles de ponts (boucles réseau). <strong>Défaillance :</strong> Un imposteur se déclare "Architecte en Chef" = attaque STP.</li>
+                    <li><span class="concept-key">Livre des Invités</span> → Serveur AAA (RADIUS/TACACS+). Centraliser les identités et permissions. <strong>Défaillance :</strong> Livre perdu = retour à des listes locales désorganisées.</li>
+                </ul>
+                <p>Cette analogie systémique permet de raisonner : si le <strong>pont-levis (802.1X)</strong> est levé, même un ennemi ayant une tenue d'habitant (usurpation MAC) ne pourra pas entrer. Si les <strong>gardes mobiles (IPS)</strong> sont désactivés, une ruse sophistiquée (exploit) pourrait passer inaperçue. La sécurité est un <strong>système de couches défensives interdépendantes</strong>.</p>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global (Causalité Sécurité LAN)</h2>
+                </div>
+                <p>La sécurité LAN n'est pas une collection d'outils distincts, mais un <strong>système vivant d'équilibre</strong> entre accessibilité et protection. Son état résulte de l'interaction dynamique entre ses composants.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Infrastructure Couche 2&lt;br/&gt;(Switch, VLANs, Ports)] --> B{Comportement Normal ?};
+    B -- Oui --> C[Transfert Fiable des Données];
+    B -- Non --> D[Vulnérabilités Exploitées];
+
+    D --> E[Attaques Couche 2&lt;br/&gt;(Usurpation, Inondation, Saut)];
+    E --> F[Pertes: Confidentialité, Intégrité, Disponibilité];
+
+    G[Système de Contrôle d'Accès&lt;br/&gt;(AAA &amp; 802.1X)] --> H{Autorise l'Accès ?};
+    H -- Oui, avec restrictions --> I[Accès Utilisateur Sécurisé];
+    H -- Non / Serveur Indisponible --> J[Blocage ou Secours Local];
+
+    K[Systèmes Immunitaires&lt;br/&gt;(NGFW, IPS, ESA, WSA)] --> L{Détecte/Mitige la Menace ?};
+    L -- Oui --> M[Menace Neutralisée];
+    L -- Non / Désactivé --> N[Menace Pénètre le Réseau];
+
+    E & N --> O[Impact sur les Données et Services];
+    I & M --> P[État de Sécurité Maintenu];
+
+    style A fill:#e1f5fe
+    style G fill:#f3e5f5
+    style K fill:#e8f5e8
+    style E fill:#ffebee
+    style O fill:#fff3e0
+                    </div>
+                </div>
+                <p><strong>Composants Principaux et leurs Interactions :</strong></p>
+                <ol>
+                    <li><strong>L'Infrastructure de Base (Couche 2) :</strong> Les commutateurs forment l'épine dorsale. Leur comportement normal (transfert basé sur la table MAC) est la base de tout. Toute perturbation ici (A) impacte directement la confidentialité et l'intégrité de tout le trafic (B).</li>
+                    <li><strong>Le Contrôle d'Accès (Plans AAA & 802.1X) :</strong> C'est le système nerveux décisionnel. Il interroge le cerveau (serveur AAA) pour chaque tentative d'accès. S'il tombe, le réseau peut soit tout bloquer, soit tout ouvrir (mécanisme de secours), impactant l'accessibilité (C).</li>
+                    <li><strong>Les Systèmes de Détection & Prévention (Appliance & Protocoles de Sécurité) :</strong> Ce sont les systèmes immunitaires spécialisés. Leur activation/modification (D) affecte la résilience face à des menaces spécifiques (E), mais peut impacter les performances (F).</li>
+                </ol>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p>Le domaine de la sécurité LAN est le <strong>fondement de la sécurité réseau globale</strong>. Il opère principalement au niveau de la <span class="concept-key">couche 2 (Liaison de données)</span> du modèle OSI et de la <span class="concept-key">couche Accès réseau</span> du modèle TCP/IP. C'est ici que se définit le premier périmètre logique de confiance, bien avant que le trafic n'atteigne les routeurs (couche 3).</p>
+                <ul>
+                    <li><strong>Rôle Central :</strong> Garantir la <span class="concept-key">confidentialité</span>, <span class="concept-key">l'intégrité</span> et la <span class="concept-key">disponibilité</span> du trafic au sein d'un même domaine de broadcast (VLAN). Contrairement aux idées reçues, la sécurité ne commence pas au pare-feu ; elle commence au commutateur.</li>
+                    <li><strong>Positionnement dans OSI/TCP-IP :</strong> Son cœur bat à la <strong>couche 2</strong>. Les mécanismes comme la sécurité des ports, l'inspection ARP (DAI), ou le contrôle d'accès 802.1X agissent sur des trames Ethernet, des adresses MAC et des protocoles comme ARP ou STP.</li>
+                    <li><strong>Frontières et Relations :</strong>
+                        <ul>
+                            <li><strong>Frontière interne :</strong> Séparation entre les hôtes et le premier point d'accès réseau (port du commutateur). C'est la zone du <span class="concept-key">demandeur (supplicant) 802.1X</span> et du <span class="concept-key">NAC (Network Access Control)</span>.</li>
+                            <li><strong>Relation avec la sécurité périmétrique :</strong> La sécurité LAN est complémentaire. Un pare-feu (NGFW) protège des menaces extérieures et inter-VLAN, mais <strong>fait confiance au trafic intra-VLAN</strong>. Si la sécurité LAN est défaillante, l'attaquant est déjà <em>derrière</em> le pare-feu.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Le Paradigme du "Maillon le Plus Faible" :</strong> Historiquement, les protocoles de couche 2 (ARP, STP, CDP) ont été conçus pour la fonctionnalité et l'efficacité dans un environnement de confiance, <strong>non pour la sécurité</strong>. Ils manquent cruellement de mécanismes d'authentification intégrés. C'est pourquoi cette couche est si fréquemment ciblée.</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détailés</h2>
+                </div>
+
+                <h3 id="mecanisme-switch">A. Mécanisme : L'Apprentissage et le Transfert par un Commutateur</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    A[Trame arrive sur Port] --> B{Source MAC connue ?};
+    B -- Non --> C[Ajouter MAC-Port à la table];
+    B -- Oui --> D[Mettre à jour le timer];
+    C & D --> E{Destination MAC connue ?};
+    E -- Oui --> F[Transférer uniquement vers port cible];
+    E -- Non ou Broadcast --> G[Inonder sur tous les ports du VLAN];
+                    </div>
+                </div>
+                <p><strong>Fonctionnement Normal :</strong> Un commutateur apprend les adresses MAC sources des trames entrantes sur un port et les associe à ce port dans sa table CAM. Pour une trame destinée à une MAC connue, il la transfère uniquement vers le port correspondant.</p>
+                <p><strong>Condition de Validité :</strong> La table CAM a une taille finie. Tant qu'elle n'est pas saturée, le processus est efficace.</p>
+                <p><strong>Limite et Cas Frontière :</strong> Lorsque la table est pleine, le commutateur peut entrer dans un <strong>état de défaillance contrôlé</strong> où il commence à agir comme un hub, inondant <strong>toutes</strong> les trames entrantes. C'est ce comportement "de secours" non sécurisé qui est exploité par les attaques par inondation MAC.</p>
+
+                <h3 id="mecanisme-arp">B. Mécanisme : La Résolution d'Adresse avec ARP</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Hôte A veut IP X] --> B{IP X dans cache ARP ?};
+    B -- Non --> C[A diffuse "Qui a X ?"];
+    C --> D[Hôte avec X répond "X est à MAC Y"];
+    D --> E[A met à jour son cache];
+    B -- Oui --> F[Utilise MAC du cache];
+                    </div>
+                </div>
+                <p><strong>Séquence Logique :</strong> 1) Un hôte A veut communiquer avec l'IP X. 2) Si X n'est pas dans son cache ARP, A diffuse une <span class="concept-key">requête ARP</span> "Qui a X ?". 3) L'hôte possédant X répond. 4) A met à jour son cache.</p>
+                <p><strong>Faiblesse Fondamentale :</strong> Le protocole ARP est <strong>stateless</strong> et <strong>naïf</strong>. Il accepte les réponses ARP non sollicitées et n'a <strong>aucun moyen de vérifier l'authenticité</strong> d'une réponse. C'est le cœur de l'usurpation ARP.</p>
+
+                <h3 id="mecanisme-802.1x">C. Mécanisme : Le Contrôle d'Accès avec 802.1X</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Client connecté] --> B[Port non autorisé];
+    B --> C[Authentificateur demande identité];
+    C --> D[Demandeur envoie identité];
+    D --> E[Relais vers Serveur AAA];
+    E --> F[Négociation EAP];
+    F --> G[Décision du Serveur];
+    G -- Accepté --> H[Port autorisé];
+    G -- Rejeté --> I[Port bloqué];
+                    </div>
+                </div>
+                <p><strong>Séquence des Événements (EAP over LAN - EAPoL) :</strong> 1) <strong>Initialisation :</strong> Port en état "non autorisé". 2) <strong>Solicitation/Identité</strong>. 3) <strong>Relais</strong> de l'identité au serveur d'authentification. 4) <strong>Négociation</strong> via une méthode EAP. 5) <strong>Décision</strong> du serveur. 6) <strong>Autorisation</strong> du port.</p>
+                <p><strong>Condition de Validité :</strong> Nécessite un demandeur 802.1X-compatible, un authentificateur configuré et un serveur AAA opérationnel. Un mécanisme de <span class="concept-key">secours (fallback)</span> est crucial pour éviter un déni de service administratif.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+
+                <h3>📦 AAA (Authentication, Authorization, Accounting)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Fournir un cadre modulaire et scalable pour le contrôle d'accès aux ressources réseau.</li>
+                    <li><strong>Couche(s) OSI :</strong> Principalement couche 7 (Application).</li>
+                    <li><strong>Composants :</strong>
+                        <ul>
+                            <li><strong>Authentification (<code>who are you?</code>) :</strong> Vérification de l'identité.</li>
+                            <li><strong>Autorisation (<code>what can you do?</code>) :</strong> Définition des droits d'accès <strong>après</strong> authentification réussie. <span class="concept-key">Confusion fréquente :</span> Croire que l'autorisation contrôle "qui peut accéder". Non, c'est l'authentification.</li>
+                            <li><strong>Traçabilité/Comptabilité (<code>what did you do?</code>) :</strong> Enregistrement des sessions pour l'audit, la facturation.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Protocoles de Transport :</strong>
+                        <ul>
+                            <li><strong>RADIUS :</strong> Standard ouvert, utilise UDP. Chiffre uniquement le mot de passe.</li>
+                            <li><strong>TACACS+ :</strong> Protocole Cisco, utilise TCP. Sépare clairement les trois phases AAA et chiffre l'intégralité du corps des paquets.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>🛡️ 802.1X (Port-Based Network Access Control)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Empêcher l'accès physique au réseau avant qu'une authentification réussie n'ait lieu.</li>
+                    <li><strong>Couche OSI :</strong> Couche 2 (Liaison de données). Fonctionne avec des trames EAPoL.</li>
+                    <li><strong>Rôles :</strong>
+                        <ul>
+                            <li><strong>Demandeur (Supplicant) :</strong> Le logiciel sur le client.</li>
+                            <li><strong>Authentificateur :</strong> Le commutateur ou point d'accès. C'est un <strong>relais passif</strong>.</li>
+                            <li><strong>Serveur d'Authentification :</strong> Le serveur RADIUS/TACACS+.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>🔒 Sécurité des Ports (Port Security)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Contrôler quelles adresses MAC peuvent parler sur un port physique et en quelle quantité.</li>
+                    <li><strong>Couche OSI :</strong> Couche 2.</li>
+                    <li><strong>Mécanismes :</strong> Limite le nombre d'adresses MAC apprises sur un port. Actions de violation : <code>shutdown</code>, <code>restrict</code>, <code>protect</code>.</li>
+                    <li><strong>Erreur Conceptuelle :</strong> Croire qu'il empêche l'usurpation d'adresse IP. Un attaquant peut usurper la MAC d'un périphérique autorisé et passer au travers. C'est un contrôle de <em>quantité</em> et d'<em>identité MAC</em>, pas d'<em>intégrité</em>.</li>
+                </ul>
+
+                <h3>🕵️ IP Source Guard (IPSG)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Empêcher l'usurpation d'adresse IP et d'adresse MAC en validant la légitimité de la paire IP-MAC-source sur un port.</li>
+                    <li><strong>Fonctionnement :</strong> S'appuie sur la <strong>table de liaison DHCP Snooping</strong>. Pour chaque trame, vérifie que l'IP/MAC source correspond à une entrée valide pour ce port.</li>
+                    <li><strong>Interaction :</strong> Dépend entièrement de <span class="concept-key">DHCP Snooping</span> pour sa table de confiance dynamique.</li>
+                </ul>
+
+                <h3>🧪 DHCP Snooping</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Sécuriser l'infrastructure DHCP et créer une base de données de confiance des baux IP.</li>
+                    <li><strong>Comportement :</strong> Distingue ports de confiance (serveurs) et non fiables (clients). Filtre les messages des serveurs pirates et construit la table de liaison.</li>
+                    <li><strong>Service Fondateur :</strong> C'est le <strong>prérequis</strong> pour DAI et IPSG.</li>
+                </ul>
+
+                <h3>⚖️ Dynamic ARP Inspection (DAI)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Empêcher les attaques par usurpation et empoisonnement ARP.</li>
+                    <li><strong>Fonctionnement :</strong> S'appuie sur la table de liaison DHCP Snooping. Intercepte et valide les messages ARP sur les ports non fiables.</li>
+                    <li><strong>Interaction Clé :</strong> Protège spécifiquement contre la manipulation du protocole ARP. <strong>Ne protège pas</strong> contre l'usurpation IP pure. Pour cela, il faut IPSG.</li>
+                </ul>
+
+                <h3>🏰 Spanning Tree Protocol (STP) & Sa Sécurité</h3>
+                <ul>
+                    <li><strong>Objectif Principal :</strong> Éviter les boucles de couche 2.</li>
+                    <li><strong>Vulnérabilité :</strong> Un attaquant peut envoyer des BPDU avec une <strong>priorité de pont de 0</strong> pour se faire élire pont racine, perturbant la topologie.</li>
+                    <li><strong>Mécanismes de Sécurité :</strong>
+                        <ul>
+                            <li><strong>Root Guard :</strong> Empêche un port de devenir port racine.</li>
+                            <li><strong>BPDU Guard :</strong> Désactive un port d'accès si un BPDU est reçu.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>📡 Protocoles de Découverte (CDP, LLDP)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Découvrir automatiquement les voisins et échanger des informations.</li>
+                    <li><strong>Menace : Reconnaissance.</strong> Fournissent gratuitement à un attaquant une cartographie précise de l'infrastructure (version IOS, adresse IP, etc.).</li>
+                    <li><strong>Bonne Pratique :</strong> Désactiver sur les ports face à des segments non fiables.</li>
+                </ul>
+
+                <h3>🛡️ Appliances de Sécurité Spécialisées</h3>
+                <ul>
+                    <li><strong>Pare-feu de Nouvelle Génération (NGFW) :</strong> Inspecte le trafic jusqu'à la couche 7 (Application), intègre souvent IPS.</li>
+                    <li><strong>Appliance de Sécurité Web (WSA) :</strong> Proxy dédié. Filtre le trafic HTTP/HTTPS, bloque les sites malveillants, prévient la fuite de données (DLP).</li>
+                    <li><strong>Appliance de Sécurité des Emails (ESA) :</strong> Gateway dédiée. Filtre le trafic SMTP. Bloque le spam, le phishing, chiffre les emails.</li>
+                    <li><strong>Contrôle d'Admission Réseau (NAC) :</strong> Cadre global qui évalue la "santé" d'un périphérique (antivirus, correctifs) avant de lui donner accès.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. "Une attaque qui crypte les données est nécessairement une violation de données."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Les deux concepts impliquent un accès non autorisé aux données.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Une <strong>violation de données (data breach)</strong> est un <strong>événement</strong> où des données sont consultées/copiées. Un <strong>rançongiciel (ransomware)</strong> est un <strong>type d'action</strong> qui a pour but l'extorsion, en utilisant le chiffrement comme un moyen.</p>
+                    <p><strong>Raisonnement correct :</strong> Distinguer le <strong>mécanisme</strong> (chiffrement, exfiltration) de <strong>l'objectif</strong> de l'attaque (extorsion, espionnage) et du <strong>résultat</strong> (perte de confidentialité, disponibilité).</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. "Un commutateur est un périphérique de sécurité."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Les commutateurs modernes intègrent de nombreuses fonctions de sécurité.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Leur <strong>fonction primaire</strong> est la <strong>commutation de trames de couche 2 de manière efficace</strong>. Les fonctions de sécurité sont des <strong>ajouts</strong>. Un <strong>pare-feu</strong> ou un <strong>IPS</strong> sont conçus <em>de fond en comble</em> pour analyser et filtrer avec une intention sécuritaire.</p>
+                    <p><strong>Raisonnement correct :</strong> Catégoriser les périphériques par leur <strong>finalité architecturale première</strong>. Un commutateur sécurise en <strong>appliquant des politiques au périmètre d'accès</strong>.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. "Authentification et Autorisation sont interchangeables pour contrôler l'accès."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Les deux sont nécessaires pour qu'un utilisateur accède à une ressource.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Ce sont deux <strong>phases séquentielles et distinctes</strong>.
+                        <br>1. <strong>Authentification (AuthN)</strong> : <code>"Êtes-vous bien qui vous prétendez être ?"</code> (vérification d'identité).
+                        <br>2. <strong>Autorisation (AuthZ)</strong> : <code>"Que vous est-il permis de faire, maintenant que je vous connais ?"</code> (application de politiques).</p>
+                    <p><strong>Raisonnement correct :</strong> Penser en termes de <strong>"Identité d'abord, Permissions ensuite"</strong>.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. "La sécurité des ports (Port Security) protège contre l'usurpation IP."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Elle limite les adresses MAC, et une IP est souvent liée à une MAC.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Port Security ne regarde <strong>que l'adresse MAC source</strong>. Un attaquant peut usurper la MAC d'un périphérique légitime (autorisé) et <strong>usurper simultanément son adresse IP</strong>. Port Security ne vérifie <strong>aucunement</strong> la cohérence de l'adresse IP.</p>
+                    <p><strong>Raisonnement correct :</strong> Pour se prémunir contre l'usurpation de la paire <strong>IP-MAC</strong>, il faut <strong>IP Source Guard</strong> (qui valide cette association).</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>5. "IP Source Guard (IPSG) et Dynamic ARP Inspection (DAI) sont la même chose."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Les deux s'appuient sur DHCP Snooping et visent à empêcher des usurpations.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Ils protègent contre des <strong>couches de protocole différentes</strong>.
+                        <br>- <strong>IPSG</strong> opère sur les <strong>trames de données (couche 3/IP)</strong>. Il vérifie que l'adresse IP source est légitime.
+                        <br>- <strong>DAI</strong> opère sur les <strong>messages ARP (couche 2)</strong>. Il vérifie que l'association IP-MAC annoncée est véridique.</p>
+                    <p><strong>Raisonnement correct :</strong> <strong>IPSG est une police d'identité</strong> qui vérifie vos papiers (IP/MAC). <strong>DAI est une police qui surveille les annonces publiques</strong>. Les deux sont nécessaires.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <p>Penser comme un expert, c'est adopter une <strong>vision systémique, proactive et en couches</strong>.</p>
+                <ol>
+                    <li><strong>Le Principe de Défense en Profondeur (Layered Defense) :</strong> Ne jamais compter sur une seule technologie. Si Port Security échoue, DAI ou IPSG doivent prendre le relais. Si la couche 2 est compromise, le NGFW en couche 3 doit détecter les comportements anormaux. Concevez vos défenses comme des cercles concentriques.</li>
+                    <li><strong>Raisonnement par Menace et Contre-Mesure :</strong> Pour chaque composant, demandez-vous : "Qu'est-ce qui pourrait mal se passer ?" (Menace) puis "Que puis-je faire pour l'empêcher ou en limiter l'impact ?" (Contre-mesure).
+                        <ul>
+                            <li><strong>Menace sur un port d'accès :</strong> Connexion d'un périphérique non autorisé.</li>
+                            <li><strong>Contre-mesures en cascade :</strong> 802.1X pour l'authentification, Port Security pour limiter les MAC, DHCP Snooping pour bloquer les serveurs pirates.</li>
+                            <li><strong>Impact résiduel :</strong> Si l'attaquant usurpe l'identité d'un périphérique légitime, IPSG et DAI (basés sur la table de liaison fiable) le bloqueront.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Anticiper les Effets de Bords et les Dépendances :</strong> Activer DAI sans avoir préalablement activé et configuré DHCP Snooping est inutile, car DAI n'aura pas de table de liaison fiable pour valider les messages ARP. La sécurité est une chaîne ; chaque maillon dépend du précédent.</li>
+                    <li><strong>Penser en Termes de "Confiance Zéro" au Niveau du Port :</strong> Partez du principe qu'un port d'accès est hostile par défaut. Tout périphérique qui s'y connecte doit prouver son identité (802.1X) et sa légitimité (association IP-MAC valide via DHCP Snooping+IPSG). Le trafic provenant de ce port ne doit être autorisé qu'après ces vérifications.</li>
+                    <li><strong>Auditer et Comprendre les Logs :</strong> Les logs de violation de sécurité des ports, les échecs d'authentification AAA ou les alertes de l'IPS ne sont pas du bruit. Ce sont des signaux précieux sur les tentatives d'intrusion, les configurations erronées ou les comportements anormaux. Savoir les corréler est essentiel.</li>
+                </ol>
+                <div class="analogy-box">
+                    <p><strong>Rappel de l'analogie du château :</strong> En tant qu'architecte de la sécurité, vous ne vous contentez pas de fermer la grande porte (le pare-feu). Vous formez les gardes du pont-levis (AAA), vous installez des pièges sur les murailles (Port Security, DAI), vous vérifiez les papiers de chaque habitant à l'intérieur (IPSG), et vous avez des espions qui surveillent les conversations (IPS, appliances). Chaque couche a un rôle, et une défaillance à un niveau doit être compensée par le suivant.</p>
+                </div>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Ultra-Mémorisable</h2>
+                </div>
+
+                <h3>Lois Mentales :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi du Maillon le Plus Faible (Couche 2) :</strong> La sécurité du réseau est aussi forte que la sécurité de sa couche la plus vulnérable. Protégez d'abord ARP, STP, la table MAC et le contrôle d'accès physique.</p>
+                    <p>2. <strong>Loi de la Défense en Profondeur :</strong> Une seule barrière tombe toujours. Empilez les mécanismes de sécurité (AAA, Port Sec, DHCP Snooping, IPSG, DAI) pour créer des couches de défense redondantes.</p>
+                    <p>3. <strong>Loi de la Confiance Vérifiée (Zero Trust au Port) :</strong> Un port réseau n'accorde aucun droit par défaut. L'identité, l'intégrité de l'adresse et l'autorisation doivent être vérifiées avant tout accès.</p>
+                    <p>4. <strong>Loi de la Dépendance des Mécanismes :</strong> Les protections avancées (IPSG, DAI) reposent sur des services fondamentaux (DHCP Snooping). Activez et sécurisez les bases d'abord.</p>
+                    <p>5. <strong>Loi du But de l'Attaque :</strong> Identifiez toujours l'objectif final (interception, déni de service, accès non autorisé) pour choisir la contre-mesure appropriée. Inonder une table MAC sert à écouter, usurper ARP sert à intercepter.</p>
+                </div>
+
+                <h3>Équations Conceptuelles :</h3>
+                <div class="equation-box">
+                    <p><strong>Sécurité LAN = Maîtrise de la Couche 2 + Contrôle d'Accès + Vérification d'Intégrité</strong></p>
+                    <p><strong>Contrôle d'Accès Fort = Authentification (AAA) + Autorisation + Traçabilité</strong></p>
+                    <p><strong>Intégrité du Trafic = DHCP Snooping (Confiance) + IPSG (Vérif IP/MAC) + DAI (Vérif ARP)</strong></p>
+                </div>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p>Vous êtes le châtelain. Votre devoir n'est pas seulement de fermer le pont-levis (802.1X), mais de vous assurer que les murailles (commutateurs) sont solides, que les gardes (AAA) sont vigilants, que les annonces dans la cour (ARP) sont véridiques (DAI), et que personne ne porte un faux blason (IPSG). Une faille en un point peut mener à la chute de l'ensemble. La sécurité est un état d'esprit systémique et permanent.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Contrôlée (Au-delà de NetAcad)</h2>
+                </div>
+                <ul>
+                    <li><strong>Micro-segmentation et Zéro Trust Réseau :</strong> L'évolution va au-delà des VLAN. La micro-segmentation utilise des politiques de sécurité hyper-granulaires (basées sur l'identité, l'application) appliquées directement entre les charges de travail, même au sein du même segment IP. Des technologies comme les <span class="concept-key">groupes de sécurité (Security Groups)</span> ou les <span class="concept-key">overlays logiciels (VXLAN avec sécurité intégrée)</span> rendent cela possible, réduisant la surface d'attaque latérale.</li>
+                    <li><strong>Network Detection and Response (NDR) et Behavioral Analytics :</strong> Au-delà des signatures d'IPS, les solutions NDR utilisent l'apprentissage machine pour établir une ligne de base du comportement "normal" du réseau (patterns de communication, volumes de trafic). Elles détectent ensuite les anomalies subtiles qui pourraient indiquer une menace persistante avancée (APT) ou un mouvement latéral, même si le trafic est chiffré.</li>
+                    <li><strong>Automation et Security as Code (SaC) :</strong> La sécurité réseau ne se configure plus uniquement via CLI. Elle est définie, versionnée et déployée sous forme de code (avec des outils comme Ansible, Terraform). Cela permet une conformité constante, des déploiements reproductibles et une capacité à "rollback" rapidement en cas de problème, intégrant la sécurité dès la conception (DevSecOps pour le réseau).</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous ne voyez plus un commutateur comme une simple boîte de transfert, mais comme le <strong>gardien fondamental du périmètre de confiance</strong>. Vous concevez l'accès réseau comme une série d'épreuves (authentification, vérification d'intégrité) que tout périphérique doit passer. Vous comprenez que la sécurité est une <strong>chaîne de dépendances logiques</strong> (pas de DAI sans DHCP Snooping) et un <strong>système d'équilibre</strong> entre protection et opérabilité.</p>
+                    <p>Vous pouvez expliquer la cause racine d'une panne ou d'une brèche en raisonnant des protocoles de couche 2 jusqu'aux politiques d'application. Vous anticipez les effets de bord d'une configuration et choisissez les contre-mesures non pas au hasard, mais en fonction de la menace spécifique à mitiger. Vous êtes prêt à architecturer, sécuriser et dépanner des réseaux d'entreprise modernes avec une approche systémique et une compréhension profonde.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte de sécurité réseau senior »</li>
+                        <li>« Je comprends les causes profondes des attaques de couche 2 et comment les contrer »</li>
+                        <li>« Je peux concevoir et implémenter une défense en profondeur pour un LAN »</li>
+                        <li>« Mon niveau de compréhension dépasse largement celui d'une certification d'entrée de gamme »</li>
+                        <li>« Je comprends comment chaque mécanisme fonctionne et interagit »</li>
+                        <li>« Je sais expliquer pourquoi une illusion conceptuelle est dangereuse »</li>
+                        <li>« Je peux raisonner sur la sécurité en systèmes, sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique Sécurité LAN — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>

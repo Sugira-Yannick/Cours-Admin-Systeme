@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Académique : DHCPv4 - La Dynamique de l'Adressage IP</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 Module Académique : DHCPv4 - La Dynamique de l'Adressage IP</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">DHCPv4 Expert</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes Détailés</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-dora">Processus DORA</a></li>
+                        <li><a href="#mecanisme-renewal">Renouvellement du Bail</a></li>
+                        <li><a href="#mecanisme-relay">DHCP Relay Agent</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension au-delà de NetAcad (500%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Système de Réservation et de Contrat d'un Hôtel Intelligent</h2>
+                </div>
+                <p>Imaginez un grand hôtel (le réseau) avec ses chambres (adresses IP). Le <strong>Logiciel Central de Réservation</strong> (serveur DHCP) gère toutes les chambres. Un nouveau client (périphérique) arrive au hall (le domaine de broadcast). Il va au comptoir "Arrivées" (port UDP 68) et dit : "Je voudrais une chambre" (DHCPDISCOVER), en donnant sa pièce d'identité (adresse MAC).</p>
+                <div class="analogy-box">
+                    <p><strong>Bon de Réservation Provisoire (DHCPOFFER)</strong> : Le logiciel consulte sa base, marque une chambre libre comme "optionnée" et génère un bon provisoire envoyé au hall d'entrée. Ce bon contient le numéro de chambre, les heures d'ouverture du mini-bar (passerelle), et le numéro du service room-service (DNS).</p>
+                    <p><strong>Annonce Publique d'Acceptation (DHCPREQUEST Broadcast)</strong> : Le client, recevant peut-être plusieurs bons, en choisit un. Il retourne alors au centre du hall et annonce haut et fort : "J'accepte la réservation de l'Hôtel A, chambre 205 !". Ce cri informe les autres hôtels potentiels d'annuler leurs offres.</p>
+                    <p><strong>Clé Électronique Définitive (DHCPACK)</strong> : Le logiciel de l'Hôtel A entend cela, transforme le statut de la chambre 205 de "optionnée" à "occupée - Contrat signé", et envoie la clé définitive au client. Le contrat de location (le bail) précise la durée du séjour et stipule qu'à mi-séjour (T1), le client doit contacter directement la réception (unicast) pour prolonger.</p>
+                    <p><strong>Réceptionniste Relais (ip helper-address)</strong> : Un employé dans une aile éloignée (sous-réseau) qui, entendant un client crier dans le hall local, prend son téléphone et appelle directement la réception centrale pour lui transmettre la demande.</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Hall d'Hôtel</span> → Domaine de Broadcast L2.</li>
+                    <li><span class="concept-key">Comptoir Arrivées (Port 68)</span> → Port UDP Client.</li>
+                    <li><span class="concept-key">Statut "Optionnée"</span> → Adresse Réservée Temporairement.</li>
+                    <li><span class="concept-key">Contact de mi-séjour</span> → Renouvellement Unicast (T1).</li>
+                    <li><span class="concept-key">Rappel Automatique</span> → Renouvellement Broadcast (T2).</li>
+                    <li><span class="concept-key">Client qui part sans prévenir</span> → Bail expiré, chambre retourne au pool.</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global : Un Système d'État Distribué à Temps Réel</h2>
+                </div>
+                <p>DHCPv4 est un <strong>système de coordination distribué à base de messages UDP</strong> dont l'objectif est de maintenir une correspondance cohérente entre des identifiants physiques permanents (MAC) et des identifiants logiques temporaires (IP) à travers le temps. Sa cohérence repose sur un serveur faisant autorité qui est la source de vérité pour l'état des allocations. Le système est tolérant aux pannes client mais vulnérable aux pannes serveur. La conception est un équilibre entre l'efficacité (unicast après attribution) et la robustesse (broadcast pour la découverte et le secours).</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph “État Côté Serveur”
+        S1[Libre] -->|Réception DISCOVER| S2[Offerte à MAC X]
+        S2 -->|Réception REQUEST pour cette offre| S3[Attribuée à MAC X<br>Binding: MAC X ↔ IP Y<br>Timer Bail]
+        S3 -->|ACK de renouvellement| S3
+        S3 -->|Expiration du Timer Bail| S1
+        S2 -->|Timeout (offre non acceptée)| S1
+        S3 -->|Réception RELEASE| S1
+    end
+
+    subgraph “État Côté Client”
+        C1[Sans adresse] -->|Envoi DISCOVER| C2[En attente d'offre]
+        C2 -->|Réception OFFER| C3[Offre reçue]
+        C3 -->|Envoi REQUEST| C4[En attente d'ACK]
+        C4 -->|Réception ACK| C5[Adresse active<br>Timers T1 & T2 en cours]
+        C5 -->|T1 atteint, envoi RENEW| C6[En renouvellement]
+        C6 -->|Réception ACK| C5
+        C5 -->|T2 atteint, envoi REBIND| C7[En rebind]
+        C7 -->|Réception ACK (d'un autre serveur)| C5
+        C5 -->|Expiration Bail| C1
+        C6 -->|Réception NAK| C1
+        C7 -->|Pas de réponse à T2+ | C1
+    end
+
+    S3 -.->|Binding partagé| C5
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale : Un Service Critique de Couche 3/4</h2>
+                </div>
+                <p>Le DHCPv4 est un protocole de la <strong>couche application (L7)</strong> dont la sémantique est entièrement dédiée à la configuration de la <strong>couche réseau (L3)</strong>. Il fonctionne comme un <strong>service de bootstrap</strong> pour la pile IP. Son transport, <strong>UDP (L4)</strong>, est un choix architectural crucial : il évite la surcharge de connexion TCP pour des échanges simples, permet l'utilisation du broadcast (impossible avec TCP), et tolère la perte de paquets (le client retransmettra).</p>
+                <p>Son positionnement dans la pile est donc <strong>hybride</strong> : il utilise les services des couches inférieures (IP, Ethernet) pour fournir un paramétrage essentiel à ces mêmes couches. Son domaine d'action est le <strong>domaine de broadcast de couche 2</strong>. Sa présence est nécessaire avant toute communication IP structurée, ce qui en fait un service <strong>pré-routage</strong>. Sa frontière naturelle est le routeur, qui, par défaut, ne laisse pas passer ses messages de diffusion (broadcast), créant ainsi la nécessité du <strong>DHCP Relay</strong> pour les architectures multi-sous-réseaux.</p>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détailés (Avec Diagrammes)</h2>
+                </div>
+
+                <h3 id="mecanisme-dora">A. Anatomie de l'Échange DORA Initial (Vue Champ par Champ)</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Client: DHCPDISCOVER<br/>Src: 0.0.0.0, Dst: 255.255.255.255<br/>UDP 68→67, Option 53:1] --> B[Broadcast];
+    B --> C[Serveur: DHCPOFFER<br/>Src: IP_SRV, Dst: 255.255.255.255<br/>UDP 67→68, Option 53:2, yiaddr: IP_OFFERTE];
+    C --> D[Client: DHCPREQUEST<br/>Broadcast, Option 53:3,<br/>Option 50: IP_OFFERTE, Option 54: IP_SRV];
+    D --> E[Broadcast];
+    E --> F[Serveur: DHCPACK<br/>Option 53:5, yiaddr: IP_ATTRIBUÉE<br/>Options 1,3,6,51,58,59];
+    F --> G[Client: Adresse IP Active];
+                    </div>
+                </div>
+                <p><strong>Points Clés du Mécanisme :</strong></p>
+                <ul>
+                    <li><span class="concept-key">DHCPDISCOVER</span> : Utilise l'adresse IP source <code>0.0.0.0</code> car le client n'a pas d'identité L3.</li>
+                    <li><span class="concept-key">DHCPOFFER</span> : Le serveur <strong>réserve temporairement</strong> l'adresse dans le champ <code>yiaddr</code>. Il l'envoie souvent en broadcast par défaut.</li>
+                    <li><span class="concept-key">DHCPREQUEST (Initial)</span> : Est un <strong>broadcast</strong> contenant l'<code>Option 54 (Server Identifier)</code>. Ceci est crucial pour désigner le serveur choisi et informer les autres serveurs de libérer leurs offres.</li>
+                    <li><span class="concept-key">DHCPACK</span> : Contient toutes les options de configuration finales. L'adresse passe à l'état "attribuée/baillée" côté serveur.</li>
+                </ul>
+
+                <h3 id="mecanisme-renewal">B. Mécanisme de Renouvellement : Une Horloge à Deux Ressorts (T1 & T2)</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Bail Actif] --> B{T1 = 50% du Bail};
+    B -->|Client envoie DHCPREQUEST Unicast| C[Renouvellement Direct];
+    C -->|Réception DHCPACK| A;
+    C -->|Pas de réponse| D{Attente jusqu'à T2};
+    D --> E[T2 = 87.5% du Bail];
+    E -->|Client envoie DHCPREQUEST Broadcast| F[Renouvellement de Secours (Rebinding)];
+    F -->|Réception DHCPACK (de n'importe quel serveur)| A;
+    F -->|Pas de réponse| G[Expiration à 100%];
+    G --> H[Client libère l'adresse, retour à l'état initial];
+                    </div>
+                </div>
+                <p><strong>Explication :</strong> Le renouvellement n'est pas un simple "rappel". C'est un processus actif à deux niveaux de résilience, géré par deux timers indépendants (<code>Option 58 - T1</code>, <code>Option 59 - T2</code>). À T1, le client tente une communication <strong>unicast directe et efficace</strong> avec son serveur actuel. Si cela échoue (serveur hors ligne), il passe en mode "rebinding" à T2 et <strong>broadcast</strong> une requête, acceptant une réponse de n'importe quel serveur disponible. Ce mécanisme assure la continuité de service même en cas de panne du serveur primaire.</p>
+
+                <h3 id="mecanisme-relay">C. Le DHCP Relay Agent : Modificateur de Paquets Stratégique</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph “Sous-réseau Client”
+        A[Client: DHCPDISCOVER Broadcast] --> B[Routeur Interface Fa0/1];
+    end
+    subgraph “Routeur (Agent Relais)”
+        B --> C{Processus Relay};
+        C --> D[Modification:<br/>1. IP Source = 0.0.0.0 → IP(Interface Fa0/1)<br/>   (Remplit champ `giaddr`)<br/>2. IP Dest = 255.255.255.255 → IP_SRV_DHCP];
+        D --> E[Paquet modifié routé en Unicast];
+    end
+    subgraph “Réseau du Serveur”
+        E --> F[Serveur DHCP reçoit la requête];
+        F --> G[Serveur utilise `giaddr` pour choisir le pool];
+        G --> H[Serveur répond en Unicast au routeur];
+        H --> I[Routeur convertit la réponse en Broadcast/Unicast vers le client];
+    end
+                    </div>
+                </div>
+                <p><strong>Algorithme du Relay :</strong> L'agent de relais n'est pas un simple répéteur. C'est un élément actif de la couche 3 qui réécrit des champs IP pour franchir la barrière des routeurs. L'étape clé est l'insertion de l'adresse de l'interface de réception dans le champ <code>giaddr</code> (Gateway IP Address). Cette adresse indique au serveur DHCP <strong>de quel sous-réseau</strong> provient la requête, lui permettant de sélectionner le pool d'adresses approprié. La commande <code>ip helper-address</code> est un redirecteur UDP spécifique pour une liste prédéfinie de ports (67, 68, 53, etc.), pas un tunnel générique pour tous les broadcasts.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif Granulaire)</h2>
+                </div>
+                <ul>
+                    <li><span class="concept-key">DHCPv4 (RFC 2131) & Options (RFC 2132)</span> :
+                        <ul>
+                            <li><strong>Format</strong> : Message fixe (240 octets) + Zone Options variable.</li>
+                            <li><strong>Champ <code>flags</code> (Bit 0 - BROADCAST)</strong> : Si à 1, force le serveur à répondre en broadcast L3 (pour les clients dont la pile TCP/IP n'est pas encore initialisée).</li>
+                            <li><strong>Champ <code>giaddr</code></strong> : Rempli <strong>uniquement par l'agent de relais</strong>. Pivot du relayage, utilisé par le serveur pour identifier le sous-réseau source et le pool approprié.</li>
+                            <li><strong>Options Critiques</strong> :
+                                <ul>
+                                    <li><code>53 (DHCP Message Type)</code> : 1=Discover, 2=Offer, 3=Request, 5=ACK, 6=NAK.</li>
+                                    <li><code>50 (Requested IP Address)</code> : Utilisé par le client dans le REQUEST.</li>
+                                    <li><code>54 (Server Identifier)</code> : Adresse IP du serveur DHCP. Désigne le serveur choisi.</li>
+                                    <li><code>51 (IP Address Lease Time)</code>, <code>58 (Renewal Time - T1)</code>, <code>59 (Rebinding Time - T2)</code> : Gestion du temps.</li>
+                                    <li><code>1 (Subnet Mask)</code>, <code>3 (Router)</code>, <code>6 (Domain Name Server)</code> : Configuration réseau.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="concept-key">UDP sur les Ports 67/68</span> : Choix architectural pour un échange simple, sans connexion, permettant le broadcast. La fiabilité est assurée par les <strong>retransmissions au niveau application</strong> du client DHCP.</li>
+                    <li><span class="concept-key">Interaction avec ARP</span> : Un client prudent effectue souvent un <strong>ARP gratuit (Gratuitous ARP)</strong> avant d'utiliser pleinement une adresse reçue via DHCP, pour détecter un conflit d'adresse IP. En cas de conflit, il envoie un <strong>DHCPDECLINE</strong> au serveur.</li>
+                    <li><span class="concept-key">Services relayés par défaut</span> : La commande <code>ip helper-address</code> relaye 8 services UDP spécifiques : Time (37), TACACS (49), DNS (53), DHCP/BOOTP server (67), DHCP/BOOTP client (68), TFTP (69), NetBIOS name (137), NetBIOS datagram (138).</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures (Erreurs Issues des Traces Cognitives)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. "Le DHCPOFFER et le DHCPACK sont toujours envoyés en unicast à l'adresse IP du client."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> La logique voudrait qu'une communication établie soit en unicast.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Le client ne peut recevoir de paquets unicast <strong>que si sa pile TCP/IP est prête à traiter des paquets destinés à l'adresse offerte</strong>. Avant le DHCPACK final, ce n'est souvent pas le cas. Le <strong>bit 'Broadcast'</strong> dans le champ <code>flags</code> du DISCOVER permet au client de forcer une réponse en broadcast. Même si ce bit est à 0, certaines implémentations de serveur envoient l'OFFER en broadcast par précaution.</p>
+                    <p><strong>Raisonnement correct :</strong> "Les premiers messages DORA dansent sur le fil du rasoir de l'initialisation réseau. Le broadcast est une béquille nécessaire."</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. "La commande `ip helper-address` relaye tous les broadcasts d'un sous-réseau."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Le terme "helper" semble général.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> La commande est un <strong>redirecteur UDP spécifique</strong>. Elle n'écoute et ne modifie que les paquets UDP broadcast destinés à une <strong>liste prédéfinie de ports</strong> (67, 68, 69, 53, etc.). Un broadcast ARP (L2) ou un broadcast NetBIOS sur un autre port <strong>ne sera pas relayé</strong>.</p>
+                    <p><strong>Raisonnement correct :</strong> "`ip helper-address` est un traducteur protocolaire pour quelques services UDP clés, pas un passe-droit pour tout le trafic de broadcast."</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. "L'exclusion d'adresses avec `ip dhcp excluded-address` est optionnelle, juste pour la propreté."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Le serveur semble fonctionner sans cela.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> C'est une <strong>mesure de protection critique</strong>. Sans exclusion, le serveur DHCP est susceptible d'attribuer une adresse IP déjà configurée manuellement sur un serveur, une imprimante ou une interface de routeur. Cela crée un <strong>conflit d'adresse IP</strong>, rendant les deux périphériques instables ou injoignables. L'exclusion définit une <strong>zone interdite</strong> dans le pool.</p>
+                    <p><strong>Raisonnement correct :</strong> "La première étape de la configuration d'un pool DHCP est de définir ce qui n'en fait <strong>pas</strong> partie. L'exclusion est le garde-fou contre le chaos des IP en double."</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. "Le bail se renouvelle automatiquement à l'expiration."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> L'expérience utilisateur est une connectivité continue.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Le renouvellement est un <strong>processus actif initié par le client</strong> à T1 (50%) et T2 (87.5%). Si le client est éteint ou hors réseau à ces moments, <strong>il ne peut pas renouveler</strong>. À 100%, le bail expire côté serveur. Quand le client se reconnecte, son adresse est invalide, et il doit lancer un <strong>nouveau processus DORA</strong>.</p>
+                    <p><strong>Raisonnement correct :</strong> "Le bail est un contrat qui nécessite une reconduction active. L'absence de signal est interprétée comme une résiliation."</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>5. "La commande `network 192.168.1.0 255.255.255.0` signifie que le serveur attribuera l'adresse 192.168.1.0."</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Confusion avec la syntaxe de configuration d'une interface.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> Dans le contexte DHCP, l'adresse réseau (ici `192.168.1.0`) et l'adresse de broadcast (`192.168.1.255`) sont <strong>implicitement et automatiquement exclues</strong> par le serveur. La commande définit une <strong>plage logique</strong>. Le pool actif va de `192.168.1.1` à `192.168.1.254`, <strong>moins</strong> les adresses exclues manuellement.</p>
+                    <p><strong>Raisonnement correct :</strong> "La commande `network` en mode DHCP ne configure pas une interface ; elle délimite un champ de mines (les adresses exclues) dans un champ de ressources (le sous-réseau)."</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <p>Un expert ne voit pas DHCP comme une simple liste de commandes, mais comme un <strong>système à réguler</strong>. Sa pensée est causale et prospective :</p>
+                <ul>
+                    <li><span class="concept-key">Dimensionnement des Pools :</span> "Si j'ai 300 postes possibles mais seulement 200 simultanément connectés, je configure un pool de 220 adresses. Pourquoi ? Un surplus de 10% pour la marge, mais pas plus, pour préserver l'espace d'adressage."</li>
+                    <li><span class="concept-key">Règle des Exclusions :</span> "Avant de créer un pool, je liste TOUTES les adresses statiques : l'interface du routeur (.1), le serveur d'impression (.10), le contrôleur WLC (.50). Je les exclue <strong>en premier</strong>. Cela évite tout conflit futur."</li>
+                    <li><span class="concept-key">Optimisation de la Durée de Bail :</span> "Sur un réseau d'entreprise fixe, un bail de 8 jours. Pourquoi ? Assez long pour minimiser le trafic de renouvellement, assez court pour récupérer les adresses d'un département qui change d'étage en un week-end. Sur un réseau d'invités Wi-Fi : 2 heures. Pourquoi ? Rotation rapide, libération immédiate après le départ."</li>
+                    <li><span class="concept-key">Diagnostic par la Pensée Systémique :</span> "Un utilisateur ne peut pas obtenir d'IP ? Scénario mental : 1) Le serveur DHCP est-il joignable ? (Ping, vérifier le service). 2) Le pool est-il épuisé ? (`show ip dhcp pool`). 3) Y a-t-il un relay configuré ? Et est-il pointé vers la bonne adresse ? 4) Le client est-il dans le bon VLAN ? (Problème de couche 2)." Chaque symptôme (broadcast vu sur l'interface mais pas de réponse, NAK reçu, etc.) remonte à une cause racine dans la chaîne logique du système.</li>
+                    <li><span class="concept-key">Anticipation des Effets du Relay :</span> "Quand j'active `ip helper-address`, je sais que le routeur va aussi relayer les broadcasts TFTP, DNS, etc. Est-ce souhaitable ? Si non, dois-je filtrer ? Je documente cette dépendance de service."</li>
+                    <li><span class="concept-key">Compréhension des Détails Cisco :</span> "La commande `show ip dhcp conflict` me révèle les conflits d'adresse que le serveur a détectés (via des ping ou des déclarations DECLINE). C'est mon premier outil pour diagnostiquer les problèmes d'instabilité aléatoire."</li>
+                </ul>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>Lois Mentales :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi du Bail :</strong> <strong>Aucune adresse DHCP n'est définitive. Toute attribution est un prêt à renouveler.</strong></p>
+                    <p>2. <strong>Loi de la Découverte :</strong> <strong>Sans connaissance, on broadcast. Le broadcast est l'outil de découverte des services en couche 3.</strong></p>
+                    <p>3. <strong>Loi du Routeur-Frontière :</strong> <strong>Un routeur arrête les broadcasts. La communication inter-sous-réseaux nécessite du relais (unicast) ou un serveur local.</strong></p>
+                    <p>4. <strong>Loi de la Double Exclusion :</strong> <strong>Une adresse dans un pool DHCP est rendue indisponible par deux mécanismes : l'exclusion implicite (adresse réseau/broadcast) et l'exclusion explicite de l'administrateur.</strong></p>
+                    <p>5. <strong>Loi du Relay par l'Adresse :</strong> <strong>`giaddr` est la boussole du serveur DHCP. Cette adresse, insérée par le relais, lui indique vers quel sous-réseau pointer l'attribution.</strong></p>
+                </div>
+
+                <h3>Équations Conceptuelles :</h3>
+                <div class="equation-box">
+                    <p><strong>Connectivité IP Complète = Adresse IP + Masque de Sous-Réseau + Passerelle par Défaut + Serveur(s) DNS</strong></p>
+                    <p><em>Le rôle du DHCP est de résoudre automatiquement cette équation pour chaque client.</em></p>
+                    <br>
+                    <p><strong>Attribution Valide = (Adresse ∈ Pool_Actif) && (Adresse ∝ Sous-Réseau(giaddr)) && (État = Libre) && (MAC ∉ Conflit)</strong></p>
+                </div>
+
+                <h3>Principe de Temporalité :</h3>
+                <div class="analogy-box">
+                    <p><strong>"En DHCP, le temps est un paramètre de configuration actif."</strong> La durée du bail, T1 et T2, sont des leviers qui contrôlent l'agitation du réseau, la récupération des ressources et la tolérance aux pannes.</p>
+                </div>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p>Vous êtes le gestionnaire de l'hôtel intelligent. Votre travail est de garantir que chaque nouveau client obtienne une chambre (IP) rapidement via un processus standardisé (DORA), que les chambres réservées (exclues) ne soient jamais attribuées à tort, et que les clients dans les ailes éloignées (sous-réseaux) puissent contacter la réception centrale via vos réceptionnistes relais. Vous devez aussi gérer les contrats de location (baux) pour éviter que les chambres ne restent vacantes mais attribuées.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension au-delà de NetAcad (500%+)</h2>
+                </div>
+                <ul>
+                    <li><span class="concept-key">DHCP Snooping, DAI (Dynamic ARP Inspection) et IP Source Guard :</span> La <strong>trinité de sécurité de couche 2</strong>. DHCP Snooping construit une <strong>table de confiance (binding table)</strong> des baux légitimes (MAC, IP, VLAN, Port). Cette table alimente DAI (qui valide les réponses ARP) et IP Source Guard (qui filtre le trafic à la source sur un port d'accès). Sans un DHCP Snooping propre, ces mécanismes de sécurité échouent.</li>
+                    <li><span class="concept-key">Attaque par Épuisement de Pool :</span> Un attaant peut générer un grand nombre de requêtes DHCP avec des adresses MAC sources forgées, épuisant rapidement toutes les adresses disponibles dans le pool, provoquant un <strong>déni de service</strong> pour les vrais clients. Les mécanismes de sécurité comme le taux limite (rate limiting) des messages DHCP par port sont essentiels.</li>
+                    <li><span class="concept-key">Option 82 (Agent Information Option / Relay Agent Information) :</span> Une extension de sécurité et d'information. L'agent de relais peut y ajouter des données comme l'identifiant du circuit (port du switch) ou l'ID du VLAN d'où provient la requête. Permet au serveur de faire des politiques d'attribution très fines (ex: attribuer des adresses d'un pool spécifique selon le port de connexion).</li>
+                    <li><span class="concept-key">DHCP sans état (Stateless) vs. avec état (Stateful) :</span> Le modèle classique est <em>stateful</em> : le serveur garde l'état de tous les baux. En contraste, le <strong>DHCP Stateless</strong> (prévu pour IPv6 mais conceptuellement applicable) sert uniquement à fournir les <em>paramètres de configuration</em> (DNS, domaine) mais <strong>pas les adresses IP</strong>, qui sont obtenues par d'autres moyens (auto-configuration). Cela découple la gestion de l'identité (l'adresse) de la gestion de la configuration.</li>
+                    <li><span class="concept-key">DHCPv6 vs SLAAC (Stateless Address Autoconfiguration) :</span> IPv6 introduit une séparation des préoccupations. <strong>SLAAC</strong> permet à un hôte de générer sa propre adresse IPv6 à partir du préfixe réseau annoncé par le routeur (RA - Router Advertisement). <strong>DHCPv6</strong> peut ensuite être utilisé <strong>statelessly</strong> pour fournir uniquement les autres informations (DNS, domaines) ou <strong>statefully</strong> pour gérer l'attribution des adresses, comme en IPv4. Cette distinction est fondamentale.</li>
+                    <li><span class="concept-key">Le Coût du Broadcast :</span> Chaque DORA initial génère au moins 4 paquets broadcast sur le segment LAN. Sur un réseau avec des centaines de postes qui démarrent en même fois (le matin), cela peut créer une <strong>micro-tempête de broadcast</strong>. Ajuster les timers de retransmission côté client et la taille des pools peut atténuer ce phénomène.</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">cycle de vie d'adresses IP</span> et de <span class="concept-key">système d'état distribué</span>. Vous concevez des pools DHCP en anticipant l'exclusion et la durée de bail. Vous comprenez que le broadcast n'est pas une anomalie mais le mécanisme fondamental de découverte dans un état d'ignorance. Vous savez que la frontière du routeur est à la fois un obstacle (pour le broadcast) et un point de contrôle (pour le relay).</p>
+                    <p>Vous pouvez expliquer pourquoi un client n'obtient pas d'adresse en raisonnant du champ `giaddr` manquant dans un relay jusqu'à l'épuisement d'un pool mal dimensionné. Votre compréhension des timers T1/T2 et des états (OFFERED, BOUND, RENEWING) vous permet de dépanner des problèmes de connectivité intermittente. Vous êtes prêt à déployer et sécuriser (Snooping) des services DHCP dans des environnements réseaux complexes et multi-sous-réseaux.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte et un administrateur réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique DHCPv4 — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>
