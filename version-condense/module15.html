@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Académique : Le Routage IP Statique – L’Art de Cartographier le Réseau</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 Module Académique : Le Routage IP Statique – L’Art de Cartographier le Réseau</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">Routage IP Statique</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-processus">Processus d'Installation</a></li>
+                        <li><a href="#mecanisme-etats">États & Validité</a></li>
+                        <li><a href="#mecanisme-frontieres">Cas Frontières</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Illusions Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Ultra-Mémorisable</a></li>
+                <li><a href="#extension">7️⃣ Extension Contrôlée</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Système Nerveux Central du Corps Humain</h2>
+                </div>
+                <p>Imaginez le système nerveux central d'un organisme complexe. Le cerveau (le routeur) ne contrôle pas directement chaque muscle, mais établit des voies nerveuses prédéfinies (routes statiques) pour transmettre des signaux vers des organes spécifiques. Certaines voies sont réflexes, automatiques et s'adaptent (protocoles dynamiques), tandis que d'autres sont des <strong>connexions intentionnelles, délibérément établies par le système supérieur</strong> pour assurer des fonctions critiques.</p>
+                <div class="analogy-box">
+                    <p><strong>Mapping Explicite :</strong></p>
+                    <ul>
+                        <li><span class="concept-key">Cerveau</span> → <strong>Plan de contrôle du routeur</strong> (CPU, mémoire de routage).</li>
+                        <li><span class="concept-key">Voie nerveuse intentionnelle</span> → <strong>Route statique configurée</strong>.</li>
+                        <li><span class="concept-key">Jonction synaptique</span> → <strong>Interface réseau</strong> (point de sortie/entrée).</li>
+                        <li><span class="concept-key">Neurone relais</span> → <strong>Next-hop</strong> (routeur suivant).</li>
+                        <li><span class="concept-key">Hiérarchie des réflexes</span> → <strong>Distance Administrative</strong> (priorité des sources).</li>
+                        <li><span class="concept-key">Voie de secours neurologique</span> → <strong>Route statique flottante</strong>.</li>
+                        <li><span class="concept-key">Système nerveux autonome</span> → <strong>Protocole de routage dynamique</strong> (OSPF, EIGRP).</li>
+                        <li><span class="concept-key">Erreur : créer une voie intentionnelle qui court-circuite un réflexe vital</span> → <strong>Configuration d'une route statique avec DA=1 sur un préfixe géré par OSPF</strong>.</li>
+                    </ul>
+                </div>
+                <p>Cette analogie systémique révèle l'essence du routage statique : <strong>l'imposition d'une volonté cognitive supérieure sur le système de transport automatisé</strong>. Ce n'est pas une défaillance de l'automatisme, mais son complément intentionnel.</p>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global du Système</h2>
+                </div>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph "Environnement Réseau"
+        Net[Espace d'adressage IP] --> Dest[Destinations possibles]
+        Topo[Topologie physique] --> Lien[Liens & Interfaces]
+    end
+
+    subgraph "Cerveau Réseau : Plan de Contrôle"
+        Intent[Intention de l'Administrateur] --> Logique{Logique de Décision}
+        Intent --> Config[Configuration Manuelle]
+        
+        Config --> RS[Routes Statiques]
+        Config --> RF[Routes Flottantes]
+        Config --> RD[Route par Défaut]
+        
+        RS --> Type{Type Statique}
+        Type --> Réc[Route Récursive]
+        Type --> ES[Route Entièrement Spécifiée]
+        Type --> Hôte[Route d'Hôte /32]
+        
+        Dyn[Protocoles Dynamiques OSPF/EIGRP] --> DR[Routes Dynamiques]
+        
+        RS & DR & RF & RD --> TDR[Table de Routage RIB]
+        
+        TDR --> Sélection{Processus de Sélection}
+        
+        Sélection --> Règle1["Règle 1 : Plus Long Préfixe"]
+        Sélection --> Règle2["Règle 2 : Plus Basse DA"]
+        Sélection --> Règle3["Règle 3 : Plus Bas Métrique"]
+        
+        Règle1 & Règle2 & Règle3 --> RouteActive["Route Active Installée"]
+    end
+
+    subgraph "Moelle Épinière : Plan de Transfert"
+        RouteActive --> FIB[Table de Forwarding FIB]
+        FIB --> Décision[Décision par Paquet]
+        Lien --> Interface[Interface de Sortie]
+        Décision --> Interface
+        Interface --> PktEnvoi[Envoi du Paquet]
+    end
+
+    subgraph "Boucle de Rétroaction"
+        PktEnvoi --> Monitoring[Monitoring & Tests]
+        Monitoring --> Ping["Test de Connectivité ping/traceroute"]
+        Ping --> Valid["Validité Opérationnelle ?"]
+        Valid -->|Non| ReÉval[Re-évaluation de la Config/Intent]
+        ReÉval --> Intent
+        Valid -->|Oui| Stabilité[État Stable]
+    end
+
+    Réc --> Résol{"Résolution Récursive du Next-Hop"}
+    Résol -->|Requiert| TDR
+    ES -->|Évite| Résol
+
+    RF -.->|"DA Élevée = État Dormant"| TDR
+    DR -.->|"DA Inférieure = Active par Défaut"| TDR
+    RD -->|"Préfixe /0 = Dernier Recours"| Sélection
+
+    style Intent fill:#e1f5fe
+    style TDR fill:#f3e5f5
+    style RouteActive fill:#c8e6c9
+    style FIB fill:#fff3e0
+    style RF fill:#ffecb3
+                    </div>
+                </div>
+                <p><strong>Explication du Modèle Mental :</strong> Ce diagramme illustre le <strong>système complet de prise de décision</strong>. L'<strong>Intention</strong> de l'administrateur se matérialise via la <strong>Configuration</strong>, créant des routes statiques. Ces dernières entrent en <strong>compétition hiérarchisée</strong> avec les routes dynamiques dans la <strong>Table de Routage (RIB)</strong>. La <strong>sélection rigoureuse</strong> (Préfixe > DA > Métrique) n'installe qu'une seule route active dans la <strong>FIB</strong> pour le transfert. La <strong>boucle de rétroaction</strong> via le monitoring valide (ou invalide) l'intention initiale. La <strong>route flottante</strong> existe dans un état quantique dormant, prête à s'activer si la route primaire disparaît. La <strong>route par défaut</strong> agit comme un attracteur universel pour tout trafic non spécifié.</p>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p><strong>Rôle Ontologique dans les Réseaux Modernes :</strong> Le routage statique n'est pas un vestige du passé, mais un <strong>méta-protocole</strong>. C'est l'expression de la <strong>souveraineté administrative</strong> sur la topologie logique. Alors que les protocoles dynamiques découvrent et optimisent, le routage statique <strong>déclare et impose</strong>. Son rôle est quadruple : stabiliser, sécuriser, optimiser des chemins critiques et offrir une redondance intentionnelle de dernier recours.</p>
+                <p><strong>Positionnement dans les Empilements OSI/TCP-IP :</strong></p>
+                <ul>
+                    <li><strong>Couche OSI 3 (Réseau) / Couche Internet TCP-IP</strong> : C'est ici qu'opère sa fonction principale : la prise de décision de transfert basée sur l'adresse IP de destination.</li>
+                    <li><strong>Au-dessus de la Couche 2 (Liaison)</strong> : Il présuppose un service de livraison de trame de couche 2 fonctionnel vers le next-hop.</li>
+                    <li><strong>En dessous de la Couche 4 (Transport)</strong> : Il est totalement agnostique des ports TCP/UDP ; il ne voit que les en-têtes IP.</li>
+                </ul>
+                <p><strong>Frontières et Relations Systémiques :</strong></p>
+                <ul>
+                    <li><strong>Frontière Nord</strong> : Interface avec la <span class="concept-key">table de routage (RIB)</span>. C'est la frontière entre la configuration et l'état opérationnel.</li>
+                    <li><strong>Frontière Sud</strong> : Interface avec la <span class="concept-key">table de forwarding (FIB)</span> et la <span class="concept-key">table ARP/ND</span> (pour résolution du next-hop).</li>
+                    <li><strong>Relation avec le Routage Dynamique</strong> : Relation de <strong>coopération-compétition</strong> régie par la Distance Administrative. Ils partagent le même espace décisionnel mais divergent radicalement dans leur méthode d'acquisition des connaissances.</li>
+                    <li><strong>Relation avec les Interfaces Connectées</strong> : Les routes connectées (DA=0) sont la <strong>condition préalable absolue</strong>. Une route statique ne peut être opérationnelle si le chemin vers le next-hop n'est pas lui-même accessible.</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détaillés</h2>
+                </div>
+
+                <h3 id="mecanisme-processus">A. Séquence Logique d'Installation d'une Route Statique</h3>
+                <ol>
+                    <li><strong>Parsing Syntaxique :</strong> Validation de la commande <code>ip route &lt;préfixe&gt; &lt;masque&gt; &lt;cible&gt; [distance]</code>.</li>
+                    <li><strong>Validation Sémantique :</strong> Vérification du préfixe, de l'interface et du next-hop.</li>
+                    <li><strong>Création de l'Objet Route :</strong> En mémoire, avec Préfixe, Masque, Type, Cible, DA, Marqueurs.</li>
+                    <li><strong>Résolution Récursive (si applicable) :</strong> Pour une route récursive, <strong>requête de recherche</strong> dans la RIB pour atteindre l'adresse IP du next-hop (opération potentiellement profonde).</li>
+                    <li><strong>Soumission à la RIB :</strong> L'objet route est présenté à la table de routage.</li>
+                    <li><strong>Processus de Sélection :</strong> Exécution de l'algorithme (LPM > DA > Métrique). Si la route statique l'emporte, elle est marquée <strong>active</strong>.</li>
+                    <li><strong>Programmation dans la FIB :</strong> Compilation dans la table de forwarding matérielle (Cisco CEF).</li>
+                </ol>
+
+                <h3 id="mecanisme-etats">B. Conditions de Validité et États</h3>
+                <ul>
+                    <li><strong>État Valide/Actif :</strong> La route a gagné la sélection en RIB ET sa cible de sortie est résolue (interface UP, next-hop accessible).</li>
+                    <li><strong>État Valide/Inactif :</strong> Route configurée mais une autre est préférée. C'est l'état d'une <span class="concept-key">route flottante fonctionnelle</span>.</li>
+                    <li><strong>État Invalide :</strong> La cible de sortie est injoignable. La route est retirée de la RIB.</li>
+                </ul>
+
+                <h3 id="mecanisme-frontieres">C. Cas Frontières et Limites</h3>
+                <ul>
+                    <li><strong>Route Null0 :</strong> <code>ip route 192.0.2.0 255.255.255.0 Null0</code>. Ce n'est pas un chemin, mais un <strong>trou noir</strong>. Le trafic correspondant est discrètement jeté. Utilisé pour la prévention de boucles.</li>
+                    <li><strong>Dépendance Circulaire :</strong> Danger mortel de la route récursive. Exemple : <code>ip route 0.0.0.0 0.0.0.0 10.1.1.1</code> et <code>ip route 10.1.1.0 255.255.255.0 192.168.1.1</code> où atteindre <code>192.168.1.1</code> nécessite la route par défaut. Crée une <strong>boucle de résolution</strong>.</li>
+                    <li><strong>Limite d'Échelle :</strong> Une route statique par destination. Gérer 10 000 préfixes statiquement est un cauchemar opérationnel, d'où la nécessité des protocoles dynamiques.</li>
+                </ul>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+                <h3>La Famille des Routes Statiques IPv4 (<code>ip route</code>) :</h3>
+                <p><strong>Récursive :</strong> <code>ip route 172.16.0.0 255.255.0.0 10.0.0.1</code> - Définit un chemin via un next-hop IP. Le routeur recherche comment joindre <code>10.0.0.1</code>.</p>
+                <p><strong>Entièrement Spécifiée :</strong> <code>ip route 172.16.0.0 255.255.0.0 Gi0/0 10.0.0.1</code> - Définit un chemin précis (interface + next-hop). Aucune recherche récursive.</p>
+                <p><strong>Par Défaut (Gateway of Last Resort) :</strong> <code>ip route 0.0.0.0 0.0.0.0 203.0.113.1</code> - Route de préfixe /0. Utilisée uniquement si aucun préfixe plus long ne correspond.</p>
+                <p><strong>D'Hôte :</strong> <code>ip route 198.51.100.50 255.255.255.255 10.0.0.2</code> - Pour atteindre une <strong>adresse IP unique</strong> (/32). Prioritaire sur toute route moins spécifique.</p>
+                <p><strong>Flottante :</strong> <code>ip route 172.16.0.0 255.255.0.0 10.0.0.1 150</code> - Route de secours passive. La <strong>DA configurée (150)</strong> est la clé. Doit être > DA de la route primaire.</p>
+
+                <h3>La Famille des Routes Statiques IPv6 (<code>ipv6 route</code>) :</h3>
+                <p><strong>Récursive IPv6 :</strong> <code>ipv6 route 2001:db8:cafe:1::/56 2001:db8:1000:10::1</code></p>
+                <p><strong>Route par Défaut IPv6 :</strong> <code>ipv6 route ::/0 2001:db8:feed::1</code> (préfixe <code>::/0</code>).</p>
+                <p><strong>Route Flottante IPv6 :</strong> <code>ipv6 route 2001:db8:acad::/48 2001:db8:6::2 200</code> (DA=200 > OSPFv3=110).</p>
+
+                <h3>Distance Administrative (DA) – Table de Référence :</h3>
+                <ul>
+                    <li>Interface connectée : <strong>0</strong></li>
+                    <li>Route statique : <strong>1</strong></li>
+                    <li>EIGRP (résumé) : <strong>5</strong></li>
+                    <li>EIGRP (interne) : <strong>90</strong></li>
+                    <li>OSPF : <strong>110</strong></li>
+                    <li>RIP : <strong>120</strong></li>
+                    <li>Route statique flottante (exemple) : <strong>150 ou 200</strong></li>
+                </ul>
+                <p><strong>Une seule route par préfixe, ayant la DA la plus basse, est active dans la table de routage.</strong></p>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. "La Route par Défaut est une Destination, pas un Attracteur"</h4>
+                    <p><strong>Racine Cognitive :</strong> L'esprit conçoit les chemins comme allant <strong>vers</strong> un lieu. <code>0.0.0.0</code> est interprété comme un "lieu" nommé "default".</p>
+                    <p><strong>Réalité Technique :</strong> <code>0.0.0.0/0</code> est un <strong>masque de correspondance universel</strong>. C'est une <strong>règle de capture</strong> pour tout ce qui n'a pas été capturé par des règles plus précises. C'est l'attracteur de dernier recours du système.</p>
+                    <p><strong>Correction Mentale :</strong> Penser à la route par défaut non pas comme "la route vers Internet", mais comme "la règle qui dit : pour tout paquet dont la destination ne correspond à aucune de mes connaissances spécifiques, utilise ce chemin".</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. "Spécifier l'Interface Seule = Simplicité et Efficacité"</h4>
+                    <p><strong>Racine Cognitive :</strong> "Je lui dis directement par où sortir, c'est plus simple et plus rapide." Confusion entre la simplicité de la commande et la complexité du comportement induit.</p>
+                    <p><strong>Réalité Technique :</strong> <code>ip route X X.X.X.X Serial0/0/0</code> sur une interface multi-accès (Ethernet) est <strong>indéterminé</strong>. Sur point-à-point, cela fonctionne. Sur Ethernet, cela peut mener à des <strong>broadcasts ARP excessifs</strong>.</p>
+                    <p><strong>Correction Mentale :</strong> Sur Ethernet, <strong>toujours spécifier le next-hop IP</strong>. Sur les liens point-à-point (PPP, HDLC), l'interface seule peut suffire.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. "Une Route Flottante est 'Configurée' quand elle est Tapée en CLI"</h4>
+                    <p><strong>Racine Cognitive :</strong> La configuration est l'action finale. Ce qui est configuré est actif.</p>
+                    <p><strong>Réalité Technique :</strong> Une route flottante est <strong>conçue pour être inactive</strong>. Son succès opérationnel se mesure par son <strong>absence</strong> de la table de routage en conditions normales. La voir apparaître signifie que la route primaire a <strong>échoué</strong>.</p>
+                    <p><strong>Correction Mentale :</strong> Valider une route flottante en deux étapes : 1) Vérifier qu'elle <strong>n'est pas</strong> dans la RIB. 2) Simuler une panne et vérifier qu'elle <strong>apparaît</strong> et que le trafic est rétabli.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. "La Distance Administrative est une 'Suggestion', pas une Loi"</h4>
+                    <p><strong>Racine Cognitive :</strong> Les nombres peuvent être interprétés, pondérés. "DA=120 n'est pas si loin de 110."</p>
+                    <p><strong>Réalité Technique :</strong> La DA est une <strong>clé de tri lexicographique absolue</strong>. Entre deux routes vers le même préfixe exact (/24), celle avec DA=110 est <strong>toujours, systématiquement, inconditionnellement</strong> préférée à celle avec DA=120. Aucune autre considération n'intervient <strong>avant</strong> ce tri.</p>
+                    <p><strong>Correction Mentale :</strong> Visualiser la DA comme le <strong>niveau de sécurité d'une source</strong>. Le routeur fait <strong>toujours</strong> confiance à la source de plus haut niveau (plus bas DA).</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <h3>Phase 1 : Conception Intentielle (Pré-Configuration)</h3>
+                <ol>
+                    <li><strong>Cartographie des Dépendances :</strong> Pour chaque préfixe, identifier tous les chemins physiques possibles et leur état attendu (primaire, backup).</li>
+                    <li><strong>Définition des Rôles et Priorités :</strong> Assigner un rôle : "Route primaire via OSPF", "Route de secours statique flottante via lien LTE".</li>
+                    <li><strong>Calcul des Distances Administratives :</strong> Établir un plan de DA strict : "OSPF primaire (110), route flottante statique (150)".</li>
+                </ol>
+
+                <h3>Phase 2 : Implémentation Défensive</h3>
+                <ol>
+                    <li><strong>Utilisation Systématique de la Syntaxe Entièrement Spécifiée :</strong> Sur Ethernet : <code>ip route &lt;réseau&gt; &lt;masque&gt; &lt;interface&gt; &lt;next-hop-ip&gt;</code>. Élimine les boucles de résolution.</li>
+                    <li><strong>Validation de la Résolution :</strong> Pour une route récursive, exécuter immédiatement <code>show ip route &lt;next-hop-ip&gt;</code>.</li>
+                    <li><strong>Test du Cas d'Échec :</strong> Après configuration d'une flottante, <strong>simuler la panne</strong> (<code>shutdown</code>) et vérifier : a) Apparition de la route, b) Rétablissement de la connectivité.</li>
+                </ol>
+
+                <h3>Phase 3 : Monitoring et Raisonnement Causal</h3>
+                <ul>
+                    <li><strong>Diagnostic par la Table de Routage :</strong> Un problème commence par <code>show ip route &lt;destination&gt;</code>.
+                        <ul>
+                            <li>"<code>Network not in table</code>" → Aucune route n'existe.</li>
+                            <li>"<code>Routing entry for X via Y, ...</code>" → La route existe. Le problème est en aval (couche 2, ACL).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Pensée en Termes d'États Stables et de Transitions :</strong> Modéliser le réseau comme une machine à états. La route flottante est un <strong>état de secours</strong>. Utiliser <code>logging</code> pour tracer ces transitions.</li>
+                </ul>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Ultra-Mémorisable</h2>
+                </div>
+
+                <h3>Les 3 Lois Fondamentales du Routage Statique :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de l'Intention :</strong> Une route statique est la matérialisation d'une <strong>volonté administrative explicite</strong> dans la table de routage.</p>
+                    <p>2. <strong>Loi de la Souveraineté de la DA :</strong> En cas de conflit de préfixe exact, <strong>la source avec la Distance Administrative la plus basse gagne toujours</strong>, sans exception.</p>
+                    <p>3. <strong>Loi de la Spécificité (LPM) :</strong> Un préfixe plus long (/32) l'emporte <strong>toujours</strong> sur un préfixe plus court (/0), <strong>quelle que soit la DA</strong>.</p>
+                </div>
+
+                <h3>Équations Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>Route Opérationnelle =</strong> (Préfixe + Masque + Cible) <strong>VALIDÉ PAR</strong> (Résolution_Next-Hop & Interface_Up)</p>
+                    <p><strong>Route Flottante Fonctionnelle =</strong> Route_Statique + (DA_Configurée > DA_Route_Primaire)</p>
+                    <p><strong>Boucle de Résolution =</strong> Route_A dépend de Route_B <strong>ET</strong> Route_B dépend de Route_A</p>
+                </div>
+
+                <h3>Principes d'Action de l'Expert :</h3>
+                <ul>
+                    <li><strong>Sur Ethernet :</strong> Next-hop <strong>toujours</strong> spécifié.</li>
+                    <li><strong>Pour un secours :</strong> DA <strong>explicitement</strong> configurée, et <strong>supérieure</strong>.</li>
+                    <li><strong>Pour tester :</strong> <code>ping</code> <strong>depuis</strong> une source réelle, <strong>vers</strong> une destination réelle au-delà du next-hop.</li>
+                </ul>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p>Vous ne demandez pas au système nerveux de "trouver un chemin" pour un signal vital ; vous lui <strong>implantez une voie dédiée</strong>. La route flottante est l'équivalent d'un <strong>nerf latent</strong> qui ne s'active qu'en cas de lésion de la voie principale.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Contrôlée (Au-delà de NetAcad 200%+)</h2>
+                </div>
+                <h3>1. Le Routage Statique dans les Architectures Spine-Leaf (Data Center)</h3>
+                <p>Dans un fabric Clos moderne, l'<strong>underlay</strong> (connectivité entre spines et leafs) est souvent construit avec du <strong>routage statique pur</strong>. Chaque lien point-à-point reçoit un <code>/31</code> et une route statique réciproque. Pourquoi ? <strong>Extrême stabilité, prédictibilité, et absence de surcharge de contrôle</strong>. L'overlay (VXLAN/BGP EVPN) gère l'intelligence. Le routage statique devient ainsi la <strong>fondation muette et robuste</strong> des réseaux les plus modernes.</p>
+
+                <h3>2. La Philosophie du "Routing Policy" vs. "Static Route"</h3>
+                <p>Les routeurs professionnels dissocient la <strong>définition de la route</strong> de la <strong>politique de son installation</strong>. On définit une <code>static route</code>, puis on utilise une <code>routing policy</code> pour lui assigner des attributs (communautés BGP, tags) ou conditionner son installation. Cela élève le routage statique du statut de commande simple à celui d'<strong>outil de politique réseau déclarative</strong>.</p>
+
+                <h3>3. Routage Statique et Automatisation (Infrastructure as Code)</h3>
+                <p>L'expert moderne ne tape plus <code>ip route</code>. Il écrit un template Ansible ou Terraform. La maîtrise conceptuelle est cruciale pour écrire ces templates correctement. L'erreur classique d'automatisation ? Oublier le paramètre <code>admin_distance: 150</code> et écraser toutes les routes OSPF en masse.</p>
+
+                <h3>4. Sécurité : Le Routage Statique comme Zone Démilitarisée Cognitive</h3>
+                <p>Dans les architectures de haute sécurité (zones DMZ), le routage dynamique est souvent <strong>interdit</strong>. Pourquoi ? Un protocole dynamique est un service réseau qui peut être attaqué, usurpé. Le routage statique crée une <strong>zone de confiance absolue</strong> : seuls les chemins explicitement autorisés existent. Il réduit la surface d'attaque à zéro.</p>
+
+                <h3>5. L'Évolution vers la "Forwarding Plane Programmability"</h3>
+                <p>Dans les réseaux de nouvelle génération (P4, Segment Routing IPv6), la notion de "route statique" disparaît au profit de <strong>instructions de forwarding programmées</strong>. Cependant, le <strong>principe mental persiste</strong> : l'administrateur définit un <strong>chemin intentionnel</strong>. La compréhension profonde du routage statique est le prérequis cognitif pour aborder ces technologies.</p>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">chemins intentionnels</span> et de <span class="concept-key">hiérarchie de souveraineté</span> (DA). Vous concevez des systèmes de routage où les routes statiques et dynamiques coopèrent selon un plan strict, où chaque route a un rôle et une priorité clairement définis.</p>
+                    <p>Vous pouvez expliquer pourquoi un paquet est jeté, routé vers une destination spécifique ou envoyé vers une passerelle de dernier recours, en raisonnant depuis la configuration manuelle jusqu'à la programmation de la FIB. Votre compréhension des compromis (contrôle vs automatisme, simplicité vs redondance) vous permet de prendre des décisions architecturales éclairées.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte et un administrateur réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique : Routage IP Statique — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>

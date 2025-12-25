@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Académique : EtherChannel & Agrégation de Liens</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 Module Académique : EtherChannel & Agrégation de Liens</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">EtherChannel Expert</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#formation-canal">Formation du canal</a></li>
+                        <li><a href="#repartition-charge">Répartition de charge</a></li>
+                        <li><a href="#gestion-defaillance">Gestion des défaillances</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension au-delà de NetAcad (500%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Câble Multi-Brins</h2>
+                </div>
+                <p>Imaginez un câble d’alimentation électrique pour une machine industrielle lourde. Un seul fil conducteur risque de surchauffer et de rompre sous une forte charge. Pour assurer fiabilité et capacité, les ingénieurs <strong>tressent plusieurs fils de cuivre</strong> en un seul câble robuste. Chaque fil est indépendant, mais ils sont regroupés pour former un <strong>conducteur unique logique</strong>.</p>
+                <div class="analogy-box">
+                    <p><strong>Fil de cuivre</strong> → Liaison Ethernet physique (ex: FastEthernet 0/1).</p>
+                    <p><strong>Tressage / Regroupement</strong> → Protocole d’agrégation (PAgP ou LACP).</p>
+                    <p><strong>Capacité totale augmentée</strong> → Bande passante agrégée (ex: 2 Gbps).</p>
+                    <p><strong>Redondance intégrée</strong> → Un fil rompu, le courant passe par les autres.</p>
+                    <p><strong>Surchauffe / rupture d’un fil</strong> → Défaillance d’un lien physique.</p>
+                    <p><strong>Norme de tressage (ISO vs fabricant)</strong> → LACP (standard IEEE) vs PAgP (Cisco).</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Fil de calibre différent casse le tressage</span> → Un lien en 100 Mbps empêche l’agrégation avec du 1 Gbps.</li>
+                    <li><span class="concept-key">Le courant cherche toujours le chemin de moindre résistance, mais dans un câble tressé, il est contraint de suivre un brin par circuit</span> → Le hash détermine le lien physique par flux.</li>
+                    <li><span class="concept-key">Si un brin fond, le câble conduit encore, mais moins bien</span> → Défaillance d’un lien → capacité réduite, mais pas d’interruption.</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global du Système</h2>
+                </div>
+                <p>EtherChannel est un <strong>système de virtualisation de liens</strong> opérant à la couche liaison de données (Couche 2 OSI). Il transforme une topologie physique redondante en une topologie logique simplifiée, préservant les mécanismes de bouclage (STP) tout en exploitant pleinement la capacité physique.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Topologie Physique Redondante] --> B{Protocole de Négociation<br>PAgP / LACP / On};
+    B --> C[Interface Logique Port-Channel];
+    C --> D[STP voit un seul lien];
+    C --> E[Répartition de charge<br>src/dst IP/MAC];
+    F[Défaillance Lien Physique] --> G{Canal toujours opérationnel<br>Capacité réduite};
+    H[Configuration incohérente] --> I[Échec de formation du canal];
+    C --> J[Augmentation bande passante<br>+ Redondance];
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p><strong>Rôle :</strong> EtherChannel est une <strong>technique d’agrégation de liens</strong> (link bonding) dont l’objectif principal est d’augmenter la bande passante disponible entre deux périphériques de couche 2/3 (commutateurs, routeurs, serveurs) tout en fournissant une <strong>redondance transparente</strong>. Il résout le conflit fondamental entre la redondance physique (nécessaire pour la résilience) et le Spanning Tree Protocol (qui bloque les chemins redondants pour éviter les boucles).</p>
+                <p><strong>Positionnement dans les modèles :</strong></p>
+                <ul>
+                    <li><strong>OSI :</strong> Principalement Couche 2 (Liaison de données). L’agrégation est traitée en sous-couche MAC.</li>
+                    <li><strong>TCP/IP :</strong> Couche Accès réseau. Le Port-Channel est vu comme une seule interface par les couches supérieures (IP, etc.).</li>
+                </ul>
+                <p><strong>Frontières :</strong> EtherChannel opère <strong>entre deux périphériques directement connectés</strong>. Il ne route pas le trafic ; il virtualise le support de transmission. Son domaine s’arrête là où commence le traitement des paquets (adressage, routage).</p>
+                <p><strong>Relations :</strong></p>
+                <ul>
+                    <li><strong>Avec STP :</strong> Partenaire antagoniste devenu collaboratif. STP bloque des chemins redondants, mais considère un EtherChannel comme un seul chemin, évitant ainsi le blocage.</li>
+                    <li><strong>Avec VLAN/Trunking :</strong> L’EtherChannel peut être un lien d’accès (un VLAN) ou un trunk (multiple VLANs). La configuration VLAN doit être identique sur tous les ports membres.</li>
+                    <li><strong>Avec le matériel :</strong> Dépendant des capacités de la plateforme (ASIC) pour la répartition de charge.</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détailés</h2>
+                </div>
+
+                <h3 id="formation-canal">A. Formation du canal</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    A[Détection des pairs] --> B[Vérification de compatibilité];
+    B --> C{Paramètres identiques ?<br>Vitesse/Duplex/VLAN};
+    C -->|Oui| D[Activation logique Port-Channel];
+    C -->|Non| E[Échec de formation];
+    D --> F[Canal opérationnel];
+                    </div>
+                </div>
+                <p><strong>Séquence logique :</strong></p>
+                <ol>
+                    <li><strong>Détection des pairs :</strong> Les ports candidats envoient des paquets de négociation (PAgP ou LACP) pour découvrir les ports homologues de l’autre côté.</li>
+                    <li><strong>Vérification de compatibilité :</strong> Les paramètres des ports (vitesse, duplex, VLAN, mode trunk/access) sont comparés. <strong>Toute divergence empêche la formation</strong>.</li>
+                    <li><strong>Activation logique :</strong> Si la vérification réussit, une interface virtuelle <span class="concept-key">Port-Channel X</span> est créée. Les tables matérielles (CAM, ASIC) sont mises à jour pour traiter les ports membres comme un ensemble.</li>
+                </ol>
+
+                <h3 id="repartition-charge">B. Répartition de charge (Load-Balancing)</h3>
+                <p><strong>Mécanisme :</strong> Un algorithme déterministe (souvent basé sur un hash) sélectionne un lien physique spécifique pour chaque <strong>flux</strong> (flow) de trafic.</p>
+                <p><strong>Entrées du hash :</strong> Peut être basé sur :</p>
+                <ul>
+                    <li>Adresse MAC source/destination</li>
+                    <li>Adresse IP source/destination</li>
+                    <li>Numéros de port TCP/UDP source/destination (couche 4)</li>
+                </ul>
+                <p><strong>Conséquence :</strong> Un flux donné <strong>ne sera jamais réparti</strong> sur plusieurs liens. Cela préserve l’ordre des paquets. L’augmentation de bande passante est donc <strong>par flux</strong>, pas par paquet.</p>
+
+                <h3 id="gestion-defaillance">C. Gestion des défaillances</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Défaillance lien physique] --> B{Détection instantanée};
+    B --> C[Redirection des flux affectés];
+    C --> D[Aucune reconvergence STP];
+    E[Rétablissement lien] --> F{Vérification compatibilité};
+    F --> G{Réintégration automatique};
+                    </div>
+                </div>
+                <p><strong>Détection :</strong> La perte de signal (link down) sur un lien physique est détectée immédiatement.</p>
+                <p><strong>Réaction :</strong> Le trafic des flux affectés est <strong>redirigé instantanément</strong> vers les liens restants. Aucune reconvergence STP n’est déclenchée, car la topologie logique (le Port-Channel) reste active.</p>
+                <p><strong>Restauration :</strong> Quand le lien revient, il est réintégré automatiquement après vérification de compatibilité.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+                <h3>1. PAgP (Port Aggregation Protocol – Cisco Propriétaire)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Négocier et gérer automatiquement la formation d’un EtherChannel entre périphériques Cisco.</li>
+                    <li><strong>Couche :</strong> Liaison de données (L2). Paquets Ethernet de type protocol ID 0x0104.</li>
+                    <li><strong>Modes de fonctionnement :</strong>
+                        <ul>
+                            <li><span class="concept-key">on (mode manuel)</span> : Pas d’échange PAgP. Nécessite une configuration identique de l’autre côté.</li>
+                            <li><span class="concept-key">desirable (actif)</span> : Initie activement la négociation.</li>
+                            <li><span class="concept-key">auto (passif)</span> : Répond seulement aux négociations.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Compatibilité :</strong>
+                        <ul>
+                            <li><span class="concept-key">desirable + desirable</span> → ✅ Canal formé</li>
+                            <li><span class="concept-key">desirable + auto</span> → ✅ Canal formé</li>
+                            <li><span class="concept-key">auto + auto</span> → ❌ <strong>Aucun canal</strong> (les deux sont passifs)</li>
+                            <li><span class="concept-key">on + desirable/auto</span> → ❌ <strong>Incompatible</strong> (côté <span class="concept-key">on</span> ne parle pas PAgP)</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>2. LACP (Link Aggregation Control Protocol – IEEE 802.1AX/802.3ad)</h3>
+                <ul>
+                    <li><strong>Objectif :</strong> Standard ouvert pour l’agrégation de liens, permettant l’interopérabilité multi-fournisseurs.</li>
+                    <li><strong>Couche :</strong> Liaison de données (L2). Paquets LACP (sous-type 0x8809).</li>
+                    <li><strong>Modes de fonctionnement :</strong>
+                        <ul>
+                            <li><span class="concept-key">on (mode manuel)</span> : Identique à PAgP.</li>
+                            <li><span class="concept-key">active (actif)</span> : Initie la négociation.</li>
+                            <li><span class="concept-key">passive (passif)</span> : Répond seulement.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Avantage clé :</strong> Supporte jusqu’à <strong>16 liens</strong> (8 actifs, 8 en veille – <em>hot standby</em>). Seuls 8 actifs maximum peuvent être utilisés simultanément.</li>
+                    <li><strong>Compatibilité :</strong> Identique à PAgP : <span class="concept-key">active/active</span> ou <span class="concept-key">active/passive</span> fonctionne. <span class="concept-key">passive/passive</span> échoue.</li>
+                </ul>
+
+                <h3>3. L’Interface Port-Channel (Logique)</h3>
+                <ul>
+                    <li><strong>Encapsulation :</strong> Transparente. Elle hérite des caractéristiques des ports membres.</li>
+                    <li><strong>Champs importants (dans la configuration) :</strong> Numéro de groupe (1-6 sur un Catalyst 2960), mode (trunk/access), VLAN, configuration STP.</li>
+                    <li><strong>Comportement :</strong> Toute configuration appliquée ici (ex: <code>switchport trunk allowed vlan</code>) est <strong>répliquée</strong> sur tous les ports physiques membres. La configuration sur un port membre individuel peut <strong>casser</strong> l’agrégation.</li>
+                </ul>
+
+                <h3>4. STP (Spanning Tree Protocol) et EtherChannel</h3>
+                <ul>
+                    <li><strong>Interaction :</strong> STP exécute son algorithme sur l’interface <span class="concept-key">Port-Channel</span>, pas sur les liens individuels.</li>
+                    <li><strong>Bénéfice :</strong> Un Port-Channel est traité comme <strong>une seule liaison logique</strong>. STP ne bloque donc <strong>aucun</strong> des liens physiques qui le composent, exploitant ainsi toute la bande passante redondante.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Erreurs Conceptuelles Majeures</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. « L’agrégation multiplie la vitesse d’un seul flux »</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Logique intuitive : "plus de liens = plus vite pour tout".</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> La répartition de charge est <strong>par flux</strong>. Un flux unique (ex: un téléchargement TCP) est assigné à un seul lien physique par l’algorithme de hash. Sa vitesse max reste celle d’un lien individuel.</p>
+                    <p><strong>Raisonnement correct :</strong> L’agrégation augmente la capacité <strong>agrégée</strong> pour <strong>plusieurs flux simultanés</strong>. Elle améliore la résilience et la capacité globale, pas la vitesse d’une connexion unique.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. « On peut mélanger vitesse et duplex dans un canal »</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> L’idée d’agréger "ce qu’on a" pour améliorer le débit global.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> <strong>Tous les paramètres physiques (vitesse, duplex) doivent être strictement identiques.</strong> C’est une restriction fondamentale de cohérence opérationnelle. Sinon, la négociation échoue ou le canal devient instable.</p>
+                    <p><strong>Raisonnement correct :</strong> Avant l’agrégation, uniformisez la configuration physique de tous les ports membres (même vitesse, même duplex, forcés de préférence).</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. « Le mode auto/passive est une bonne pratique par défaut »</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> Mettre les deux côtés en mode passif semble sécuritaire et évite des négociations agressives.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> <strong>auto/auto (PAgP) ou passive/passive (LACP) empêchent toute formation de canal</strong>, car aucun côté n’initie la négociation.</p>
+                    <p><strong>Raisonnement correct :</strong> Au moins un côté doit être <strong>actif</strong> (<span class="concept-key">desirable</span> ou <span class="concept-key">active</span>). La meilleure pratique est <span class="concept-key">active/active</span> (LACP) ou <span class="concept-key">desirable/desirable</span> (PAgP) pour une convergence rapide, ou <span class="concept-key">active/passive</span> pour un contrôle prévisible.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. « EtherChannel et STP sont en concurrence »</h4>
+                    <p><strong>Pourquoi elle semble plausible :</strong> STP bloque les liens redondants, EtherChannel les utilise tous. Ils semblent antagonistes.</p>
+                    <p><strong>Pourquoi elle est fausse :</strong> <strong>Ils sont complémentaires.</strong> EtherChannel présente à STP une topologie <strong>sans boucle redondante apparente</strong>, permettant à STP de laisser <strong>tous les liens actifs</strong>. C’est la symbiose parfaite.</p>
+                    <p><strong>Raisonnement correct :</strong> EtherChannel est la solution au problème que STP crée avec la redondance physique. Ensemble, ils fournissent redondance + utilisation complète de la bande passante.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <p><strong>Penser en systèmes, pas en liens :</strong></p>
+                <ul>
+                    <li><strong>Avant d’agréger :</strong> Vérifiez la <strong>cohérence matérielle</strong> (même modèle de carte, même emplacement ASIC si possible) pour des performances optimales.</li>
+                    <li><strong>Design :</strong> Privilégiez <span class="concept-key">LACP (active)</span> dans des environnements hétérogènes ou futurs. Utilisez <span class="concept-key">active/passive</span> pour un contrôle prévisible sur quel périphérique initie.</li>
+                </ul>
+
+                <p><strong>Anticiper les effets de configuration :</strong></p>
+                <ul>
+                    <li><strong>Règle d’or :</strong> Configurez d’abord le Port-Channel logique, puis ajoutez les ports physiques. Jamais l’inverse.</li>
+                    <li><strong>Checklist pré-agrégation :</strong>
+                        <ol>
+                            <li><strong>Vitesse/Duplex :</strong> Identiques, forcés de préférence.</li>
+                            <li><strong>Mode VLAN :</strong> Tous en <code>access</code> sur le même VLAN, OU tous en <code>trunk</code> avec les mêmes VLAN natifs et autorisés.</li>
+                            <li><strong>Configuration STP :</strong> Coût du Port-Channel, priorité.</li>
+                        </ol>
+                    </li>
+                </ul>
+
+                <p><strong>Dépannage systématique :</strong> Si le canal ne se forme pas (<code>show etherchannel summary</code> indique <code>D</code> pour down), vérifiez dans l’ordre :</p>
+                <ol>
+                    <li><strong>Connexion physique</strong> et statut des ports (<code>show int status</code>).</li>
+                    <li><strong>Cohérence des paramètres</strong> L2 (<code>show run int fa0/1</code> vs <code>fa0/2</code>).</li>
+                    <li><strong>Compatibilité des protocoles</strong> (<code>show etherchannel protocol</code>).</li>
+                    <li><strong>Logs</strong> (<code>show log</code> pour messages PAgP/LACP).</li>
+                </ol>
+
+                <p><strong>Comprendre les conséquences invisibles :</strong></p>
+                <ul>
+                    <li><strong>Répartition de charge asymétrique :</strong> Si l’algorithme hash basé sur les adresses IP source/destination est utilisé dans un trafic très directionnel (ex: un serveur unique), la charge peut être déséquilibrée. <strong>Changer l’algorithme</strong> (par exemple, inclure les ports L4) peut mieux répartir.</li>
+                    <li><strong>Impact sur le forwarding matériel :</strong> L’agrégation consomme des ressources du TCAM/ASIC. Sur des plateformes anciennes, trop d’EtherChannels peut saturer les capacités de forwarding.</li>
+                </ul>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>Lois Conceptuelles :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de l’unité logique :</strong> « L’EtherChannel présente N liens physiques comme 1 lien logique à toutes les couches supérieures (STP, routage). »</p>
+                    <p>2. <strong>Loi de la cohérence absolue :</strong> « Tout paramètre de couche 2 qui diffère entre les ports membres est un motif de rejet. »</p>
+                    <p>3. <strong>Loi de l’initiative :</strong> « Pour qu’un canal dynamique se forme, au moins un côté doit être actif (desirable/active). »</p>
+                </div>
+
+                <h3>Équations Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>EtherChannel = Σ(Liens Physiques) → 1 Interface Logique (Port-Channel)</strong></p>
+                    <p><strong>Bande passante agrégée = Σ(Bandwidth des liens)</strong>, mais <strong>Bande passante par flux ≤ Bandwidth d’un lien</strong>.</p>
+                    <p><strong>Résilience = N liens - 1</strong> (Le canal survit à la perte de N-1 liens).</p>
+                </div>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p><strong>Le câble multi-brins :</strong> Vous êtes l’ingénieur réseau qui tresse des liens physiques en un conducteur unique logique. Vous garantissez que le « courant » (les données) circule même si un brin fond (lien en panne), que tous les brins sont de même calibre (paramètres identiques), et que le courant est réparti de manière équilibrée entre eux (load-balancing). Votre objectif : une conduite robuste, fiable et haute capacité.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension au-delà de NetAcad (500%+)</h2>
+                </div>
+                <h3>1. Agrégation multi-châssis (MLAG / vPC / StackWise)</h3>
+                <ul>
+                    <li><strong>Concept :</strong> Étendre l’agrégation de liens <strong>sur deux commutateurs physiques distincts</strong> les faisant apparaître comme un seul périphérique logique (pair). Ex: Cisco vPC, Arista MLAG.</li>
+                    <li><strong>Avantage :</strong> Élimine le SPOF (Single Point of Failure) du commutateur en plus des liens.</li>
+                    <li><strong>Complexité :</strong> Nécessite une liaison de contrôle dédiée et synchro d’état entre les deux châssis.</li>
+                </ul>
+
+                <h3>2. Agrégation de couche 3 (L3 EtherChannel / Port-Channel Routé)</h3>
+                <ul>
+                    <li><strong>Concept :</strong> L’interface <span class="concept-key">Port-Channel</span> peut avoir une <strong>adresse IP</strong>. L’agrégation est alors gérée par la couche réseau.</li>
+                    <li><strong>Utilisation :</strong> Entre routeurs ou commutateurs multicouches pour augmenter la bande passante de routage.</li>
+                    <li><strong>Répartition de charge :</strong> Se fait via les tables de routage (ECMP – Equal-Cost Multi-Path) en plus du hash de couche 2.</li>
+                </ul>
+
+                <h3>3. Algorithmes de hash avancés</h3>
+                <p>Au-delà de src/dst IP/MAC, les plateformes modernes supportent des hashs basés sur :</p>
+                <ul>
+                    <li>Adresse IP source seule (pour une sortie symétrique)</li>
+                    <li>Combinaison de champs de l’entête MPLS ou IPv6</li>
+                    <li><strong>Adaptive Load Balancing :</strong> Surveillance de la charge par lien et ajustement dynamique du hash.</li>
+                </ul>
+
+                <h3>4. Vision Vendor-Neutral et normes</h3>
+                <ul>
+                    <li><strong>IEEE 802.1AX-2020 :</strong> La norme actuelle définissant LACP et les principes généraux de l’agrégation de liens.</li>
+                    <li><strong>Comparaison PAgP vs LACP :</strong> Préférer LACP pour tout nouvel déploiement sauf environnement Cisco pur hérité. LACP est universel, plus riche (liens de secours), et évolutif.</li>
+                </ul>
+
+                <h3>5. Supervision et télémétrie</h3>
+                <ul>
+                    <li><strong>Métriques clés :</strong> Surveiller le <strong>déséquilibre de charge</strong> (counters par interface physique), les <strong>flaps de liens</strong> (qui dégradent la stabilité), et l’<strong>utilisation du canal logique</strong>.</li>
+                    <li><strong>Outils :</strong> Utiliser <code>show etherchannel load-balance</code>, <code>show interfaces counter</code>, et des protocoles de télémétrie (NetFlow, sFlow) pour analyser la répartition par flux.</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">virtualisation de liens</span> et de <span class="concept-key">systèmes logiques</span>. Vous concevez des agrégations pour la performance ET la résilience, vous choisissez un protocole (PAgP vs LACP) en fonction de l’environnement, et vous savez que la cohérence de configuration est non négociable.</p>
+                    <p>Vous pouvez expliquer pourquoi un EtherChannel ne se forme pas en raisonnant des paramètres physiques jusqu’à la compatibilité des protocoles de négociation. Votre compréhension des compromis (bande passante par flux vs agrégée, simplicité vs contrôle, redondance vs complexité) vous permet de prendre des décisions architecturales éclairées et de dépanner avec méthodologie. Vous êtes prêt à aborder la conception et l’optimisation de réseaux d’agrégation complexes, incluant des technologies multi-châssis et de couche 3.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte et un administrateur réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique EtherChannel — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>

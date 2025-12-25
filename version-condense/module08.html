@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Académique : SLAAC et DHCPv6 - Architectures de Configuration IPv6</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 Module Académique : SLAAC et DHCPv6 - Architectures de Configuration IPv6</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">IPv6 Config</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-slaac">SLAAC</a></li>
+                        <li><a href="#mecanisme-dhcp-etat">DHCPv6 avec État</a></li>
+                        <li><a href="#mecanisme-dhcp-sans-etat">DHCPv6 sans État</a></li>
+                        <li><a href="#mecanisme-dad">DAD</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Ultime</a></li>
+                <li><a href="#extension">7️⃣ Extension Avancée</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : La Constitution d'une Nation Numérique et Son Gouvernement</h2>
+                </div>
+                <p>Imaginez qu'un nouveau continent (le réseau IPv6) soit découvert, où chaque habitant (hôte) doit obtenir une identité civique (adresse IPv6). Deux philosophies constitutionnelles s'affrontent :</p>
+                <div class="analogy-box">
+                    <p><strong>Le Système Anarcho-Libéral (SLAAC)</strong> : Chaque ville (routeur) proclame sa charte territoriale (préfixe /64). Les citoyens génèrent leur propre numéro d'identité (Interface ID). Avant de l'utiliser, ils doivent crier leur identité dans l'agora (DAD) pour vérifier qu'aucun autre citoyen ne la possède déjà. <strong>Aucun registre central</strong> n'existe.</p>
+                    <p><strong>Le Système Étatique (DHCPv6 avec état)</strong> : Un gouvernement central (serveur) maintient un registre civil exhaustif. Les citoyens doivent s'inscrire pour obtenir une identité officielle. L'État connaît à tout moment qui possède quelle identité, pour combien de temps, et peut la révoquer.</p>
+                    <p><strong>Le Système Mixte (SLAAC + DHCPv6 sans état)</strong> : Les citoyens s'auto-enregistrent (SLAAC) mais consultent un ministère des services (DHCPv6) pour obtenir l'annuaire téléphonique (DNS), les horaires (NTP), etc. Le ministère <strong>ne suit pas</strong> qui a quelle identité.</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Proclamation de la charte</span> → Router Advertisement (RA) avec préfixe</li>
+                    <li><span class="concept-key">Cri de vérification dans l'agora</span> → Duplicate Address Detection (DAD) via Neighbor Solicitation</li>
+                    <li><span class="concept-key">Registre central d'identités</span> → Base de données des baux DHCPv6</li>
+                    <li><span class="concept-key">Ministère des services</span> → Serveur DHCPv6 sans état</li>
+                    <li><span class="concept-key">Conflit constitutionnel</span> → Incohérence entre drapeaux M et O</li>
+                    <li><span class="concept-key">Révolution silencieuse</span> → Privacy Extensions avec adresses temporaires</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global : L'Ontologie du Stateful vs Stateless</h2>
+                </div>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    P[Philosophie Réseau] --> D[Décentralisation<br/>Auto-organisation]
+    P --> C[Centralisation<br/>Contrôle Administratif]
+    
+    D --> SLAAC_Philosophy
+    C --> DHCP_Philosophy
+    
+    SLAAC_Philosophy --> ICMPv6_Layer[**Couche ICMPv6 :<br/>Le Langage Constitutionnel**]
+    DHCP_Philosophy --> DHCPv6_Layer[**Couche DHCPv6 :<br/>L'Administration Gouvernementale**]
+    
+    ICMPv6_Layer --> RS[RS : Pétition pour la Charte]
+    ICMPv6_Layer --> RA[RA : Proclamation de la Charte<br/>A/M/O = Articles Constitutionnels]
+    ICMPv6_Layer --> NS[NS : Vérification d'Identité]
+    ICMPv6_Layer --> NA[NA : Reconnaissance d'Identité]
+    
+    DHCPv6_Layer --> SOLICIT[SOLICIT : Demande d'Inscription]
+    DHCPv6_Layer --> ADVERTISE[ADVERTISE : Accusé de Réception]
+    DHCPv6_Layer --> REQUEST[REQUEST : Formalisation de la Demande]
+    DHCPv6_Layer --> REPLY[REPLY : Délivrance de l'Identité]
+    DHCPv6_Layer --> INFO_REQ[INFORMATION-REQUEST : Demande de Services]
+    
+    RA -->|A=1, M=0| State1[**État Naturel :<br/>Auto-Configuration Pure**]
+    RA -->|M=1| State2[**État Administratif :<br/>Contrôle Central**]
+    RA -->|A=1, M=0, O=1| State3[**État Social-Libéral :<br/>Auto-ID + Services Publics**]
+    
+    State1 --> Process1[DAD : Contrat Social d'Unicité]
+    State2 --> Process2[Négociation DHCP : Processus Bureaucratique]
+    State3 --> Process3[Hybridation : Auto-gestion + Services]
+    
+    Process1 --> Implication1[Anonymat Potentiel<br/>Pas de Trace Centralisée]
+    Process2 --> Implication2[Traçabilité Totale<br/>Point de Défaillance Unique]
+    Process3 --> Implication3[Équilibre Précaire<br/>Complexité Cognitive]
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale : La Métaphysique de l'Addressage Dynamique</h2>
+                </div>
+                <p>L'adressage IP n'est pas qu'un problème technique, mais un problème <strong>ontologique</strong> : comment créer, distribuer et gérer des <strong>identités numériques uniques</strong> dans un espace décentralisé ? IPv6, avec son espace de 2¹²⁸ adresses, transforme ce problème : la rareté disparaît, mais la <strong>coordination</strong> devient le défi central.</p>
+                
+                <h3>Positionnement dans la Stack Existentielle</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TB
+    subgraph "Couche 7: Applications"
+        A1[DHCPv6 (Étatique)<br/>Administration des Identités]
+    end
+    
+    subgraph "Couche 4: Transport"
+        T1[UDP 546/547<br/>Canal Bureaucratique]
+    end
+    
+    subgraph "FRONTIÈRE ONTOLOGIQUE"
+        F1[Ce qui est Contrôlé (DHCP)<br/>vs<br/>Ce qui est Libre (SLAAC)]
+    end
+    
+    subgraph "Couche 3: Réseau"
+        R1[ICMPv6 (Libertaire)<br/>Langage Constitutionnel du Lien]
+        R2[RA : Proclamation de la Loi Fondamentale]
+        R3[RS : Droit de Pétition]
+        R4[NDP/DAD : Contrat Social d'Unicité]
+    end
+    
+    subgraph "Couche 2: Lien"
+        L1[Multicast FF02::/16<br/>Agora Numérique]
+    end
+    
+    A1 --> T1
+    T1 --> F1
+    F1 --> R1
+    R1 --> R2
+    R1 --> R3
+    R1 --> R4
+    R4 --> L1
+                    </div>
+                </div>
+                
+                <h3>Les Quatre Mondes Possibles de Configuration</h3>
+                <ul>
+                    <li><span class="concept-key">Monde 0 : Le Vide Administratif</span> (A=0, M=0, O=0) – Configuration manuelle pure</li>
+                    <li><span class="concept-key">Monde 1 : L'Anarchie Organisée</span> (A=1, M=0, O=0) – <strong>SLAAC Pur</strong></li>
+                    <li><span class="concept-key">Monde 2 : L'État Totalitaire</span> (M=1) – <strong>DHCPv6 avec État</strong></li>
+                    <li><span class="concept-key">Monde 3 : L'État Social-Libéral</span> (A=1, M=0, O=1) – <strong>Hybride (SLAAC + DHCPv6 sans état)</strong></li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détaillés</h2>
+                </div>
+
+                <h3 id="mecanisme-slaac">A. SLAAC : L'Âme Collective du Réseau</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Client Démarre] --> B[Config. Link-Local<br/>fe80::/EUI-64];
+    B --> C{Mode d'Écoute};
+    C -->|Passif| D[Attente RA Périodique];
+    C -->|Actif| E[Émission RS (ff02::2)];
+    D & E --> F[Réception RA avec A=1];
+    F --> G[Génération Adresse = Préfixe + IID];
+    G --> H[Exécution DAD];
+    H --> I{Adresse Unique ?};
+    I -->|Oui| J[✅ Adresse Valide];
+    I -->|Non| K[❌ Crise Identitaire<br/>Générer Nouvelle Adresse];
+                    </div>
+                </div>
+                <p><strong>Le Paradoxe du DAD</strong> : Pour prouver que je suis unique, je dois demander "Est-ce que quelqu'un est déjà moi ?" Si personne ne répond, c'est la preuve que je suis unique. Mais si le réseau est partitionné, deux entités peuvent croire être uniques tout en ayant la même identité.</p>
+
+                <h3 id="mecanisme-dhcp-etat">B. DHCPv6 avec État : La Bureaucratie Numérique</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph "ACTE I : La Sollicitation"
+        A1[Client: SOLICIT<br/>ff02::1:2] --> A2[Serveurs: ADVERTISE];
+    end
+    
+    subgraph "ACTE II : La Négociation"
+        B1[Client: REQUEST] --> B2[Serveur: Vérification Registre];
+    end
+    
+    subgraph "ACTE III : La Délivrance"
+        C1[Serveur: REPLY<br/>Adresse + Options] --> C2[Client: Enregistrement Bail];
+    end
+    
+    subgraph "ACTE IV : Le Renouvellement"
+        D1[50% Bail: RENEW<br/>→ Serveur Original] --> D2{État Répond ?};
+        D2 -->|Oui| D3[Bail Renouvelé];
+        D2 -->|Non| D4[87.5% Bail: REBIND<br/>→ N'importe Quel Serveur];
+    end
+    
+    A2 --> B1;
+    B2 --> C1;
+    C2 --> D1;
+    D4 --> D3;
+                    </div>
+                </div>
+                <p><strong>Pathologie Bureaucratique</strong> : Si le serveur original ne répond pas au RENEW, et qu'aucun serveur ne répond au REBIND, le client perd son identité à l'expiration. C'est la <strong>mort administrative</strong>.</p>
+
+                <h3 id="mecanisme-dhcp-sans-etat">C. DHCPv6 sans État : Le Ministère des Services</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Client avec Adresse SLAAC] --> B{Réception RA avec O=1 ?};
+    B -->|Oui| C[Émission INFORMATION-REQUEST<br/>ff02::1:2];
+    B -->|Non| D[❌ Pas de Services Supplémentaires];
+    C --> E[Serveur DHCPv6 sans État];
+    E --> F[Pas de Vérification d'Identité];
+    F --> G[Pas de Registre de Bail];
+    G --> H[Réponse: REPLY avec Options<br/>DNS, NTP, Domaines];
+    H --> I[✅ Client Reçoit Services Publics];
+                    </div>
+                </div>
+                <p><strong>Principe de Neutralité</strong> : Le serveur ne connaît pas les identités, ne suit pas les baux, ne juge pas les demandes. C'est une <strong>fonction pure</strong> qui transforme une requête en informations publiques.</p>
+
+                <h3 id="mecanisme-dad">D. DAD (Duplicate Address Detection) : Le Contrat Social d'Unicité</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Client Génère Adresse] --> B[Création Neighbor Solicitation];
+    B --> C[Source: :: (Adresse Non-Spécifiée)];
+    C --> D[Target: Adresse Candidate];
+    D --> E[Envoi à l'Adresse<br/>Solicited-Node Multicast];
+    E --> F[Attente 1s x 3];
+    F --> G{Réception NA ?};
+    G -->|Non| H[✅ SILENCE = PERMISSION<br/>Adresse Unique];
+    G -->|Oui| I[❌ CATASTROPHE EXISTENTIELLE<br/>"JE SUIS DÉJÀ ÇA !"<br/>Abandon de l'Adresse];
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+                
+                <h3>ICMPv6 : Le Système Nerveux Autonome du Réseau</h3>
+                <ul>
+                    <li><span class="concept-key">Router Solicitation (RS) - Type 133</span> : "Je cherche un sens à ma connexion" (Client → ff02::2)</li>
+                    <li><span class="concept-key">Router Advertisement (RA) - Type 134</span> : "Voici la loi de ce territoire" (Routeur → ff02::1)<br/>
+                        <strong>Drapeaux Constitutionnels</strong> :
+                        <ul>
+                            <li><strong>M (Managed)</strong> : 1 = L'État contrôle les identités (DHCPv6 avec état)</li>
+                            <li><strong>O (Other)</strong> : 1 = L'État fournit des services (DHCPv6 sans état)</li>
+                            <li><strong>A (Autonomous)</strong> : 1 = Auto-détermination permise (SLAAC)</li>
+                        </ul>
+                    </li>
+                    <li><span class="concept-key">Neighbor Solicitation (NS) - Type 135</span> : "Qui est à cette adresse ?" / "Suis-je seul ?" (DAD)</li>
+                    <li><span class="concept-key">Neighbor Advertisement (NA) - Type 136</span> : "Je suis ici !" / "Cette adresse est mienne !"</li>
+                </ul>
+
+                <h3>DHCPv6 : L'Anthropologie de la Bureaucratie Réseau</h3>
+                <ul>
+                    <li><span class="concept-key">Architecture Ports</span> : Client→Serveur: UDP 546 → 547 / Serveur→Client: UDP 547 → 546</li>
+                    <li><span class="concept-key">Grammaire des Messages</span> :
+                        <ul>
+                            <li><strong>1: SOLICIT</strong> - "Existe-t-il une administration ?" (ff02::1:2)</li>
+                            <li><strong>2: ADVERTISE</strong> - "Je suis une administration disponible"</li>
+                            <li><strong>3: REQUEST</strong> - "Je veux une identité officielle" (avec état)</li>
+                            <li><strong>11: INFORMATION-REQUEST</strong> - "Donne-moi juste les informations publiques" (sans état)</li>
+                            <li><strong>7: REPLY</strong> - "Voici la réponse officielle"</li>
+                        </ul>
+                    </li>
+                    <li><span class="concept-key">Options Fondamentales</span> :
+                        <ul>
+                            <li><strong>IA_NA (Identity Association Non-Temporary)</strong> : Conteneur pour adresses avec état</li>
+                            <li><strong>IAADDR</strong> : Adresse IPv6 spécifique avec durées de vie (preferred/valid)</li>
+                            <li><strong>DNS Servers, Domain Search List</strong> : Services publics en mode sans état</li>
+                        </ul>
+                    </li>
+                    <li><span class="concept-key">Timers Existentiels</strong> :
+                        <div class="mermaid-diagram">
+                            <div class="mermaid">
+graph LR
+    A[T0<br/>Début] -->|50%| B[T1<br/>RENEW vers<br/>Serveur Original];
+    B -->|87.5%| C[T2<br/>REBIND vers<br/>N'importe Quel Serveur];
+    C -->|100%| D[Expiration<br/>Identité Perdue];
+    
+    style A fill:#cce5ff
+    style B fill:#ffd6cc
+    style C fill:#ff9999
+    style D fill:#cc0000,color:#fff
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures (Pathologies Cognitives)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. Le Fétichisme du Drapeau (Flag Fetishism)</h4>
+                    <p><strong>Symptôme</strong> : "M=1 donc DHCPv6, M=0 donc pas de DHCPv6."</p>
+                    <p><strong>Diagnostic</strong> : Réduction binaire d'un spectre continu. Les drapeaux sont des <strong>vecteurs dans un espace de configuration 3D</strong> : A (auto-détermination), M (contrôle étatique), O (services publics).</p>
+                    <p><strong>Réalité</strong> :
+                        <ul>
+                            <li><strong>A=1, M=0, O=0</strong> : Anarchie pure (SLAAC seul)</li>
+                            <li><strong>A=1, M=0, O=1</strong> : Social-libéral (SLAAC + services)</li>
+                            <li><strong>A=0, M=1, O=0</strong> : État minimal (juste les identités)</li>
+                            <li><strong>A=1, M=1</strong> : Schizophrénie protocolaire (incohérence)</li>
+                        </ul>
+                    </p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. L'Illusion de la Couche (Layer Illusion)</h4>
+                    <p><strong>Symptôme</strong> : "DHCPv6 est à la couche application, donc il est 'au-dessus' et contrôle tout."</p>
+                    <p><strong>Diagnostic</strong> : Confusion entre hiérarchie protocolaire et autorité fonctionnelle.</p>
+                    <p><strong>Réalité</strong> : DHCPv6 est <strong>subordonné sémantiquement</strong> à ICMPv6. Sans les RA (ICMPv6) pour dire "utilisez DHCPv6", DHCPv6 reste muet. C'est ICMPv6 qui <strong>délègue</strong> l'autorité à DHCPv6 via le drapeau M.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. Le Réductionnisme du Processus (Process Reductionism)</h4>
+                    <p><strong>Symptôme</strong> : "DHCPv6 c'est comme DHCPv4 mais en IPv6."</p>
+                    <p><strong>Diagnostic</strong> : Analogie superficielle qui masque les différences profondes.</p>
+                    <p><strong>Réalité Contrastée</strong> :
+                        <ul>
+                            <li><strong>DHCPv4 (DORA)</strong> : DISCOVER → OFFER → REQUEST → ACK (broadcast)</li>
+                            <li><strong>DHCPv6 avec état</strong> : SOLICIT → ADVERTISE → REQUEST → REPLY (multicast spécifique)</li>
+                            <li><strong>DHCPv6 ajoute</strong> : INFORMATION-REQUEST, RELAY-FORW/RELAY-REPL, IA_NA/IA_TA</li>
+                        </ul>
+                    </p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. Le Nominalisme du DAD (DAD Nominalism)</h4>
+                    <p><strong>Symptôme</strong> : "Le DAD c'est juste une vérification."</p>
+                    <p><strong>Diagnostic</strong> : Sous-estimation de la profondeur philosophique du mécanisme.</p>
+                    <p><strong>Réalité</strong> : Le DAD est un <strong>rituel social de reconnaissance mutuelle</strong>. C'est le moment où une entité dit "Je veux être X" et écoute si quelqu'un dit "Je suis déjà X". C'est le fondement de l'<strong>unicité décentralisée</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+
+                <h3>Le Prisme des Quatre Mondes (Framework Décisionnel)</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    Q[Quel Monde Voulons-Nous ?] --> S1[Besoin de Simplicité Extrême,<br/>Redondance, Résilience ?]
+    Q --> S2[Besoin de Contrôle Total,<br/>Audit, Compliance ?]
+    Q --> S3[Besoin d'Équilibre entre<br/>Autonomie et Services ?]
+    Q --> S4[Environnement Spécialisé<br/>IoT, Réseaux Éphémères ?]
+    
+    S1 --> M1[**Monde 1 : SLAAC Pur**<br/>A=1, M=0, O=0<br/>✅ Aucun Point de Défaillance<br/>❌ Pas de Traçabilité]
+    S2 --> M2[**Monde 2 : DHCPv6 avec État**<br/>M=1<br/>✅ Registre Complet<br/>❌ Single Point of Failure]
+    S3 --> M3[**Monde 3 : Hybride**<br/>A=1, M=0, O=1<br/>✅ Flexibilité + Services<br/>❌ Complexité Cognitive]
+    S4 --> M4[**Variantes Avancées**<br/>Privacy Extensions,<br/>DHCPv6-PD, SEND]
+                    </div>
+                </div>
+
+                <h3>Diagnostic Existentiel d'un Client Sans Adresse GUA</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    Start[Client Sans Adresse GUA] --> Step1[Étape 1 : Existence Link-Local ?];
+    Step1 -->|Non| Diag1[❌ Crise Existentielle Primordiale<br/>Pas de Corps Réseau];
+    Step1 -->|Oui| Step2[Étape 2 : RA Reçus ?];
+    
+    Step2 -->|Non| Diag2[❌ Sourd aux Proclamations<br/>Vérifier ipv6 unicast-routing];
+    Step2 -->|Oui| Step3[Étape 3 : Analyse Drapeaux];
+    
+    Step3 --> Cond1{M=1 ?};
+    Cond1 -->|Oui| Step3a[Client Envoie SOLICIT ?];
+    Step3a -->|Non| Diag3[❌ Refus de la Bureaucratie<br/>Client Ignore M=1];
+    Step3a -->|Oui| Step3b[Serveur Répond ADVERTISE ?];
+    
+    Step3 --> Cond2{A=1 & O=1 ?};
+    Cond2 -->|Oui| Step3c[Client Envoie INFO-REQUEST ?];
+    Step3c -->|Non| Diag4[❌ Refus des Services Publics<br/>Client Ignore O=1];
+    
+    Step3b -->|Non| Diag5[❌ L'État est Sourd<br/>Serveur Ne Répond Pas];
+    Step3b -->|Oui| Step4[Étape 4 : DAD Réussi ?];
+    
+    Step4 -->|Non| Diag6[❌ Conflit Existentiel<br/>Quelqu'un est Déjà Moi];
+    Step4 -->|Oui| Step5[Étape 5 : Bail Obtenu ?];
+    
+    Step5 -->|Non| Diag7[❌ Refus d'Identité<br/>Serveur Rejette la Demande];
+    Step5 -->|Oui| Success[✅ Configuration Réussie];
+    
+    Step3c -->|Oui| Success;
+                    </div>
+                </div>
+
+                <h3>Scénarios d'Effondrement Systémique</h3>
+                <ul>
+                    <li><span class="concept-key">Scénario 1 : La Chute de l'État</span><br/>
+                        <strong>Préconditions</strong> : M=1, un seul serveur DHCPv6<br/>
+                        <strong>Déclencheur</strong> : Crash du serveur<br/>
+                        <strong>Effondrement total</strong> : T+Valid_Lifetime (plus aucune identité valide)
+                    </li>
+                    <li><span class="concept-key">Scénario 2 : La Révolte des Identités</span><br/>
+                        <strong>Préconditions</strong> : SLAAC avec conflits DAD non résolus<br/>
+                        <strong>Effet</strong> : Clients en crise identitaire permanente<br/>
+                        <strong>Manifestation</strong> : Dénis de service silencieux
+                    </li>
+                    <li><span class="concept-key">Scénario 3 : La Schizophrénie Protocolaire</span><br/>
+                        <strong>Préconditions</strong> : Configuration incohérente (A=1, M=1)<br/>
+                        <strong>Déclencheur</strong> : Clients essayant d'être à la fois autonomes et contrôlés<br/>
+                        <strong>Effet</strong> : Comportements imprévisibles, instabilité
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Ultra-Mémorisable</h2>
+                </div>
+
+                <h3>Les 7 Lois Conceptuelles de l'Addressage IPv6 Dynamique</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de l'Auto-Existence</strong> : Tout hôte IPv6 capable doit avoir une adresse link-local, générée par lui-même, sans aide externe.</p>
+                    <p>2. <strong>Loi de la Proclamation</strong> : L'autorité (routeur) doit proclamer périodiquement les règles du territoire (RA). Silence = anarchie.</p>
+                    <p>3. <strong>Loi des Drapeaux Constitutionnels</strong> : M=1 : L'État contrôle les identités. O=1 : L'État fournit des services. A=1 : L'auto-détermination est permise. <em>A et M mutuellement exclusifs dans l'esprit du client.</em></p>
+                    <p>4. <strong>Loi de l'Unicité Sociale (DAD)</strong> : Aucune identité ne peut être utilisée sans vérification décentralisée de son unicité.</p>
+                    <p>5. <strong>Loi de la Bureaucratie (DHCPv6)</strong> : L'identité étatique exige inscription, renouvellement et peut être révoquée.</p>
+                    <p>6. <strong>Loi de la Neutralité des Services (DHCPv6 sans état)</strong> : Les services publics sont distribués sans discrimination ni enregistrement.</p>
+                    <p>7. <strong>Loi de l'Héritage (EUI-64) et du Secret (Privacy)</strong> : L'identité peut être dérivée du corps physique OU créée ex nihilo pour se cacher.</p>
+                </div>
+
+                <h3>Équations Mentales Fondamentales</h3>
+                <div class="equation-box">
+                    <p><strong>(1) Identité SLAAC = Préfixe<sub>RA</sub> ⊕ Interface_ID</strong><br/>
+                    <small>où ⊕ = concaténation, Interface_ID ∈ {EUI-64(MAC), Aléatoire}</small></p>
+                    <p><strong>(2) Validité Existentielle = f(Préféré ≤ Valide)</strong><br/>
+                    <small>Mort = maintenant > Valide</small></p>
+                    <p><strong>(3) Processus DHCPv6 = SOLICIT → ADVERTISE → REQUEST → REPLY</strong><br/>
+                    <small>Condition : M=1 dans RA</small></p>
+                    <p><strong>(4) Processus SLAAC = RA(A=1) → Génération → DAD → Utilisation</strong></p>
+                    <p><strong>(5) Processus Hybride = SLAAC + INFORMATION-REQUEST → REPLY(options)</strong><br/>
+                    <small>Condition : A=1 et O=1 dans RA</small></p>
+                </div>
+
+                <h3>Matrice de Décision Cognitive</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    subgraph "Monde 1 : SLAAC Pur<br/>A=1, M=0, O=0"
+        M1A[RA reçu ?] --> M1B[Préfixe ok ?];
+        M1B --> M1C[Génération];
+        M1C --> M1D[DAD passé ?];
+        M1D --> M1E[✅ ADRESSE OK];
+    end
+    
+    subgraph "Monde 3 : Hybride<br/>A=1, M=0, O=1"
+        M3A[RA reçu ?] --> M3B[Préfixe ok ?];
+        M3B --> M3C[Génération];
+        M3C --> M3D[DAD passé ?];
+        M3D --> M3E[INFO-REQ envoyé ?];
+        M3E --> M3F[REPLY reçu ?];
+        M3F --> M3G[✅ HYBRIDE RÉUSSI];
+    end
+    
+    subgraph "Monde 2 : DHCP avec État<br/>M=1"
+        M2A[RA reçu ?] --> M2B[M=1 confirmé ?];
+        M2B --> M2C[SOLICIT envoyé ?];
+        M2C --> M2D[ADVERTISE reçu ?];
+        M2D --> M2E[REQUEST envoyé ?];
+        M2E --> M2F[REPLY reçu ?];
+        M2F --> M2G[✅ DHCP RÉUSSI];
+    end
+    
+    style M1E fill:#90EE90
+    style M3G fill:#90EE90
+    style M2G fill:#90EE90
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Avancée (Au-delà de NetAcad)</h2>
+                </div>
+
+                <h3>DHCPv6 Prefix Delegation (PD) : Le Fédéralisme Numérique</h3>
+                <p>Un routeur (client) peut demander à un routeur supérieur (serveur) non pas une adresse, mais un <strong>bloc d'adresses</strong> (un préfixe, ex: /56) qu'il pourra lui-même redistribuer.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Routeur CPE (Client)] --> B[Serveur FAI];
+    A --> C[SOLICIT avec IA_PD];
+    B --> D[REPLY avec Préfixe /56];
+    D --> E[Routeur CPE];
+    E --> F[Clients LAN];
+    E --> G[RA avec Sous-Préfixe /64];
+    G --> F;
+                    </div>
+                </div>
+
+                <h3>Secure Neighbor Discovery (SEND - RFC 3971)</h3>
+                <p><strong>Problème</strong> : NDP est vulnérable aux attaques (usurpation de RA, Evil NA).</p>
+                <p><strong>Solution</strong> :
+                    <ul>
+                        <li><span class="concept-key">Cryptographic Generated Addresses (CGA)</span> : Interface ID = hash(clé publique)</li>
+                        <li><span class="concept-key">Signature des messages</span> : RA, RS, NS, NA signés numériquement</li>
+                        <li><span class="concept-key">Autorisation par certificats</span> pour les routeurs légitimes</li>
+                    </ul>
+                </p>
+
+                <h3>RFC 7217 : Semantic-Opaque Interface Identifiers</h3>
+                <p><strong>Problème d'EUI-64</strong> : Permet le traçage permanent, révèle le constructeur.</p>
+                <p><strong>Problème des Privacy Extensions (RFC 4941)</strong> : Adresses temporaires changeantes, complexes pour le filtrage.</p>
+                <p><strong>Solution RFC 7217</strong> : Interface ID stable mais opaque = f(préfixe, clé secrète, identifiant réseau, compteur).</p>
+
+                <h3>DHCPv6 dans les Clouds et Containers : L'Âge de l'Orchestration</h3>
+                <ul>
+                    <li><span class="concept-key">Pattern Moderne</span> : DHCPv6 injecté par l'orchestrateur (Kubernetes, OpenStack)</li>
+                    <li><span class="concept-key">Intégration IPAM</span> : Infoblox, phpIPAM, systèmes de gestion d'adresses</li>
+                    <li><span class="concept-key">Nouveaux Paradigmes</span> :
+                        <ul>
+                            <li>Adresses éphémères (containers)</li>
+                            <li>Multi-homing (une interface, plusieurs préfixes)</li>
+                            <li>Service Mesh (l'identité de service > adresse IP)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>Maîtriser SLAAC et DHCPv6 ne signifie pas connaître des commandes. Cela signifie comprendre les <strong>forces philosophiques</strong> en tension :</p>
+                    <ul>
+                        <li><strong>Autonomie vs Contrôle</strong></li>
+                        <li><strong>Décentralisation vs Centralisation</strong></li>
+                        <li><strong>Anonymat vs Traçabilité</strong></li>
+                        <li><strong>Simplicité vs Fonctionnalité</strong></li>
+                        <li><strong>Résilience vs Gestionabilité</strong></li>
+                    </ul>
+                    
+                    <p>Un expert ne choisit pas "SLAAC ou DHCPv6". Il <strong>conçoit un écosystème</strong> où ces mécanismes coexistent, se complètent, et où leurs limites sont connues et anticipées.</p>
+                    
+                    <h3>La Vérité Ultime</h3>
+                    <p>Aucun mécanisme n'est parfait. SLAAC échoue silencieusement en cas de conflit. DHCPv6 crée un point de défaillance. L'hybride crée de la complexité. Le maître connaît ces limites et <strong>désigne en conséquence</strong>, avec humilité et profondeur systémique.</p>
+                    
+                    <h3>La Question Finale</h3>
+                    <p>Quel monde numérique voulons-nous construire ? Un monde d'auto-détermination anarchique ? Un monde de contrôle étatique strict ? Un monde hybride complexe ? <strong>La réponse technique découle de la réponse philosophique.</strong></p>
+                    
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique SLAAC & DHCPv6 — Reconstruction pour la Maîtrise Expert (500%+)</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>

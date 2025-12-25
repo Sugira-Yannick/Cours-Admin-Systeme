@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2 : Le Système Urbain des Commutations</title>
+    <!-- Intégration de Mermaid pour les diagrammes -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+    <!-- Styles CSS -->
+    <style>
+        /* Définition des polices et variables */
+        :root {
+            --color-primary: #1a365d; /* Bleu foncé pour les titres */
+            --color-secondary: #2d3748; /* Gris foncé pour sous-titres */
+            --color-accent: #2b6cb0; /* Bleu accent pour concepts clés */
+            --color-law: #c53030; /* Rouge pour les lois mentales */
+            --color-illusion: #b7791f; /* Or pour illusions conceptuelles */
+            --color-background: #ffffff;
+            --color-surface: #f7fafc;
+            --color-border: #e2e8f0;
+            --font-heading: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            --font-body: 'Source Sans 3', 'Inter', 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-secondary);
+            background-color: var(--color-background);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* Header */
+        .page-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--color-accent);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation principale */
+        #main-nav {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-secondary);
+            font-weight: 600;
+            padding: 1rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover, .nav-menu a:focus {
+            color: var(--color-accent);
+        }
+
+        .nav-menu a.active {
+            color: var(--color-accent);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Contenu principal en deux colonnes */
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar / Navigation latérale */
+        #sidebar {
+            width: 280px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px; /* Hauteur de la nav principale */
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--color-secondary);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a:focus, .sidebar-nav a.active-section {
+            background-color: rgba(43, 108, 176, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styles typographiques spécifiques */
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Éléments de mise en forme sémantique */
+        .analogy-box {
+            background-color: rgba(247, 250, 252, 0.8);
+            border-left: 4px solid var(--color-accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .concept-key {
+            color: var(--color-accent);
+            font-weight: 700;
+            background-color: rgba(43, 108, 176, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .law-box {
+            background-color: rgba(197, 48, 48, 0.05);
+            border-left: 4px solid var(--color-law);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .illusion-box {
+            background-color: rgba(183, 121, 31, 0.05);
+            border-left: 4px solid var(--color-illusion);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .equation-box {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .mermaid-diagram {
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Objectifs cognitifs */
+        .cognitive-objectives {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .cognitive-objectives h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cognitive-objectives ul {
+            list-style: none;
+            padding-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cognitive-objectives li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .cognitive-objectives li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: var(--color-primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                position: static;
+                top: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-surface);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid var(--color-border);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .module-section {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media print {
+            #main-nav, #sidebar, .page-footer, .hamburger {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            #content {
+                padding: 0;
+            }
+
+            .module-section {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>📘 MODULE ACADÉMIQUE : Le Système Urbain des Commutations</h1>
+        <p class="subtitle">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    </header>
+
+    <nav id="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">Commutation Expert</div>
+            <div class="hamburger" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="main-menu">
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-title">Navigation du Module</div>
+            <ul class="sidebar-nav">
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes Détaillés</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-apprentissage">Le Processus d'Apprentissage</a></li>
+                        <li><a href="#mecanisme-prise-decision">La Prise de Décision et le Transfert</a></li>
+                        <li><a href="#mecanisme-gestion-congestion">La Gestion de la Congestion</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches et Services</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#protocole-ethernet">Ethernet & la Trame</a></li>
+                        <li><a href="#methodes-commutation">Les Méthodes de Commutation</a></li>
+                        <li><a href="#negociation-auto-mdix">Négociation Auto-MDIX</a></li>
+                    </ul>
+                </li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension Au-Delà de NetAcad (500%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            </ul>
+        </aside>
+
+        <main id="content">
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 ANALOGIE SYSTÉMIQUE MAÎTRE : LA MÉTROPOLE INTELLIGENTE</h2>
+                </div>
+                <p>Imaginez un réseau local (LAN) comme une ville en pleine expansion. Au début, ce n'était qu'un grand village (un domaine de collision) où tout le monde criait dans la même rue, se coupant souvent la parole (collisions). Les maisons étaient reliées par des rues uniques et surchargées (concentrateur/hub).</p>
+                <div class="analogy-box">
+                    <p><strong>L'arrivée du <span class="concept-key">Commutateur (Switch)</span></strong> est comparable à la construction d'un <strong>système de rues intelligentes et d'échangeurs</strong>. Chaque maison (hôte) obtient sa propre rue en impasse (port dédié). Un bureau central de la logistique (table d'adresses MAC) apprend l'adresse de chaque maison en observant d'où viennent les colis (adresses MAC source). Pour acheminer un colis, il consulte ce registre. Si l'adresse de destination est inconnue, il envoie une fourgonnette faire du porte-à-porte dans tous les quartiers sauf celui d'origine (flooding). Cette organisation élimine les embouteillages de rue en rue (collisions) et permet à chaque maison d'envoyer et de recevoir des colis simultanément (full-duplex).</p>
+                    <p><strong>Le <span class="concept-key">Routeur</span></strong>, quant à lui, est la grande gare centrale ou le poste frontière. Il connecte notre ville intelligente à d'autres villes (sous-réseaux différents). Il comprend les adresses postales complètes (adresses IP) et décide vers quelle autre ville expédier le courrier. <strong>Il empêche les annonces municipales (broadcasts) de quitter la ville</strong>, contenant ainsi le bruit au sein de chaque municipalité (domaine de diffusion).</p>
+                </div>
+                <h4>Mapping Explicite :</h4>
+                <ul>
+                    <li><span class="concept-key">Rue/Impasse dédiée</span> → <strong>Port de commutateur</strong> (domaine de collision isolé).</li>
+                    <li><span class="concept-key">Bureau de logistique & registre des adresses</span> → <strong>Processus de commutation & Table MAC</strong>.</li>
+                    <li><span class="concept-key">Colis avec adresse de destination inconnue</span> → <strong>Trame inondée (flooding)</strong>.</li>
+                    <li><span class="concept-key">Grande Gare Centrale / Poste Frontière</span> → <strong>Routeur</strong> (séparation des domaines de diffusion).</li>
+                    <li><span class="concept-key">Embouteillage dans une rue commune</span> → <strong>Collision dans un domaine partagé</strong>.</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 MODÈLE MENTAL GLOBAL DU SYSTÈME</h2>
+                </div>
+                <p>La commutation de couche 2 est l'épine dorsale intelligente d'un réseau local. Elle transforme un média partagé et chaotique en un système de micro-segments dédiés, gérés de manière déterministe. Son rôle est de <strong>livrer des trames Ethernet de manière efficace et précise entre hôtes d'un même domaine de broadcast</strong>, en apprenant dynamiquement la topologie et en isolant les problèmes de collision.</p>
+                <p>Le système repose sur trois piliers interdépendants :</p>
+                <ol>
+                    <li><strong>L'Isolation</strong> : Création de micro-domaines de collision (par port) permettant le duplex intégral.</li>
+                    <li><strong>L'Apprentissage</strong> : Construction autonome d'une carte de localisation (table MAC) par observation du trafic.</li>
+                    <li><strong>La Prise de Décision</strong> : Choix du chemin de sortie (forwarding) ou diffusion contrôlée (flooding) basé sur l'adresse de destination.</li>
+                </ol>
+                <p>Une perturbation à un niveau impacte les autres : une table MAC saturée entraîne du flooding excessif, qui à son tour peut causer de la congestion, même sur des ports dédiés.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[“Trame Ethernet Entrante<br>sur un Port”] --> B{“Adresse MAC Destination<br>connue dans Table MAC ?”};
+    B -- Oui --> C[“Forwarding Ciblé<br>Vers le Port Associé”];
+    B -- Non --> D[“Flooding Contrôlé<br>Vers tous les ports sauf port source”];
+    E[“Adresse MAC Source<br>de toute trame”] --> F[“Mise à Jour de la Table MAC<br>(Apprentissage)”];
+    F --> G[“Table d’Adresses MAC<br>Port ↔ Adresse Physique”];
+    G --> B;
+    C --> H[“Livraison Efficiente<br>Pas de Collisions (Full-Duplex)”];
+    D --> I[“Découverte du Destinataire<br>Congestion Potentielle”];
+    H --> J[“Réseau Local Performant<br>et Prévisible”];
+    I --> J;
+    K[“Routeur (Couche 3)”] -.->|“Délimite la<br>Zone de Flooding”| D;
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ ARCHITECTURE CONCEPTUELLE FONDAMENTALE</h2>
+                </div>
+                <p>La commutation Ethernet opère à la <strong>couche 2 (Liaison de données)</strong> du modèle OSI et à la couche Accès réseau du modèle TCP/IP. Son domaine d'autorité est le <strong>domaine de broadcast</strong>. Un commutateur transparent interconnecte les segments d'un même réseau logique (même sous-réseau IP).</p>
+                <p>Son rôle est d'assurer la <strong>connectivité filaire ou sans-fil de bout en bout au sein d'un LAN</strong>, en se basant exclusivement sur les adresses physiques (MAC). Il sert de fondation à la communication locale : sans commutation efficace, le routage (couche 3) ne peut fonctionner de manière optimale. Il entretient une relation symbiotique avec le routage : le switch gère l'intra-ville, le routeur gère l'inter-ville.</p>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ MÉCANISMES INTERNES DÉTAILLÉS</h2>
+                </div>
+
+                <h3 id="mecanisme-apprentissage">A. Le Processus d'Apprentissage (Learning)</h3>
+                <p>Pour chaque trame reçue, le commutateur extrait l'<strong>adresse MAC source</strong> et l'associe au <strong>port d'entrée</strong> dans sa table de commutation. Cette table a un temps de vie (aging timer) ; une entrie non rafraîchie est effacée, permettant l'adaptation aux changements de topologie. Ce mécanisme est <strong>passif et continu</strong>, construit par l'observation du trafic existant.</p>
+
+                <h3 id="mecanisme-prise-decision">B. La Prise de Décision et le Transfert (Forwarding/Filtering)</h3>
+                <p>Lorsqu'une trame doit être transmise, le commutateur consulte l'<strong>adresse MAC de destination</strong>.</p>
+                <ul>
+                    <li><strong>Transfert Ciblé (Forwarding)</strong> : Si l'adresse est trouvée dans la table, la trame est envoyée <strong>uniquement</strong> sur le port correspondant. C'est le comportement optimal.</li>
+                    <li><strong>Filtrage (Filtering)</strong> : Si l'adresse source et destination sont sur le même port, la trame est <strong>ignorée</strong> (filtrée), car la communication est locale à ce segment.</li>
+                    <li><strong>Inondation (Flooding)</strong> : Si l'adresse destination est <strong>inconnue</strong> (adresse non apprise), <strong>broadcast</strong> (FF:FF:FF:FF:FF:FF) ou <strong>multicast</strong> (sans optimisation spécifique), la trame est répliquée sur <strong>tous les ports actifs, sauf le port source</strong>. C'est le mécanisme de découverte fondamentale.</li>
+                </ul>
+
+                <h3 id="mecanisme-gestion-congestion">C. La Gestion de la Congestion et des Vitesses Asymétriques : Les Tampons (Buffers)</h3>
+                <p>Les ports d'un commutateur peuvent avoir des vitesses différentes (ex: 1 Gbps, 10 Gbps). Lorsqu'un port rapide envoie vers un port lent, un goulot d'étranglement se crée. Les <strong>tampons de mémoire (buffers)</strong> sont des zones de stockage temporaire sur chaque port ou partagées. Ils absorbent les rafales de trafic, permettant de mettre en file d'attente les trames lorsque le port de sortie est occupé. Sans tampon, les trames seraient perdues, dégradant gravement les performances.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ PROTOCOLES, COUCHES ET SERVICES (EXHAUSTIF)</h2>
+                </div>
+
+                <h3 id="protocole-ethernet">A. Ethernet (IEEE 802.3) & la Trame</h3>
+                <ul>
+                    <li><strong>Objectif</strong> : Protocole de couche 2 dominant pour les LAN filaires. Définit le format de trame et le média d'accès.</li>
+                    <li><strong>Champs Critiques</strong> :
+                        <ul>
+                            <li><span class="concept-key">Adresse MAC Destination (6 octets)</span> : Cible de la livraison. Détermine l'action du switch (forwarding/flooding).</li>
+                            <li><span class="concept-key">Adresse MAC Source (6 octets)</span> : Origine de la trame. Source unique pour l'apprentissage de la table MAC.</li>
+                            <li><span class="concept-key">FCS (Frame Check Sequence, 4 octets)</span> : Somme de contrôle (CRC) permettant de détecter les erreurs de transmission.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Comportement Normal</strong> : Transmise sur le média, traitée par les commutateurs et ponts.</li>
+                </ul>
+
+                <h3 id="methodes-commutation">B. Les Méthodes de Commutation</h3>
+                <ul>
+                    <li><strong>Store-and-Forward (Stocker-et-Transmettre)</strong> :
+                        <ul>
+                            <li><strong>Séquence</strong> : Réception complète de la trame → Vérification du FCS → Décision de commutation → Transmission.</li>
+                            <li><strong>Avantage</strong> : <strong>Détection d'erreurs</strong>. Les trames corrompues sont jetées, protégeant la bande passante.</li>
+                            <li><strong>Inconvénient</strong> : Latence plus élevée (latence variable selon la taille de la trame).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Cut-Through (À la Volée)</strong> :
+                        <ul>
+                            <li><strong>Séquence</strong> : Dès que l'adresse MAC destination est lue (typiquement après les 6 premiers octets), la transmission sur le port de sortie commence, <strong>sans attendre la fin de la trame ni vérifier le FCS</strong>.</li>
+                            <li><strong>Avantage</strong> : Latence <strong>fixe et minimale</strong>.</li>
+                            <li><strong>Inconvénient</strong> : <strong>Propagation des trames erronées</strong>. Une trame corrompue après l'en-tête destination sera quand même transmise, gaspillant la bande passante du segment suivant.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3 id="negociation-auto-mdix">C. La Négociation Auto-MDIX et de Vitesse/Duplex</h3>
+                <ul>
+                    <li><strong>Objectif</strong> : Permettre une connexion plug-and-play entre dispositifs sans configuration manuelle du câblage (droit/croisé) ou des paramètres duplex.</li>
+                    <li><strong>Mécanisme</strong> : Échange de pulses physiques permettant de déterminer la capacité commune maximale (10/100/1000 Mbps) et le mode duplex (half/full). <strong>La règle d'or : le dénominateur commun le plus bas est sélectionné.</strong> Un port 100 Mbps et une carte 1 Gbps négocieront 100 Mbps.</li>
+                    <li><strong>Interaction</strong> : Fonctionne au niveau physique (couche 1) mais est essentiel pour le fonctionnement correct de la couche 2.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ ERREURS CONCEPTUELLES MAJEURES (ISSUES DES RÉPONSES FAUSSES)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 1 : « Le commutateur apprend à partir de la destination. »</h4>
+                    <p><strong>Pourquoi c'est plausible</strong> : On pourrait penser que pour trouver un chemin, on regarde où on veut aller.</p>
+                    <p><strong>Pourquoi c'est faux</strong> : L'adresse destination indique le but, mais elle ne donne aucune information sur l'<strong>emplacement de la source</strong>. L'apprentissage est un processus de <strong>cartographie</strong> : « Cette adresse (source) est <strong>ici</strong> (sur ce port) ». On ne peut cartographier que ce qu'on observe localement.</p>
+                    <p><strong>Raisonnement correct</strong> : Le commutateur est un cartographe passif. Il ne déduit la position des destinations qu'après les avoir vues apparaître comme sources.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 2 : « Ajouter un commutateur augmente ou divise le domaine de diffusion. »</h4>
+                    <p><strong>Pourquoi c'est plausible</strong> : Puisqu'il divise les collisions, on extrapole faussement.</p>
+                    <p><strong>Pourquoi c'est faux</strong> : Par défaut, un commutateur <strong>transmet les trames broadcast</strong> sur tous les ports. Il <strong>interconnecte</strong> les domaines de diffusion de chaque port, créant <strong>un unique grand domaine</strong>. La séparation des diffusions nécessite une logique de <strong>filtrage basée sur des identifiants logiques</strong> (comme les VLANs) ou un routeur.</p>
+                    <p><strong>Raisonnement correct</strong> : Un switch est transparent à la diffusion. Visualisez-le comme un grand espace ouvert (l'analogie de la ville) ; les annonces (broadcasts) y résonnent partout. Seuls les murs (routeurs) les arrêtent.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 3 : « Les tampons servent principalement à vérifier les erreurs. »</h4>
+                    <p><strong>Pourquoi c'est plausible</strong> : Le terme « buffer » peut évoquer un contrôle.</p>
+                    <p><strong>Pourquoi c'est faux</strong> : La vérification d'erreur (via FCS) est une fonction de la <strong>méthode de commutation</strong> (Store-and-Forward), pas du tampon. Le rôle du tampon est <strong>temporel</strong> : résoudre un déséquilibre spatial (port de sortie occupé) par un stockage temporel (mise en file d'attente).</p>
+                    <p><strong>Raisonnement correct</strong> : Les buffers sont des <strong>aires de stationnement temporaires</strong> sur un échangeur routier, permettant de gérer les afflux soudains sans bloquer les voies d'entrée.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 4 : « Full-Duplex double la vitesse physique du lien. »</h4>
+                    <p><strong>Pourquoi c'est plausible</strong> : On peut envoyer et recevoir à 1 Gbps simultanément, donnant un débit agrégé de 2 Gbps.</p>
+                    <p><strong>Pourquoi la formulation est dangereuse</strong> : La <strong>vitesse du lien</strong> (ex: 1 Gbps) est une caractéristique physique fixe. Le <strong>débit utile (throughput) effectif</strong> peut atteindre cette valeur dans les deux sens simultanément. Dire qu'il « double la vitesse » est un raccourci trompeur qui mène à des confusions en calcul de bande passante.</p>
+                    <p><strong>Raisonnement correct</strong> : Le full-duplex élimine les collisions et permet une <strong>utilisation à 100% de la capacité du lien dans chaque sens, simultanément</strong>, maximisant l'efficacité, mais sans changer la spécification physique fondamentale (1 Gbps dans un sens à un instant <em>t</em>).</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ RAISONNEMENT D'ADMINISTRATEUR RÉSEAU EXPERT</h2>
+                </div>
+                <p>Un expert ne voit pas des commutateurs isolés, mais un <strong>système de distribution dynamique</strong>. Sa pensée est causalitaire et systémique.</p>
+                <ol>
+                    <li><strong>Penser en Flux et en Tables</strong> : Tout problème de connectivité locale (couche 2) se résout en suivant le flux d'une trame et en interrogeant les tables. « L'hôte A ne parle pas à B ? Vérifiez la table MAC du switch intermédiaire. L'adresse de B y est-elle ? Sur quel port ? Ce port est-il opérationnel ? »</li>
+                    <li><strong>Anticiper les Effets de Boucle</strong> (Au-delà du module, mais critique) : Deux switches interconnectés par deux câbles créeront une boucle de broadcast et un « tempête » qui paralyse le réseau. La pensée experte intègre immédiatement le besoin de <span class="concept-key">STP (Spanning Tree Protocol)</span> dans tout design redondant.</li>
+                    <li><strong>Comprendre l'Impact du Flooding</strong> : Un flooding élevé n'est pas toujours normal. C'est le symptôme d'une table MAC qui n'apprend pas (vieillissement trop rapide, port en erreur), d'une boucle, ou d'une attaque par empoisonnement. L'expert corrèle le taux de flooding avec l'état des tables et des ports.</li>
+                    <li><strong>Configurer pour la Résilience, pas juste la Connectivité</strong> : Choisir Store-and-Forward dans un environnement non contrôlé (pour la fiabilité), s'assurer que les liens uplink entre switches sont en full-duplex et à vitesse fixe (désactiver l'auto-négociation sur les liens critiques), dimensionner la taille des tampons selon le profil de trafic.</li>
+                </ol>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ SYNTHÈSE MÉMORISABLE LONG TERME</h2>
+                </div>
+
+                <h3>Lois Conceptuelles :</h3>
+                <div class="law-box">
+                    <p><strong>Loi de l'Apprentissage</strong> : <strong>« La Source révèle l'Origine, la Destination guide le Chemin. »</strong> Le switch cartographie les sources, il suit les destinations.</p>
+                    <p><strong>Équivalence Domaine</strong> : <strong>« Un Port = Une Collision, Un Broadcast = Tous les Ports (sans Routeur/VLAN). »</strong></p>
+                    <p><strong>Principe de Précaution (Store-vs-Cut)</strong> : <strong>« Pour la vitesse pure, coupez. Pour la propreté du réseau, stockez. »</strong></p>
+                    <p><strong>Règle du Tampon</strong> : <strong>« La mémoire comble l'écart entre la vitesse d'entrée et la vitesse de sortie. »</strong></p>
+                </div>
+
+                <h3>Équations et Règles Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>Switch = Apprentissage(Source, Port) + Forwarding(Destination, Table)</strong></p>
+                    <p><strong>Performance = Vitesse de port - Collisions + Tampons - Erreurs (FCS)</strong></p>
+                </div>
+
+                <h3>Rappel via l'Analogie Centrale :</h3>
+                <div class="analogy-box">
+                    <p>En cas de doute, revenez à la <strong>métropole</strong> : qui parle ? (source), où va le message ? (destination), la rue de sortie est-elle bouchée ? (tampon), l'annonce municipale doit-elle rester en ville ? (routeur/broadcast domain). Votre rôle d'administrateur est celui de l'urbaniste, pas du livreur de colis.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ EXTENSION AU-DELÀ DE NETACAD (500%+)</h2>
+                </div>
+                <ul>
+                    <li><span class="concept-key">Au-delà de la Table MAC : Content-Addressable Memory (CAM) et TCAM</span> : Les switches professionnels n'utilisent pas de RAM classique pour leurs tables. La <strong>CAM</strong> permet des recherches d'adresse MAC en <strong>temps constant (O(1))</strong>, ultra-rapide. La <strong>TCAM</strong> permet des recherches avec masques (wildcards), utilisée pour le routage et les ACL au niveau matériel.</li>
+                    <li><span class="concept-key">La Virtualisation : VLANs (802.1Q)</span> : Le vrai pouvoir du switching moderne est de <strong>créer plusieurs domaines de broadcast logiques sur une infrastructure physique unique</strong>. Un trunk 802.1Q transporte des trames « étiquetées » appartenant à différents VLANs, permettant de segmenter logiquement le réseau (comme créer plusieurs villes virtuelles sur les mêmes routes).</li>
+                    <li><span class="concept-key">L'Évolution vers le Software-Defined Networking (SDN)</span> : Dans un réseau SDN, le <strong>plan de contrôle</strong> (la logique qui remplit les tables MAC) est séparé du <strong>plan de données</strong> (le hardware qui commute les trames). Un contrôleur central peut programmer les flux de manière dynamique, faisant du commutateur un dispositif beaucoup plus programmable qu'un simple apprenti automatique.</li>
+                    <li><span class="concept-key">Sécurité au Niveau 2 : Port-Security, DHCP Snooping, Dynamic ARP Inspection</span> : La couche 2 n'est pas innocente. Un attaquant peut saturer la table MAC (attaque par empoisonnement), usurper des adresses. Les mécanismes de sécurité de couche 2 (comme limiter le nombre d'adresses MAC par port) sont essentiels pour durcir l'infrastructure réseau.</li>
+                    <li><span class="concept-key">Vision Vendor-Neutral</span> : Bien que Cisco popularise des termes, les concepts (MAC learning, forwarding, STP, VLANs) sont des standards <strong>IEEE</strong> (802.1D, 802.1Q). Un administrateur expert comprend les principes sous-jacents, indépendamment du fabricant du switch.</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 OBJECTIFS COGNITIFS FINAUX – ADMINISTRATEUR RÉSEAU ÉLITE</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">système de distribution urbain</span> où le trafic est intelligent et segmenté. Vous concevez des LANs où les collisions sont un concept du passé, vous comprenez que l'apprentissage de la table MAC est la clé de voûte de l'efficacité, et vous savez que la gestion des broadcasts définit les frontières logiques de votre réseau.</p>
+                    <p>Vous pouvez expliquer pourquoi une communication échoue en raisonnant de l'auto-négociation de vitesse jusqu'à l'inondation de trames dans la table MAC. Votre compréhension des mécanismes (apprentissage, forwarding, buffering) et des compromis (latence vs fiabilité, coût vs densité de port) vous permet de sélectionner, configurer et dépanner des équipements de commutation avec une méthodologie infaillible. Vous êtes prêt à aborder la conception de réseaux locaux complexes, résilients et performants.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte et un administrateur réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="page-footer">
+        <p>Module Académique – Le Système Urbain des Commutations — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    </footer>
+
+    <script>
+        // Script pour la navigation mobile et le suivi des sections actives
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const mainMenu = document.getElementById('main-menu');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            const mainNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // Gestion du menu hamburger
+            hamburger.addEventListener('click', function() {
+                mainMenu.classList.toggle('active');
+            });
+
+            // Fermer le menu mobile en cliquant sur un lien
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainMenu.classList.contains('active')) {
+                        mainMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Suivi de la section active (scroll)
+            const sections = document.querySelectorAll('.module-section');
+            const navLi = document.querySelectorAll('.sidebar-nav a, .nav-menu a');
+
+            function setActiveSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active', 'active-section');
+                    if (li.getAttribute('href') === `#${current}`) {
+                        li.classList.add('active', 'active-section');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', setActiveSection);
+            // Initialiser l'état actif au chargement
+            setActiveSection();
+        });
+    </script>
+</body>
+</html>
