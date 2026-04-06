@@ -1,0 +1,730 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kit de Maîtrise - Module 2: Commutation Ethernet</title>
+  <style>
+    :root{
+      --bg:#071018;--bg2:#0c1722;--panel:#12212b;--panel2:#162934;--line:rgba(121,221,210,.18);--line-strong:rgba(121,221,210,.42);--text:#eef7fa;--muted:#a7bec6;--accent:#72dfd2;--accent2:#f4cb7e;--shadow:0 28px 70px rgba(0,0,0,.34);--radius-xl:30px;--radius-lg:22px;--radius-md:16px;--light-surface:#f8fbfc;--light-line:#d6e5ea;--light-text:#1f2933;--light-muted:#52606d;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;color:var(--text);font-family:"Aptos","Segoe UI","Trebuchet MS",sans-serif;background:radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);scroll-behavior:smooth}
+    a{color:var(--accent);text-decoration:none}
+    .page-shell{width:min(1560px,calc(100vw - 28px));margin:14px auto 24px;display:grid;gap:18px}
+    .hero,.panel{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-xl);background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));box-shadow:var(--shadow)}
+    .hero::before,.panel::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%)}
+    .hero>*,.panel>*{position:relative;z-index:1}
+    .hero{padding:34px 34px 28px}
+    .eyebrow{margin:0 0 14px;color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.24em;text-transform:uppercase}
+    h1{margin:0;max-width:1080px;font-size:clamp(34px,4.8vw,64px);line-height:1.02;letter-spacing:-.04em}
+    .hero-copy{margin:18px 0 0;max-width:1080px;font-size:19px;line-height:1.7;color:var(--muted)}
+    .layout{display:grid;gap:18px;grid-template-columns:320px minmax(0,1fr);align-items:start}
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .nav ul{list-style:none;padding:0;margin:0}
+    .nav li+li{margin-top:12px}
+    .nav a{display:block;padding:14px 16px;border-radius:18px;border:1px solid var(--line);color:var(--text);background:rgba(255,255,255,.02);transition:.22s ease}
+    .nav a:hover,.nav a.active{transform:translateX(4px);border-color:var(--line-strong);background:rgba(114,223,210,.08)}
+    .meta{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+    .main{display:grid;gap:18px}
+    .native-source{color:var(--light-text);display:grid;gap:18px}
+    .native-source > :where(section,article,div){background:linear-gradient(180deg, rgba(248,251,252,.98), rgba(241,247,249,.98));border:1px solid var(--light-line);border-radius:24px;padding:28px;box-shadow:0 18px 40px rgba(3,18,26,.12)}
+    .native-source > :where(script,style){display:none}
+    .native-source h2,.native-source h3,.native-source h4,.native-source h5,.native-source h6{color:var(--light-text);letter-spacing:-.03em}
+    .native-source h2{font-size:clamp(1.6rem,2.8vw,2.2rem);margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--light-line)}
+    .native-source h3{font-size:1.35rem;margin:1.7rem 0 .9rem}
+    .native-source h4{font-size:1.05rem;margin:1.2rem 0 .7rem}
+    .native-source p,.native-source li,.native-source td,.native-source th,.native-source blockquote,.native-source label{color:var(--light-text);line-height:1.8}
+    .native-source p,.native-source ul,.native-source ol,.native-source table,.native-source pre,.native-source blockquote{margin:0 0 1.1rem}
+    .native-source ul,.native-source ol{padding-left:1.4rem}
+    .native-source li+li{margin-top:.45rem}
+    .native-source table{width:100%;border-collapse:collapse;display:block;overflow:auto;border-radius:18px;border:1px solid var(--light-line);background:#fff}
+    .native-source th{background:#183340;color:#fff;font-weight:700}
+    .native-source th,.native-source td{padding:14px;border-bottom:1px solid var(--light-line);text-align:left}
+    .native-source tr:last-child td{border-bottom:none}
+    .native-source pre{overflow:auto;padding:18px;border-radius:18px;border:1px solid #24404b;background:#0d1e27;color:#eaf7fb;white-space:pre-wrap;word-break:break-word}
+    .native-source code{word-break:break-word}
+    .native-source img,.native-source iframe,.native-source svg,.native-source canvas{max-width:100%}
+    .native-source .page-number,.native-source .edition,.native-source .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;border:1px solid var(--light-line);background:#fff;color:var(--light-muted);font-size:.9rem;font-weight:700}
+    .native-source .highlight-box,.native-source .warning-box,.native-source .info-box,.native-source .analogy-box,.native-source .security-box,.native-source .exam-trap,.native-source .core-law,.native-source .law-box,.native-source .illusion-box,.native-source .concept-key,.native-source .critical,.native-source .warning,.native-source .success,.native-source .info,.native-source .concept{padding:20px;border-radius:18px;border:1px solid var(--light-line);background:linear-gradient(180deg,#ffffff,#f5fafb)}
+    .native-source .warning-box,.native-source .warning,.native-source .security-box{background:linear-gradient(180deg,#fff8e6,#fff1bf);border-color:#f0d777}
+    .native-source .info-box,.native-source .info,.native-source .analogy-box,.native-source .concept-key{background:linear-gradient(180deg,#eef9fc,#dff4fb);border-color:#96d4e8}
+    .native-source .highlight-box,.native-source .success,.native-source .exam-trap{background:linear-gradient(180deg,#effaf1,#ddf4e2);border-color:#92d5a0}
+    .native-source .critical,.native-source .illusion-box{background:linear-gradient(180deg,#fff1f1,#ffe2e2);border-color:#ef9a9a}
+    .native-source .micro-kit,.native-source .quiz-container,.native-source .cli-box,.native-source .mermaid-container,.native-source .mermaid-diagram{padding:22px;border-radius:20px;border:1px solid var(--light-line);background:#fff}
+    .native-source .cli-box{background:#0d1e27;color:#eaf7fb;border-color:#24404b}
+    .native-source .cli-box *{color:inherit}
+    .native-source .copy-btn,.native-source .mermaid-btn,.native-source button{border:1px solid var(--light-line);background:#fff;color:var(--light-text);border-radius:12px;padding:8px 12px;font:inherit;cursor:pointer}
+    .native-source .copy-btn:hover,.native-source .mermaid-btn:hover,.native-source button:hover{background:#eef9fc}
+    .native-source .mermaid-controls,.mermaid-toolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
+    .native-source .quiz-option,.native-source .option{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--light-line);background:#fff;margin-bottom:10px;cursor:pointer}
+    .native-source .quiz-option.correct,.native-source .option.correct{background:#e8f7ec;border-color:#8dcea0}
+    .native-source .quiz-option.incorrect,.native-source .option.incorrect{background:#fdecec;border-color:#e6a1a1}
+    .native-source .feedback,.native-source .question-card,.native-source .micro-kit-card{padding:18px;border-radius:16px;border:1px solid var(--light-line);background:#fff}
+    .native-source .micro-kit-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .native-source .section-title{display:flex;align-items:center;gap:12px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}.sidebar{position:relative;top:auto}}
+    @media (max-width:860px){.page-shell{width:min(100vw - 14px,1560px)}.hero,.panel{padding:20px}.native-source > :where(section,article,div){padding:20px}h1{font-size:42px}}
+  </style>
+</head>
+<body>
+<div class="page-shell">
+  <section class="hero">
+    <p class="eyebrow">Cours Admin Système</p>
+    <h1>🚀 MODULE 2 KIT DE MAÎTRISE</h1>
+    <p class="hero-copy">Commutation Ethernet - De la théorie à la maîtrise opérationnelle</p>
+  </section>
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2 class="side-title">Navigation</h2>
+        <nav class="nav">
+          <ul>
+            <li><a href="#analogie-syst-mique-centrale">📍 ANALOGIE SYSTÉMIQUE CENTRALE</a></li>
+            <li><a href="#anatomie-profonde-de-la-trame">🧠 ANATOMIE PROFONDE DE LA TRAME</a></li>
+            <li><a href="#le-noyau-dur-4-lois-immuables">⚡ LE NOYAU DUR (4 Lois Immuables)</a></li>
+            <li><a href="#profondeur-s-curit">🔐 PROFONDEUR SÉCURITÉ</a></li>
+            <li><a href="#profondeur-examen-ccna">📚 PROFONDEUR EXAMEN CCNA</a></li>
+            <li><a href="#lab-complet">⚙️ LAB COMPLET</a></li>
+            <li><a href="#version-fondation-cisco">📚 VERSION FONDATION CISCO</a></li>
+            <li><a href="#m-thodes-de-commutation">⚙️ Méthodes de Commutation</a></li>
+            <li><a href="#synth-se-ultime">⚡ SYNTHÈSE ULTIME</a></li>
+            <li><a href="#ma-trise-acquise">🎯 MAÎTRISE ACQUISE</a></li>
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Source</h2>
+        <p class="meta"><code>Cours-Admin-Systeme\version-filtre\module02.html</code></p>
+      </section>
+    </aside>
+    <main class="main">
+      <section class="panel" id="contenu">
+        <div class="native-source">
+<!-- Main Header -->
+
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <button class="tab-button active" onclick="showSection('expert')">
+                🔬 Version Expert
+            </button>
+            <button class="tab-button" onclick="showSection('foundation')">
+                📚 Version Fondation
+            </button>
+            <button class="tab-button" onclick="showSection('synthesis')">
+                ⚡ Synthèse Ultime
+            </button>
+        </div>
+
+       
+
+        <!-- EXPERT VERSION -->
+        <section id="expert" class="content-section active">
+            <div class="card analogy-card">
+                <h2 class="card-title" id="analogie-syst-mique-centrale">📍 ANALOGIE SYSTÉMIQUE CENTRALE</h2>
+                <h3 style="color: #9b59b6; margin-bottom: 1.5rem;">🔵 LE CENTRE DE TRI POSTAL INTELLIGENT</h3>
+                
+                <div class="analogy-grid">
+                    <div class="analogy-item">
+                        <h4>📬 Boîte d'entrée</h4>
+                        <p><strong>Port Ingress</strong> - Où la lettre (trame) arrive</p>
+                    </div>
+                    <div class="analogy-item">
+                        <h4>📮 Boîte de sortie</h4>
+                        <p><strong>Port Egress</strong> - Où la lettre repart</p>
+                    </div>
+                    <div class="analogy-item">
+                        <h4>📒 Carnet d'adresses</h4>
+                        <p><strong>Table CAM</strong> - Mémorise "M. Dupont → Boîte 3"</p>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(155, 89, 182, 0.1); padding: 1.5rem; border-radius: 10px; margin-top: 1.5rem; border-left: 4px solid #9b59b6;">
+                    <strong>🚨 RISQUE ANALOGIQUE :</strong> Si le centre utilise le mode "express" (cut-through) et qu'une lettre a une mauvaise adresse, elle sera livrée à la mauvaise maison ET d'autres lettres suivront la même erreur.
+                </div>
+            </div>
+
+            <!-- Frame Anatomy -->
+            <div class="card mental-card">
+                <h2 class="card-title" id="anatomie-profonde-de-la-trame">🧠 ANATOMIE PROFONDE DE LA TRAME</h2>
+                
+                <div class="frame-anatomy">
+                    <div class="code-title">TRAME ETHERNET (64-1518 octets)</div>
+                    <div style="margin: 1rem 0;">
+                        <div class="frame-segment">PRÉAMBULE<br>7 octets</div>
+                        <div class="frame-segment active">DEST MAC<br>6 octets</div>
+                        <div class="frame-segment active">SRC MAC<br>6 octets</div>
+                        <div class="frame-segment">TYPE<br>2 octets</div>
+                        <div class="frame-segment">DATA<br>46-1500 octets</div>
+                        <div class="frame-segment">FCS<br>4 octets</div>
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.9em;">
+                        <span style="color: #00c853;">● Vert</span> = Ce que le switch regarde
+                    </div>
+                </div>
+
+                <div class="interactive-box" onclick="toggleContent('switch-logic')">
+                    <h4>🎯 CE QUE LE SWITCH REGARDE VRAIMENT</h4>
+                    <p>Cliquez pour voir la logique interne...</p>
+                </div>
+                
+                <div id="switch-logic" class="hidden-content">
+                    <div class="code-block">
+                        <div class="code-title">1. POUR L'APPRENTISSAGE</div>
+<span class="cli-command">"Hey, une trame arrive sur Fa0/1"</span><br>
+<span class="cli-command">"Regardons la SRC MAC: 0050.7966.6800"</span><br>
+<span class="comment">→ J'écris dans mon carnet: "0050.7966.6800 habite à Fa0/1"</span><br>
+<span class="comment">→ Timer: 5 minutes avant d'oublier</span>
+                    </div>
+                    
+                    <div class="code-block">
+                        <div class="code-title">2. POUR LE FORWARDING</div>
+<span class="cli-command">"Maintenant, où dois-je envoyer cette trame?"</span><br>
+<span class="cli-command">"Regardons la DEST MAC: 0000.0C12.3456"</span><br>
+<span class="comment">→ Je cherche dans mon carnet...</span><br>
+<span class="comment">→ Ah! "0000.0C12.3456 habite à Fa0/3"</span><br>
+<span class="comment">→ J'envoie la trame vers Fa0/3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Laws -->
+            <div class="card core-card">
+                <h2 class="card-title" id="le-noyau-dur-4-lois-immuables">⚡ LE NOYAU DUR (4 Lois Immuables)</h2>
+                <div class="law-container">
+                    <div class="law-item">
+                        <strong>LOI #1 : "Apprendre sur la Source, Forwarder sur la Destination"</strong><br>
+                        <em>Détail anatomique : Le switch ne regarde que les 6 premiers octets après le préambule pour l'apprentissage (SRC MAC).</em>
+                    </div>
+                    <div class="law-item">
+                        <strong>LOI #2 : "Unicast Inconnue = Flood, Connue = Forward"</strong><br>
+                        <em>Détail anatomique : Quand le switch flood, il recopie la trame entière sur tous les ports sauf ingress.</em>
+                    </div>
+                    <div class="law-item">
+                        <strong>LOI #3 : "Store-and-Forward Valide, Cut-Through Rapide"</strong><br>
+                        <em>Store-and-Forward : Vérifie CRC, attente complète. Cut-Through : Forward après DEST MAC seulement.</em>
+                    </div>
+                    <div class="law-item">
+                        <strong>LOI #4 : "Chaque Port Switch = Son Propre Domaine de Collision"</strong><br>
+                        <em>Full-Duplex : Circuits séparés RX/TX. Half-Duplex : Circuit partagé = collisions.</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="card security-card">
+                <h2 class="card-title" id="profondeur-s-curit">🔐 PROFONDEUR SÉCURITÉ</h2>
+                
+                <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <h3 style="color: white; margin-bottom: 10px;">🎯 RISQUE PRINCIPAL : MAC FLOODING ATTACK</h3>
+                    <p>L'attaquant envoie des milliers de trames avec des MAC sources différentes → Remplit la table CAM → Switch en "fail-open" mode → Tout le trafic est floodé.</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-title">🛡️ MITIGATION - PORT SECURITY</div>
+<span class="cli-command">interface FastEthernet0/1</span><br>
+<span class="cli-command"> switchport port-security</span><br>
+<span class="cli-command"> switchport port-security maximum 3</span><br>
+<span class="cli-command"> switchport port-security violation shutdown</span><br>
+<span class="cli-command"> switchport port-security mac-address sticky</span>
+                </div>
+            </div>
+
+            <!-- Exam Tips -->
+            <div class="card exam-card">
+                <h2 class="card-title" id="profondeur-examen-ccna">📚 PROFONDEUR EXAMEN CCNA</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question">❓ Un switch reçoit une trame broadcast. Apprend-il l'adresse MAC source?</div>
+                    
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">A) Oui, toujours</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, true)">B) Non, jamais</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">C) Seulement si configuré</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">D) Uniquement en store-and-forward</div>
+                    
+                    <div class="quiz-explanation" id="quiz1-explanation">
+                        <strong>💡 Réponse correcte : B</strong><br>
+                        Un switch n'apprend JAMAIS d'adresses MAC à partir de trames broadcast ou multicast. C'est un piège classique à l'examen CCNA.
+                    </div>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Décision après</th>
+                            <th>Vérification CRC</th>
+                            <th>Latence</th>
+                            <th>Utilisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Store-and-Forward</strong></td>
+                            <td>Trame complète</td>
+                            <td><span class="success-badge">OUI</span></td>
+                            <td>Élevée</td>
+                            <td>Par défaut Cisco</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cut-Through</strong></td>
+                            <td>DEST MAC (64 octets)</td>
+                            <td><span class="danger-badge">NON</span></td>
+                            <td>Très faible</td>
+                            <td>HPC seulement</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Lab Section -->
+            <div class="card lab-card">
+                <h2 class="card-title" id="lab-complet">⚙️ LAB COMPLET</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 1.5rem 0;">
+                    <div style="background: white; border: 2px solid #3498db; border-radius: 10px; padding: 1.5rem;">
+                        <h4 style="color: #3498db; border-bottom: 2px solid #3498db; padding-bottom: 10px;">🎓 NIVEAU 1 (CCNA)</h4>
+                        <div class="code-block" style="margin: 1rem 0; padding: 1rem;">
+                            <span class="cli-command">Switch# show mac address-table</span><br>
+                            <span class="comment">! Affiche toutes les entrées MAC</span><br><br>
+                            <span class="cli-command">Switch# clear mac address-table dynamic</span><br>
+                            <span class="comment">! Efface la table (dépannage)</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; border: 2px solid #e74c3c; border-radius: 10px; padding: 1.5rem;">
+                        <h4 style="color: #e74c3c; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">🛡️ NIVEAU 2 (PRODUCTION)</h4>
+                        <div class="code-block" style="margin: 1rem 0; padding: 1rem;">
+                            <span class="cli-command">interface range fa0/1-24</span><br>
+                            <span class="cli-command"> switchport port-security</span><br>
+                            <span class="cli-command"> switchport port-security maximum 2</span><br>
+                            <span class="cli-command"> switchport port-security violation restrict</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOUNDATION VERSION -->
+        <section id="foundation" class="content-section">
+            <div class="card">
+                <h2 class="card-title" id="version-fondation-cisco">📚 VERSION FONDATION CISCO</h2>
+                
+                <div class="interactive-box" onclick="toggleContent('foundation-1')">
+                    <h4>2.1.1 Commutation dans la Mise en Réseau</h4>
+                    <p>Concepts fondamentaux de commutation...</p>
+                </div>
+                
+                <div id="foundation-1" class="hidden-content">
+                    <p>Le concept de <strong>commutation et transfert de trames</strong> est universel dans les réseaux et télécommunications.</p>
+                    
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong>Deux termes critiques :</strong><br>
+                        • <strong>Ingress (Entrée)</strong> : Port par lequel une trame entre<br>
+                        • <strong>Egress (Sortie)</strong> : Port par lequel une trame sort
+                    </div>
+                    
+                    <p><strong>⚠️ RÈGLE ABSOLUE :</strong> Une trame Ethernet ne sera <strong>jamais</strong> transférée sur le même port que celui où elle a été reçue.</p>
+                </div>
+
+                <div class="interactive-box" onclick="toggleContent('foundation-2')">
+                    <h4>2.1.2 Table d'Adresse MAC du Commutateur</h4>
+                    <p>Mémoire CAM et processus d'apprentissage...</p>
+                </div>
+                
+                <div id="foundation-2" class="hidden-content">
+                    <p>Le switch utilise la <strong>mémoire CAM (Content-Addressable Memory)</strong> pour stocker sa table d'adresses MAC.</p>
+                    
+                    <div class="code-block">
+                        <div class="code-title">Processus d'apprentissage</div>
+<span class="cli-command">Le switch APPREND en regardant les adresses MAC SOURCE</span><br>
+<span class="cli-command">Le switch FORWARD en fonction des adresses MAC DESTINATION</span>
+                    </div>
+                    
+                    <p>Chaque entrée dans la table CAM contient :</p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>Adresse MAC</li>
+                        <li>Numéro de port</li>
+                        <li>Type (Dynamic/Static)</li>
+                        <li>Timer d'expiration (5 min par défaut)</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-box" onclick="toggleContent('foundation-3')">
+                    <h4>2.1.3 La Méthode "Switch Learn and Forward"</h4>
+                    <p>Processus en deux étapes...</p>
+                </div>
+                
+                <div id="foundation-3" class="hidden-content">
+                    <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                        <h4 style="color: #856404;">ÉTAPE 1 : DÉCOUVERTE</h4>
+                        <p>Examen de l'adresse MAC Source :</p>
+                        <ul>
+                            <li>Si MAC inconnue → Ajout à la table</li>
+                            <li>Si MAC connue → Timer réinitialisé</li>
+                            <li>Si MAC connue mais port différent → Entrée remplacée</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #d4edda; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                        <h4 style="color: #155724;">ÉTAPE 2 : TRANSFERT</h4>
+                        <p>Examen de l'adresse MAC Destination :</p>
+                        <ul>
+                            <li>MAC unicast connue → Transfert vers port spécifique</li>
+                            <li>MAC unicast inconnue → <strong>FLOODING</strong> (tous ports sauf ingress)</li>
+                            <li>Broadcast/Multicast → <strong>FLOODING</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="interactive-box" onclick="toggleContent('foundation-4')">
+                    <h4>2.1.4 Vidéo - Tables d'Adresses MAC</h4>
+                    <p>Visualisation du processus d'apprentissage...</p>
+                </div>
+                
+                <div id="foundation-4" class="hidden-content">
+                    <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🎬</div>
+                        <p><strong>Animation disponible dans le cours Cisco</strong></p>
+                        <p style="font-size: 0.9em; color: #666;">Montre comment deux switches connectés créent leurs tables MAC</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Switching Methods -->
+            <div class="card">
+                <h2 class="card-title" id="m-thodes-de-commutation">⚙️ Méthodes de Commutation</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Méthode</th>
+                            <th>Description</th>
+                            <th>Avantages</th>
+                            <th>Inconvénients</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Store-and-Forward</strong></td>
+                            <td>Reçoit la trame complète, vérifie CRC, puis forward</td>
+                            <td>Détection erreurs, support mixte vitesses</td>
+                            <td>Latence plus élevée</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cut-Through</strong></td>
+                            <td>Forward après lecture DEST MAC seulement</td>
+                            <td>Latence très faible</td>
+                            <td>Forwarde des trames corrompues</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fragment-Free</strong></td>
+                            <td>Attend 64 octets avant de forwarder</td>
+                            <td>Évite les "runts", bon compromis</td>
+                            <td>Pas de vérification complète</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SYNTHESIS VERSION -->
+        <section id="synthesis" class="content-section">
+            <div class="card">
+                <h2 class="card-title" id="synth-se-ultime">⚡ SYNTHÈSE ULTIME</h2>
+                <p style="margin-bottom: 1.5rem;">Combinaison des deux approches pour maîtrise totale</p>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+                    <h3 style="color: white;">🎯 CHECKLIST DE MAÎTRISE</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 1rem;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                            <input type="checkbox" id="check1"> <label for="check1">Comprendre ingress vs egress</label>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                            <input type="checkbox" id="check2"> <label for="check2">Savoir lire table MAC</label>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                            <input type="checkbox" id="check3"> <label for="check3">Différencier store-and-forward/cut-through</label>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                            <input type="checkbox" id="check4"> <label for="check4">Configurer port-security</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Matrix -->
+                <h3 style="color: var(--primary); margin: 2rem 0 1rem 0;">📊 MATRICE COMPARATIVE</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Approche Fondation</th>
+                            <th>Approche Expert</th>
+                            <th>Synthèse</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Apprentissage MAC</strong></td>
+                            <td>"Le switch apprend les adresses"</td>
+                            <td>"Examine octets 15-20 (SRC MAC)"</td>
+                            <td><span class="success-badge">Apprend sur source, forward sur dest</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Store-and-Forward</strong></td>
+                            <td>"Vérifie les erreurs"</td>
+                            <td>"Lit 1518 octets, calcule CRC"</td>
+                            <td><span class="success-badge">Vérification complète + buffer</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cut-Through</strong></td>
+                            <td>"Commutation rapide"</td>
+                            <td>"Forward après 64 octets seulement"</td>
+                            <td><span class="warning-badge">Rapide mais propage erreurs</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Table CAM</strong></td>
+                            <td>"Table d'adresses MAC"</td>
+                            <td>"Mémoire associative haute vitesse"</td>
+                            <td><span class="success-badge">CAM = recherche ultra-rapide</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Advanced Scenarios -->
+                <h3 style="color: var(--primary); margin: 2rem 0 1rem 0;">🚨 SCÉNARIOS AVANCÉS</h3>
+                
+                <div class="interactive-box" onclick="toggleContent('scenario1')">
+                    <h4>Scénario 1 : Performance dégradée</h4>
+                    <p>Utilisateurs se plaignent de lenteurs intermittentes...</p>
+                </div>
+                
+                <div id="scenario1" class="hidden-content">
+                    <div class="code-block">
+                        <div class="code-title">PROCESSUS DE DÉPANNAGE</div>
+<span class="cli-command">Switch# show interfaces fa0/1 | include CRC</span><br>
+<span class="comment">! Vérifier erreurs CRC</span><br><br>
+<span class="cli-command">Switch# show interfaces fa0/1 | include duplex</span><br>
+<span class="comment">! Vérifier mode duplex</span><br><br>
+<span class="cli-command">Switch# show mac address-table count vlan 10</span><br>
+<span class="comment">! Vérifier taille table MAC</span>
+                    </div>
+                    <p><strong>Cause probable :</strong> Mismatch duplex (un côté full, l'autre half)</p>
+                </div>
+
+                <div class="interactive-box" onclick="toggleContent('scenario2')">
+                    <h4>Scénario 2 : Attaque réseau</h4>
+                    <p>Trafic réseau anormalement élevé...</p>
+                </div>
+                
+                <div id="scenario2" class="hidden-content">
+                    <div class="code-block">
+                        <div class="code-title">DÉTECTION D'ATTAQUE</div>
+<span class="cli-command">Switch# show mac address-table | include Fa0/</span><br>
+<span class="comment">! Chercher ports avec trop de MACs</span><br><br>
+<span class="cli-command">Switch# show port-security</span><br>
+<span class="comment">! Vérifier violations</span><br><br>
+<span class="cli-command">Switch# show interfaces | include broadcast</span><br>
+<span class="comment">! Vérifier tempête broadcast</span>
+                    </div>
+                    <p><strong>Attaque probable :</strong> MAC Flooding ou Broadcast Storm</p>
+                </div>
+            </div>
+
+            <!-- Final Quiz -->
+            <div class="quiz-container">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 TEST FINAL DE MAÎTRISE</h3>
+                
+                <div class="quiz-question">1. Quel est le timer par défaut pour les entrées MAC dynamiques?</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'a')">A) 30 secondes</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'b')">B) 300 secondes</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'c')">C) 30 minutes</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'd')">D) 5 heures</div>
+
+                <div class="quiz-question" style="margin-top: 2rem;">2. En cut-through, combien d'octets le switch doit-il lire avant de commencer à forwarder?</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'a')">A) 6 octets (DEST MAC)</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'b')">B) 64 octets</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'c')">C) 128 octets</div>
+                <div class="quiz-option" onclick="checkQuizAnswer(this, 'd')">D) Toute la trame</div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--gradient-primary); color: white; border-radius: 15px;">
+            <h2 id="ma-trise-acquise">🎯 MAÎTRISE ACQUISE</h2>
+            <p style="max-width: 800px; margin: 1rem auto; opacity: 0.9;">
+                Vous maîtrisez maintenant la commutation Ethernet à tous les niveaux :<br>
+                <strong>Théorie Cisco + Anatomie Profonde + Sécurité + Dépannage</strong>
+            </p>
+            <div style="margin-top: 1.5rem; font-size: 0.9em; opacity: 0.8;">
+                Module 2 Kit de Maîtrise | Version Ultime | CCNA → Expert
+            </div>
+        </div>
+    </div>
+	 <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--light-border); color: #6c757d; font-size: 0.9rem;">
+        <p>Module-Kit de Maîtrise - Concepts de Commutation</p>
+        <p>© 2025</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+        // Tab Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-button').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activate corresponding tab
+            event.currentTarget.classList.add('active');
+            
+            // Show/hide progress tracker
+            const tracker = document.getElementById('progressTracker');
+            if (sectionId === 'expert') {
+                tracker.style.display = 'block';
+            } else {
+                tracker.style.display = 'none';
+            }
+        }
+
+        // Toggle hidden content
+        function toggleContent(contentId) {
+            const content = document.getElementById(contentId);
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        }
+
+        // Quiz functionality
+        function checkAnswer(element, isCorrect) {
+            // Reset all options
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            if (isCorrect) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('incorrect');
+            }
+            
+            // Show explanation
+            document.getElementById('quiz1-explanation').style.display = 'block';
+        }
+
+        function checkQuizAnswer(element, correctLetter) {
+            const selectedLetter = element.textContent.charAt(0).toLowerCase();
+            const allOptions = element.parentElement.querySelectorAll('.quiz-option');
+            
+            // Reset all
+            allOptions.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark correct answer
+            allOptions.forEach(opt => {
+                if (opt.textContent.toLowerCase().startsWith(correctLetter)) {
+                    opt.classList.add('correct');
+                }
+            });
+            
+            // Mark selected
+            if (selectedLetter !== correctLetter) {
+                element.classList.add('incorrect');
+            }
+        }
+
+        // Scroll to section
+        function scrollToSection(sectionName) {
+            // Implementation depends on your section IDs
+            console.log('Scroll to:', sectionName);
+        }
+
+        // Progress tracking
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.card');
+            const trackerItems = document.querySelectorAll('.progress-item');
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+                    trackerItems.forEach(item => item.classList.remove('active'));
+                    if (trackerItems[index]) {
+                        trackerItems[index].classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // Initialize first interactive box
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show progress tracker for expert version
+            document.getElementById('progressTracker').style.display = 'block';
+        });
+    </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.nav a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        document.querySelectorAll('.nav a').forEach(function (item) { item.classList.remove('active'); });
+        link.classList.add('active');
+      });
+    });
+
+    if (window.mermaid) {
+      document.querySelectorAll('.mermaid').forEach(function (el) {
+        el.removeAttribute('data-processed');
+      });
+      window.mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose', flowchart: { htmlLabels: true } });
+      window.mermaid.run({ querySelector: '.mermaid' });
+    }
+
+    document.querySelectorAll('.mermaid, .mermaid-diagram .mermaid, .mermaid-container .mermaid').forEach(function (target) {
+      if (!target.classList.contains('mermaid')) return;
+      var parent = target.closest('.mermaid-diagram') || target.closest('.mermaid-container') || target.parentElement;
+      if (!parent || parent.querySelector('.mermaid-toolbar')) return;
+
+      var scale = 1;
+      target.classList.add('mermaid-stage');
+
+      var toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+      parent.insertBefore(toolbar, parent.firstChild);
+
+      function renderScale() {
+        target.style.transform = 'scale(' + scale + ')';
+      }
+
+      toolbar.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-action]');
+        if (!button) return;
+        var action = button.getAttribute('data-action');
+        if (action === 'in') scale = Math.min(2, +(scale + 0.1).toFixed(2));
+        if (action === 'out') scale = Math.max(0.5, +(scale - 0.1).toFixed(2));
+        if (action === 'reset') scale = 1;
+        renderScale();
+      });
+
+      renderScale();
+    });
+  });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,891 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Académique : L'Écosystème du Spanning Tree – Du Chaos Potentiel à l'Arbre Ordonné</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0c1722;
+      --panel:#12212b;
+      --panel2:#162934;
+      --line:rgba(121,221,210,.18);
+      --line-strong:rgba(121,221,210,.42);
+      --text:#eef7fa;
+      --muted:#a7bec6;
+      --accent:#72dfd2;
+      --accent2:#f4cb7e;
+      --shadow:0 28px 70px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --color-primary:#eef7fa;
+      --color-secondary:#d8e8ee;
+      --color-accent:#72dfd2;
+      --color-law:#ff8c8c;
+      --color-illusion:#f4cb7e;
+      --color-background:#071018;
+      --color-surface:#12212b;
+      --color-border:rgba(121,221,210,.24);
+      --font-heading:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+      --font-body:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      color:var(--text);
+      font-family:var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      scroll-behavior:smooth;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+
+    .page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,.panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:34px 34px 28px;min-height:260px}
+
+    .hero::before,
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .eyebrow{
+      margin:0 0 14px;
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(36px,5vw,68px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .hero-copy{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:21px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card strong{display:block;font-size:18px;line-height:1.2;margin-bottom:6px}
+    .hero-card span{color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      gap:18px;
+      grid-template-columns:320px minmax(0,1fr);
+      align-items:start;
+    }
+
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .main{display:grid;gap:18px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .note{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+    .nav a{
+      display:block;
+      margin-bottom:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.02);
+      transition:.22s ease;
+    }
+
+    .nav a:hover,
+    .nav a.active,
+    .nav a.active-section{
+      transform:translateX(4px);
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.08);
+    }
+
+    .nav ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .nav ul ul{
+      margin:0 0 12px 14px !important;
+      padding-left:10px;
+      border-left:1px solid var(--line);
+    }
+
+    .nav ul ul a{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .module-section{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin:0;
+      scroll-margin-top:20px;
+    }
+
+    .module-section::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.08), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.06), transparent 36%);
+    }
+
+    .module-section > *{position:relative;z-index:1}
+
+    .section-header{
+      margin-bottom:1.6rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--line);
+    }
+
+    .section-header h2{
+      margin:0;
+      font-family:var(--font-heading);
+      font-size:34px;
+      letter-spacing:-.04em;
+      color:var(--text);
+    }
+
+    .section-tag{
+      display:inline-block;
+      background:linear-gradient(135deg,var(--accent),#8ff4e8);
+      color:#07212a;
+      font-size:.78rem;
+      font-weight:800;
+      padding:.35rem .85rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    h3,h4{
+      font-family:var(--font-heading);
+      color:var(--text);
+      letter-spacing:-.03em;
+    }
+
+    h3{font-size:1.55rem;margin-top:2rem;margin-bottom:1rem}
+    h4{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.8rem}
+
+    p,ul,ol{margin-bottom:1.2rem}
+    ul,ol{padding-left:1.4rem}
+    li{margin-bottom:.5rem}
+    p,li,td,th{color:var(--text);line-height:1.8}
+
+    .analogy-box,.law-box,.illusion-box,.equation-box{
+      border-left:4px solid var(--accent);
+      padding:1.5rem;
+      margin:2rem 0;
+      border-radius:0 10px 10px 0;
+      background:rgba(114,223,210,.06);
+    }
+
+    .law-box{border-left-color:#ff8c8c;background:rgba(197,48,48,.10)}
+    .illusion-box{border-left-color:var(--accent2);background:rgba(244,203,126,.10)}
+    .equation-box{
+      text-align:center;
+      font-size:1.1rem;
+      border:1px dashed var(--line);
+      border-left-width:1px;
+      border-radius:18px;
+    }
+
+    .concept-key{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .mermaid-diagram{
+      margin:2rem 0;
+      padding:1rem;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--line);
+      background:rgba(18,33,43,.9);
+      color:var(--text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    .cognitive-objectives{
+      background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+      padding:2rem;
+      border-radius:18px;
+      margin:2rem 0;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .cognitive-objectives,
+    .cognitive-objectives p,
+    .cognitive-objectives li,
+    .cognitive-objectives h3{
+      color:#fff;
+    }
+
+    iframe,canvas,img,svg{max-width:100%}
+
+    pre{
+      overflow:auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    code{
+      color:#d9fff8;
+      word-break:break-word;
+    }
+
+    table{
+      width:100%;
+      display:block;
+      overflow:auto;
+      border-collapse:collapse;
+    }
+
+    .page-footer{
+      text-align:center;
+      padding:24px;
+      font-size:18px;
+      line-height:1.8;
+      color:var(--muted);
+    }
+
+    .page-footer p{margin:.4rem 0;color:var(--muted)}
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:4px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:3px;
+      border-radius:2px;
+      background:var(--text);
+    }
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 860px){
+      .hero{padding:24px 20px}
+      .panel,.module-section{padding:18px}
+      .page{width:min(100vw - 14px,1560px)}
+      .hero-grid{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .section-header h2{font-size:28px}
+      .hamburger{display:flex}
+      .sidebar[data-collapsed="true"] .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="eyebrow">Module Académique</p>
+    <h1>📘 Module Académique : L'Écosystème du Spanning Tree – Du Chaos Potentiel à l'Arbre Ordonné</h1>
+    <p class="hero-copy">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    <div class="hero-grid">
+      <div class="hero-card"><strong>Analogie</strong><span>Modèle systémique et vision d'ensemble</span></div>
+      <div class="hero-card"><strong>Architecture</strong><span>Fondamentaux et mécanismes détaillés</span></div>
+      <div class="hero-card"><strong>Protocoles</strong><span>Couches, services et erreurs à éviter</span></div>
+      <div class="hero-card"><strong>Objectifs</strong><span>Synthèse, extension et ancrage final</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar-shell" data-collapsed="false">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2 class="side-title" style="margin:0;">Navigation du Module</h2>
+          <div class="hamburger" id="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <nav class="nav">
+          <ul class="nav-menu" id="main-menu">
+
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            
+          </ul>
+          <div style="height:12px;"></div>
+          <ul class="sidebar-nav">
+
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Essentielle</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-boucle">Genèse de la Boucle</a></li>
+                        <li><a href="#mecanisme-bpdu">Le Langage des BPDU</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#protocole-stp">STP (802.1D)</a></li>
+                        <li><a href="#identite-bid">Bridge ID (BID)</a></li>
+                        <li><a href="#roles-ports">Rôles de Port</a></li>
+                        <li><a href="#convergence">Convergence STP vs RSTP</a></li>
+                        <li><a href="#implementations">Implémentations par VLAN</a></li>
+                        <li><a href="#optimisations">Optimisations pour l'Accès</a></li>
+                    </ul>
+                </li>
+                <li><a href="#illusions">4️⃣ Illusions Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Ultra-Mémorisable</a></li>
+                <li><a href="#extension">7️⃣ Extension Contrôlée</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Principe du module</h2>
+        <p class="note">Reconstruction visuelle basée sur le modèle du projet, avec conservation du contenu complet et des schémas Mermaid du module source.</p>
+      </section>
+    </aside>
+
+    <main class="main" id="content">
+
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Système de Chauffage Urbain</h2>
+                </div>
+                <p>Imaginez un système de chauffage urbain complexe desservant une ville.</p>
+                <div class="analogy-box">
+                    <p><strong>La chaudière centrale (Pont Racine)</strong> : C'est la source unique de chaleur (trafic). Sa position et sa puissance sont cruciales.</p>
+                    <p><strong>Les canalisations principales (Liens Trunk)</strong> : Ce sont les artères qui transportent la chaleur. Il peut y avoir des boucles de canalisations pour la redondance.</p>
+                    <p><strong>Les vannes régulatrices sur chaque canalisation (Ports des commutateurs)</strong> : Chaque vanne peut être grand ouverte (Forwarding), fermée (Blocking), ou dans un état intermédiaire (Learning/Listening) où elle surveille la pression mais ne laisse pas passer l'eau.</p>
+                    <p><strong>Le problème de la boucle (Tempête de diffusion)</strong> : Si deux canalisations forment une boucle et que toutes les vannes sont ouvertes, l'eau (un broadcast) circule en rond, s'amplifie, surchauffe le système et provoque une rupture. C'est le chaos.</p>
+                    <p><strong>L'ingénieur en chef (Algorithme STA)</strong> : Il a pour mission de créer un plan où, depuis chaque bâtiment (commutateur), il n'existe qu'un seul chemin actif vers la chaudière, en fermant stratégiquement certaines vannes, tout en gardant les autres prêtes à s'ouvrir en cas de panne.</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Chaudière</span> → Pont Racine.</li>
+                    <li><span class="concept-key">Canalisation entre deux nœuds</span> → Segment Ethernet / Lien Trunk.</li>
+                    <li><span class="concept-key">Vanne sur une canalisation</span> → Port de commutateur avec son état STP.</li>
+                    <li><span class="concept-key">Eau chaude qui circule</span> → Trame de données (Broadcast, Unknown Unicast).</li>
+                    <li><span class="concept-key">Messages de contrôle entre les vannes (pression, température)</span> → BPDU.</li>
+                    <li><span class="concept-key">Boucle de canalisation avec vannes ouvertes</span> → Boucle de couche 2 → Tempête de diffusion.</li>
+                    <li><span class="concept-key">Plan de l'ingénieur (quelles vannes fermer)</span> → Topologie Spanning Tree finale.</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global (Causalité du Système STP)</h2>
+                </div>
+                <p>Le domaine STP est un <span class="concept-key">système vivant de régulation</span> au sein de la couche 2. Son rôle n'est pas de créer des chemins, mais d'en <span class="concept-key">inhiber</span> pour préserver la stabilité globale. Il transforme un graphe physique maillé (plein de boucles) en un arbre logique (sans boucle).</p>
+                <p><strong>Composants</strong> : Commutateurs, ports, liens, BPDU (le langage du système), BID (l'identité et le rang).</p>
+                <p><strong>Interactions</strong> : Échange incessant de BPDU pour négocier les rôles. Calcul distribué du chemin optimal vers la racine.</p>
+                <p><strong>Dépendances</strong> : Toute la topologie logique dépend de l'identité du Pont Racine. Un changement de Pont Racine déclenche un recalcul en cascade.</p>
+                <p><strong>Causalités</strong> :</p>
+                <ul>
+                    <li>Si le Pont Racine tombe en panne → le système converge vers un nouveau Pont Racine.</li>
+                    <li>Si un lien actif tombe en panne → un port bloqué se réactive (après les délais).</li>
+                    <li>Si on abaisse la priorité d'un commutateur → il devient probablement le nouveau Pont Racine → toute la topologie des chemins est recalculée.</li>
+                    <li>Si on active PortFast sur un port connecté à un autre commutateur → risque de création d'une boucle non détectée.</li>
+                </ul>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Topologie Physique Maillée] --> B{Algorithme STA Distribué};
+    B -- Échange de BPDU / Calculs --> C[Élection du Pont Racine BID min];
+    C --> D[Calcul des Chemins Racine Coût min];
+    D --> E[Assignation des Rôles de Port];
+    E --> F[Ports Racine & Désignés: Forwarding];
+    E --> G[Ports Alternatifs: Blocking/Discarding];
+    F --> H[Topologie Logique en Arbre Stable];
+    G --> H;
+    H --> I{Événement: Panne Lien Actif};
+    I --> J[Port Bloqué détecte perte de BPDU];
+    J --> K[Re-convergence Rapide RSTP / Lente STP];
+    K --> H;
+    I --> L{Événement: Connexion Hôte};
+    L --> M[PortFast: Bypass États Transitoires];
+    M --> N[Accès Immédiat au Réseau];
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p><strong>Rôle dans les réseaux modernes</strong> : STP et ses évolutions (RSTP, MSTP) sont les <span class="concept-key">gardiens de la stabilité</span> de la couche de commutation Ethernet. Ils permettent d'implémenter la <span class="concept-key">redondance physique</span> (chemins multiples) sans souffrir de ses effets destructeurs (boucles logiques), garantissant ainsi la disponibilité.</p>
+                <p><strong>Positionnement dans les modèles</strong> :</p>
+                <ul>
+                    <li><strong>Modèle OSI</strong> : Couche 2 (Liaison de données). STP opère au niveau des trames Ethernet et des adresses MAC.</li>
+                    <li><strong>Modèle TCP/IP</strong> : Couche Accès réseau. Il est totalement indépendant des adresses IP (couche 3). C'est une <span class="concept-key">erreur conceptuelle majeure</span> de le confondre avec un protocole de routage comme OSPF. Le routage gère la redondance par équilibrage de charge et métriques ; STP la gère par <span class="concept-key">blocage pur</span>.</li>
+                </ul>
+                <p><strong>Frontières du domaine</strong> : STP opère au sein d'un <span class="concept-key">domaine de broadcast unique</span>. Avec PVST+, chaque VLAN a son propre domaine STP. Sa frontière s'arrête aux routeurs ou aux liens où la commutation de couche 2 cesse.</p>
+                <p><strong>Relations avec les autres briques</strong> :</p>
+                <ul>
+                    <li><strong>Avec le VLAN</strong> : PVST+ crée une instance STP par VLAN, permettant des arbres logiques différents par VLAN.</li>
+                    <li><strong>Avec le routage (Couche 3)</strong> : Dans les designs modernes (fabric switching, routage everywhere), on réduit le domaine STP à la seule couche d'accès. La redondance entre distribution et cœur est gérée par des protocoles de couche 3 (ECMP), éliminant le besoin de STP sur ces liens et ses délais de convergence.</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détaillés</h2>
+                </div>
+
+                <h3 id="mecanisme-boucle">A. La Genèse de la Boucle Catastrophique</h3>
+                <p><strong>Fonctionnement normal d'un switch</strong> : Pour une trame dont l'adresse MAC de destination est inconnue (Unknown Unicast) ou est une adresse de Broadcast/Multicast, le switch utilise le <span class="concept-key">flooding</span> : il envoie la trame sur tous ses ports, sauf celui de réception.</p>
+                <p><strong>Condition de validité</strong> : Ce mécanisme est sain dans une topologie en arbre.</p>
+                <p><strong>Limite et cas frontière</strong> : Dès qu'une <span class="concept-key">boucle physique</span> existe entre deux switches ou plus, la trame va tourner en rond indéfiniment. Chaque passage sur un switch déclenche un nouveau flooding, créant une <span class="concept-key">réaction en chaîne exponentielle</span> : c'est la tempête de diffusion. Contrairement aux paquets IP qui ont un TTL, les trames Ethernet n'ont pas de compteur de sauts. Elles tournent jusqu'à ce que la boucle soit rompue ou que les équipements soient saturés.</p>
+
+                <h3 id="mecanisme-bpdu">B. Le Langage du Système : Les BPDU</h3>
+                <p><strong>Séquence logique</strong> : Tous les 2 secondes (Hello Time), chaque switch envoie une BPDU de configuration sur chacun de ses ports. Ce message dit : "Je suis le switch [BID], et je pense que le Pont Racine est [Root BID], à un coût de [Root Path Cost] depuis moi."</p>
+                <p><strong>Fonctionnement</strong> : En recevant une BPDU sur un port, un switch compare l'information "Pont Racine revendiqué" avec sa propre connaissance. Si la BPDU reçue annonce un meilleur Pont Racine (BID plus bas), le switch met à jour sa table et relaie cette information à ses autres ports, en ajoutant le coût du port d'entrée au Root Path Cost. C'est ainsi que la connaissance du meilleur Pont Racine se propage.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+
+                <h3 id="protocole-stp">A. Le Cœur : Spanning Tree Protocol (STP - IEEE 802.1D)</h3>
+                <ul>
+                    <li><strong>Objectif</strong> : Établir une topologie en boucle unique en quatre étapes.</li>
+                    <li><strong>Couche</strong> : 2 (Liaison de données).</li>
+                    <li><strong>Encapsulation</strong> : Trame Ethernet de type 0x4242 (propriétaire Cisco) ou destination MAC 01:80:C2:00:00:00 (adresse MAC de pontage IEEE).</li>
+                    <li><strong>Champs importants</strong> : Bridge ID (BID), Root BID, Root Path Cost, Port ID.</li>
+                    <li><strong>Comportement normal</strong> : Convergence lente (30 à 50 secondes). Utilise 5 états de port.</li>
+                    <li><strong>Interactions</strong> : Nécessite des minuteurs (Hello, Fwd Delay, Max Age) synchronisés sur le Pont Racine.</li>
+                </ul>
+
+                <h3 id="identite-bid">B. L'Identité et le Rang : Le Bridge ID (BID)</h3>
+                <ul>
+                    <li><strong>Objectif</strong> : Identifier de manière unique un switch dans le processus STP et déterminer sa priorité pour être Pont Racine.</li>
+                    <li><strong>Structure</strong> : 8 octets = <strong>Priorité (2 octets)</strong> + <strong>ID système étendu (2 octets sur 3, mais valeur significative sur 12 bits)</strong> + <strong>Adresse MAC (6 octets)</strong>.</li>
+                    <li><strong>Décision</strong> : Le BID le plus bas gagne.
+                        <ol>
+                            <li>On compare d'abord la <strong>priorité</strong> (plus basse = mieux). Valeur par défaut : 32768.</li>
+                            <li>En cas d'égalité, on compare <strong>l'ID système étendu</strong> (lié au VLAN dans PVST+).</li>
+                            <li>En dernier recours, on compare <strong>l'adresse MAC</strong> (plus basse = mieux).</li>
+                        </ol>
+                    </li>
+                    <li><span class="concept-key">Illusion conceptuelle déconstruite</span> : "Le Pont Racine est celui avec la priorité la plus basse". C'est presque vrai, mais incomplet. C'est le <strong>BID</strong> le plus bas qui est élu. Avec les configurations par défaut (priorité identique à 32768), c'est effectivement l'adresse MAC la plus basse qui l'emporte, pas une priorité "plus basse".</li>
+                    <li><strong>ID système étendu</strong> : Son inclusion est une évolution majeure. Il encode le numéro de VLAN (sur 12 bits), permettant à PVST+ d'exécuter une instance STP indépendante par VLAN.</li>
+                </ul>
+
+                <h3 id="roles-ports">C. Les Rôles de Port : La Clé de la Prévention des Boucles</h3>
+                <ol>
+                    <li><strong>Port Racine (Root Port - RP)</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Être le <strong>meilleur chemin depuis ce switch</strong> vers le Pont Racine.</li>
+                            <li><strong>Détermination</strong> : Le port avec le <strong>Root Path Cost</strong> le plus bas. Ce coût est la somme des coûts des liens depuis le Pont Racine. En cas d'égalité de coût, on utilise un ordre de tie-breaker : BID voisin le plus bas, puis Port ID voisin le plus bas.</li>
+                            <li><strong>État</strong> : <em>Forwarding</em> (après les états transitoires).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Port Désigné (Designated Port - DP)</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Être le <strong>meilleur port sur un segment LAN</strong> pour envoyer/recevoir le trafic vers/du Pont Racine.</li>
+                            <li><strong>Détermination</strong> : Par segment (lien entre deux switches, ou lien vers un hôte), le port du switch qui a le <strong>meilleur chemin vers le Pont Racine</strong> devient DP. Si les deux switches ont le même coût, c'est le port du switch avec le BID le plus bas qui gagne.</li>
+                            <li><strong>État</strong> : <em>Forwarding</em>.</li>
+                            <li><span class="concept-key">Illusion conceptuelle déconstruite</span> : "Le port désigné est le meilleur port vers le Pont Racine". C'est ambigu. Le Port Racine est le meilleur port <em>depuis un switch</em>. Le Port Désigné est le meilleur port <em>pour un segment</em>. Sur le lien direct entre un switch non-racine et le Pont Racine, le port du Pont Racine est DP, et le port du switch non-racine est RP.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Port Alternatif / Bloqué (Alternate/Blocked Port)</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Être le port redondant, prêt à prendre le relais, mais <strong>bloqué</strong> pour prévenir la boucle.</li>
+                            <li><strong>Détermination</strong> : Tout port qui n'est ni RP ni DP.</li>
+                            <li><strong>État</strong> : <em>Blocking</em> (STP) / <em>Discarding</em> (RSTP). Il écoute les BPDU mais ne transmet <strong>aucune trame de données utilisateur</strong>.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3 id="convergence">D. La Convergence et ses États (STP vs RSTP)</h3>
+                <ul>
+                    <li><strong>Minuteurs STP</strong> : Sources de lenteur.
+                        <ul>
+                            <li><strong>Hello (2s)</strong> : Intervalle des BPDU.</li>
+                            <li><strong>Forward Delay (15s)</strong> : Temps passé dans chacun des états <em>Listening</em> et <em>Learning</em>. <strong>Total : 30 secondes d'attente</strong> avant de transmettre des données.</li>
+                            <li><strong>Max Age (20s)</strong> : Temps maximum pour attendre une BPDU avant de considérer le chemin perdu.</li>
+                        </ul>
+                    </li>
+                    <li><strong>États des Ports STP</strong> :
+                        <ul>
+                            <li><strong>Blocking</strong> : Reçoit des BPDU seulement. Aucune donnée. Attente de 20s (Max Age) si aucune BPDU.</li>
+                            <li><strong>Listening</strong> : Reçoit et envoie des BPDU pour déterminer la topologie. <strong>Ne transmet PAS de trames de données</strong>. Attente de 15s.</li>
+                            <li><strong>Learning</strong> : Reçoit et envoie des BPDU. <strong>Commence à peupler la table MAC</strong> à partir des trames reçues. <strong>Ne transmet PAS de trames de données</strong>. Attente de 15s.</li>
+                            <li><strong>Forwarding</strong> : Opération normale. Transmet BPDU et données.</li>
+                            <li><strong>Disabled</strong> : Administrativement désactivé.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Rapid Spanning Tree Protocol (RSTP - IEEE 802.1w)</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Convergence en quelques centaines de millisecondes.</li>
+                            <li><strong>Changement majeur</strong> : Réduction à <strong>trois états opérationnels</strong>.
+                                <ul>
+                                    <li><strong>Discarding</strong> : Fusion des états <em>Disabled</em>, <em>Blocking</em> et <em>Listening</em>. Aucune donnée utilisateur ne passe.</li>
+                                    <li><strong>Learning</strong> : Identique à STP.</li>
+                                    <li><strong>Forwarding</strong> : Identique à STP.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Avantage</strong> : Élimine les délais passifs. Les ports peuvent passer directement de <em>Discarding</em> à <em>Forwarding</em> via des mécanismes de négociation de port rapide (Proposal/Agreement).</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3 id="implementations">E. Les Implémentations par VLAN</h3>
+                <ul>
+                    <li><strong>PVST+ (Per-VLAN Spanning Tree Plus - Cisco)</strong> : Exécute une instance <strong>STP 802.1D par VLAN</strong>. Permet d'avoir un Pont Racine différent par VLAN, répartissant ainsi le trafic sur les différents liens uplinks.</li>
+                    <li><strong>Rapid-PVST+ (Cisco)</strong> : Exécute une instance <strong>RSTP 802.1w par VLAN</strong>. C'est la norme sur les commutateurs Cisco modernes. Offre la convergence rapide de RSTP avec la granularité par VLAN de PVST+.</li>
+                </ul>
+
+                <h3 id="optimisations">F. Les Optimisations pour l'Accès</h3>
+                <ul>
+                    <li><strong>PortFast</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Éviter les délais de 30 secondes (Listening + Learning) sur les <strong>ports d'accès connectés à des hôtes finaux</strong> (PC, serveur, imprimante).</li>
+                            <li><strong>Fonctionnement</strong> : Le port passe <strong>immédiatement à l'état <em>Forwarding</em></strong> dès qu'il est activé physiquement. Il ignore les états transitoires.</li>
+                            <li><strong>Condition de validité</strong> : <strong>DOIT être utilisé uniquement sur des ports connectés à des équipements terminaux qui ne génèrent PAS de boucle.</strong> Jamais sur un lien vers un autre switch.</li>
+                            <li><strong>Conséquence pratique</strong> : Résout le problème des clients DHCP qui expirent avant d'obtenir une adresse IP.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Protection BPDU (BPDU Guard)</strong> :
+                        <ul>
+                            <li><strong>Objectif</strong> : Sécuriser la configuration PortFast.</li>
+                            <li><strong>Fonctionnement</strong> : Si un port avec PortFast et BPDU Guard activés <strong>reçoit une BPDU</strong> (ce qui indiquerait qu'un switch a été connecté par erreur), il est immédiatement mis dans l'état <strong>err-disabled</strong> (désactivé par erreur). Cela empêche la création accidentelle d'une boucle.</li>
+                            <li><strong>C'est une mesure de sécurité proactive indispensable avec PortFast.</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures (Issues des Réponses Fausses)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. Illusion : "STP est un protocole de couche 3" ou "STP fait du routage".</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : STP gère des chemins dans le réseau, comme les protocoles de routage.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : STP opère exclusivement au niveau des adresses MAC et des trames Ethernet (couche 2). Il ne comprend pas les adresses IP. Son but est de bloquer des liens, pas de choisir des routes basées sur des métriques IP.</p>
+                    <p><strong>Raisonnement correct</strong> : Séparer mentalement la <span class="concept-key">commutation (couche 2, MAC, STP)</span> du <span class="concept-key">routage (couche 3, IP, OSPF/EIGRP)</span>. STP est au switch ce qu'un protocole de routage est au routeur, mais dans des couches différentes.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. Illusion : "Le port qui transmet les trames sur un segment est toujours le port racine."</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : Le port racine est important et transmet des données.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : Sur un segment entre deux switches, un seul port est actif pour transmettre les données <em>vers/depuis ce segment</em> : c'est le <strong>Port Désigné</strong>. Ce DP peut être sur le Pont Racine ou sur un autre switch. Le Port Racine est toujours <em>sur le switch non-racine</em> et regarde <em>vers le Pont Racine</em>.</p>
+                    <p><strong>Raisonnement correct</strong> : Se poser deux questions : 1) "Quel est le meilleur chemin depuis ce switch vers la racine ?" → Réponse : Port Racine. 2) "Quel est le meilleur port pour ce segment particulier ?" → Réponse : Port Désigné.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. Illusion : "Les ports bloqués ne font rien." ou "Les ports bloqués transmettent des BPDU."</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : Le nom "bloqué" suggère l'inactivité.</p>
+                    <p><strong>Pourquoi elle est fausse / incomplète</strong> : Un port bloqué est <strong>très actif</strong> dans la surveillance du réseau. Il <strong>reçoit</strong> constamment des BPDU de son voisin. Cela lui permet de détecter si le chemin principal est tombé (plus de BPDU reçus). Il ne transmet <strong>pas</strong> de BPDU générés par son propre switch (sauf dans des cas très spécifiques de RSTP), et ne transmet <strong>jamais</strong> de trames de données.</p>
+                    <p><strong>Raisonnement correct</strong> : Un port bloqué est un <span class="concept-key">sentinelle</span>. Il écoute le réseau pour être prêt à prendre le relais. Son statut de "non-transmission" ne s'applique qu'aux données utilisateur.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. Illusion : "PortFast est fait pour accélérer la convergence entre switches."</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : PortFast accélère le passage à l'état Forwarding.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : PortFast est une <strong>exception dangereuse</strong> au processus STA normal. Elle ne doit être appliquée que là où l'on est <strong>absolument certain</strong> qu'aucune boucle ne peut se former : sur les ports connectés à un seul équipement terminal non-bridgé. L'utiliser entre switches créerait une boucle instantanée.</p>
+                    <p><strong>Raisonnement correct</strong> : PortFast = "Faire confiance à ce port". On ne fait confiance qu'aux hôtes finaux. Toujours associer <strong>BPDU Guard</strong> à PortFast.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <p>Un expert ne voit pas STP comme une collection de commandes, mais comme un <span class="concept-key">système dynamique dont il influence le comportement</span>.</p>
+                <ol>
+                    <li><strong>Penser en causalité et en système</strong> :
+                        <ul>
+                            <li>Avant de changer la priorité STP d'un switch, l'expert anticipe : "Si je fais de ce switch le Pont Racine, tous les chemins racine vont-ils être optimaux ? Vais-je créer un goulot d'étranglement ?"</li>
+                            <li>Il comprend que modifier un coût de port sur un lien influence non seulement les ports directs, mais peut aussi déclencher un changement de rôle de port (DP vers bloqué) sur un segment distant, modifiant ainsi tout le flux de trafic.</li>
+                        </ul>
+                    </li>
+                    <li><strong>La méthodologie de dépannage STP</strong> :
+                        <ul>
+                            <li><strong>Étape 1 : Identifier le Pont Racine réel (<code>show spanning-tree root</code>)</strong>. Est-ce le switch souhaité par le design ? Sinon, vérifier les BID.</li>
+                            <li><strong>Étape 2 : Vérifier les rôles de port (<code>show spanning-tree detail</code>)</strong>. Pour un lien qui devrait être actif mais ne passe pas de trafic : est-ce que le port est bien en <em>Forwarding</em> ? Est-il DP ou RP ? Si non, pourquoi ? (Coût trop élevé ? BID voisin meilleur ?)</li>
+                            <li><strong>Étape 3 : Auditer la cohérence</strong>. Les BPDU sont-elles reçues partout ? Un filtre ACL bloque-t-il le protocole 0x4242 ou l'adresse MAC 01:80:C2:00:00:00 ?</li>
+                            <li><strong>Étape 4 : Vérifier les optimisations</strong>. Les ports d'accès ont-ils PortFast et BPDU Guard ? Si oui, un port est-il en err-disabled ? Cela signale une mauvaise connexion.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Design pour la résilience et la performance</strong> :
+                        <ul>
+                            <li>L'expert choisit manuellement et place stratégiquement le Pont Racine (et le Pont Racine secondaire) au centre de la topologie logique, généralement sur les switches de distribution ou de cœur, qui sont les plus puissants et disponibles.</li>
+                            <li>Il utilise PVST+ ou Rapid-PVST+ pour répartir la charge du trafic des différents VLAN sur des liens uplinks différents, en assignant des Ponts Racine différents.</li>
+                            <li>Il limite le domaine STP. Dans un design moderne, il pousse le routage (L3) aussi loin que possible vers la périphérie, confinant STP à un petit nombre de switches d'accès, réduisant ainsi la complexité et le risque de perturbation à grande échelle.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Ultra-Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>Lois Conceptuelles :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de la Racine</strong> : <strong>Tout converge vers le BID le plus bas.</strong> C'est le premier principe immuable.</p>
+                    <p>2. <strong>Loi des Chemins</strong> : <strong>Le trafic suit toujours le chemin de coût cumulé le plus bas vers la Racine.</strong></p>
+                    <p>3. <strong>Loi des Ports</strong> : <strong>Sur un segment, un seul père (DP) ; sur un switch, un seul chemin vers le père (RP) ; tous les autres sont en standby (Alternatif).</strong></p>
+                </div>
+
+                <h3>Équations Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>Élection = min(BID) → Chemin = min(Coût Racine) → Segment = min(Coût Racine local) → Tie-Breaker = min(BID voisin, Port ID voisin)</strong></p>
+                </div>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p>Dans le système de chauffage, on ne veut qu'un seul flux actif de la chaudière (Racine) vers chaque bâtiment (switch). On ferme des vannes (ports bloqués) pour briser les boucles, mais on les garde prêtes à s'ouvrir en cas de rupture de canalisation (panne). Vous, administrateur, êtes l'ingénieur en chef qui définit où se trouve la chaudière et planifie quelles vannes doivent rester ouvertes.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Contrôlée (Au-delà du Cadre Initial)</h2>
+                </div>
+                <ul>
+                    <li><strong>Multiple Spanning Tree (MSTP - IEEE 802.1s)</strong> : Le successeur évolué de PVST+. Au lieu d'une instance par VLAN (lourd), il permet de <span class="concept-key">mapper plusieurs VLAN sur un même arbre logique (MSTI)</span>. On peut ainsi avoir quelques arbres seulement (ex: "Arbre_VLANs_Data", "Arbre_VLANs_Voix") et répartir la charge, avec une bien meilleure efficacité que PVST+ à grande échelle.</li>
+                    <li><strong>Les limites de STP et le paradigme du "Routage Everywhere"</strong> : Dans les data centers modernes (fabric VXLAN, EVPN), STP est souvent <span class="concept-key">désactivé</span>. La redondance et la boucle libre sont garanties par des protocoles de couche 3 (sous-jacents ou overlay) et des protocoles de contrôle de fabrique qui gèrent nativement les multi-chemin (ECMP). STP est vu comme un protocole lent, réactif et peu scalable pour ces environnements.</li>
+                    <li><strong>Protections avancées</strong> : Au-delà de BPDU Guard, l'expert connaît <span class="concept-key">Root Guard</span> (empêche un port de devenir Port Racine, protégeant le Pont Racine élu), <span class="concept-key">Loop Guard</span> (détecte les boucles unidirectionnelles), et <span class="concept-key">UDLD</span> (UniDirectional Link Detection), pour renforcer la robustesse de l'arbre.</li>
+                    <li><strong>Vision "Vendor-Neutral"</strong> : Comprendre que les concepts de BID, RPC, RP, DP sont universels (IEEE). Les implémentations comme PVST+ sont des extensions Cisco. MSTP est le standard ouvert recommandé pour les réseaux multi-vendors complexes.</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">système de régulation distribuée</span> qui maintient la couche 2 en vie. Vous voyez la topologie physique d'un réseau commuté et vous pouvez mentalement prédire son arbre logique résultant, identifiant les ports bloqués et les chemins actifs. Vous comprenez que STP n'est pas une fonctionnalité optionnelle, mais le fondement nécessaire de toute redondance à la couche 2.</p>
+                    <p>Vous pouvez diagnostiquer une panne de connectivité en remontant la chaîne causale : de l'état d'un port (err-disabled ? blocking ?), à la réception des BPDU, jusqu'à l'élection du Pont Racine. Vous savez configurer STP pour optimiser la résilience et les performances, tout en appliquant les garde-fous de sécurité (BPDU Guard, Root Guard).</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je comprends comment STP transforme une maille physique en un arbre logique stable. »</li>
+                        <li>« Je peux expliquer la différence cruciale entre Port Racine et Port Désigné. »</li>
+                        <li>« Je sais pourquoi STP est lent et comment RSTP résout ce problème. »</li>
+                        <li>« Je conçois des réseaux commutés redondants en anticipant l'arbre STP résultant. »</li>
+                        <li>« Je sécurise les ports d'accès avec PortFast et BPDU Guard sans créer de risque. »</li>
+                        <li>« Je peux dépanner une topologie STP complexe avec une méthodologie systématique. »</li>
+                        <li>« Je connais les limites de STP et quand utiliser des alternatives de couche 3. »</li>
+                    </ul>
+                </div>
+            </section>
+        
+      <section class="panel">
+        <footer class="page-footer">
+
+        <p>Module Académique STP — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar-shell');
+      const navLinks = document.querySelectorAll('.nav a');
+      const sections = document.querySelectorAll('.module-section');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function () {
+          sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+        });
+      }
+
+      function setActiveSection() {
+        let current = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 140;
+          const height = section.offsetHeight;
+          if (window.scrollY >= top && window.scrollY < top + height) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'active-section');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active', 'active-section');
+          }
+        });
+      }
+
+      setActiveSection();
+      window.addEventListener('scroll', setActiveSection);
+
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(el => el.removeAttribute('data-processed'));
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
+        const target = diagram.querySelector('.mermaid');
+        if (!target || diagram.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        let scale = 1;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        diagram.insertBefore(toolbar, target);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          const button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          const action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+

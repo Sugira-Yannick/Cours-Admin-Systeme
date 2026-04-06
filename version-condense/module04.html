@@ -1,0 +1,883 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Académique : Routage Inter-VLAN</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0c1722;
+      --panel:#12212b;
+      --panel2:#162934;
+      --line:rgba(121,221,210,.18);
+      --line-strong:rgba(121,221,210,.42);
+      --text:#eef7fa;
+      --muted:#a7bec6;
+      --accent:#72dfd2;
+      --accent2:#f4cb7e;
+      --shadow:0 28px 70px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --color-primary:#eef7fa;
+      --color-secondary:#d8e8ee;
+      --color-accent:#72dfd2;
+      --color-law:#ff8c8c;
+      --color-illusion:#f4cb7e;
+      --color-background:#071018;
+      --color-surface:#12212b;
+      --color-border:rgba(121,221,210,.24);
+      --font-heading:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+      --font-body:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      color:var(--text);
+      font-family:var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      scroll-behavior:smooth;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+
+    .page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,.panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:34px 34px 28px;min-height:260px}
+
+    .hero::before,
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .eyebrow{
+      margin:0 0 14px;
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(36px,5vw,68px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .hero-copy{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:21px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card strong{display:block;font-size:18px;line-height:1.2;margin-bottom:6px}
+    .hero-card span{color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      gap:18px;
+      grid-template-columns:320px minmax(0,1fr);
+      align-items:start;
+    }
+
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .main{display:grid;gap:18px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .note{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+    .nav a{
+      display:block;
+      margin-bottom:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.02);
+      transition:.22s ease;
+    }
+
+    .nav a:hover,
+    .nav a.active,
+    .nav a.active-section{
+      transform:translateX(4px);
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.08);
+    }
+
+    .nav ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .nav ul ul{
+      margin:0 0 12px 14px !important;
+      padding-left:10px;
+      border-left:1px solid var(--line);
+    }
+
+    .nav ul ul a{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .module-section{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin:0;
+      scroll-margin-top:20px;
+    }
+
+    .module-section::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.08), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.06), transparent 36%);
+    }
+
+    .module-section > *{position:relative;z-index:1}
+
+    .section-header{
+      margin-bottom:1.6rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--line);
+    }
+
+    .section-header h2{
+      margin:0;
+      font-family:var(--font-heading);
+      font-size:34px;
+      letter-spacing:-.04em;
+      color:var(--text);
+    }
+
+    .section-tag{
+      display:inline-block;
+      background:linear-gradient(135deg,var(--accent),#8ff4e8);
+      color:#07212a;
+      font-size:.78rem;
+      font-weight:800;
+      padding:.35rem .85rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    h3,h4{
+      font-family:var(--font-heading);
+      color:var(--text);
+      letter-spacing:-.03em;
+    }
+
+    h3{font-size:1.55rem;margin-top:2rem;margin-bottom:1rem}
+    h4{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.8rem}
+
+    p,ul,ol{margin-bottom:1.2rem}
+    ul,ol{padding-left:1.4rem}
+    li{margin-bottom:.5rem}
+    p,li,td,th{color:var(--text);line-height:1.8}
+
+    .analogy-box,.law-box,.illusion-box,.equation-box{
+      border-left:4px solid var(--accent);
+      padding:1.5rem;
+      margin:2rem 0;
+      border-radius:0 10px 10px 0;
+      background:rgba(114,223,210,.06);
+    }
+
+    .law-box{border-left-color:#ff8c8c;background:rgba(197,48,48,.10)}
+    .illusion-box{border-left-color:var(--accent2);background:rgba(244,203,126,.10)}
+    .equation-box{
+      text-align:center;
+      font-size:1.1rem;
+      border:1px dashed var(--line);
+      border-left-width:1px;
+      border-radius:18px;
+    }
+
+    .concept-key{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .mermaid-diagram{
+      margin:2rem 0;
+      padding:1rem;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--line);
+      background:rgba(18,33,43,.9);
+      color:var(--text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    .cognitive-objectives{
+      background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+      padding:2rem;
+      border-radius:18px;
+      margin:2rem 0;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .cognitive-objectives,
+    .cognitive-objectives p,
+    .cognitive-objectives li,
+    .cognitive-objectives h3{
+      color:#fff;
+    }
+
+    iframe,canvas,img,svg{max-width:100%}
+
+    pre{
+      overflow:auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    code{
+      color:#d9fff8;
+      word-break:break-word;
+    }
+
+    table{
+      width:100%;
+      display:block;
+      overflow:auto;
+      border-collapse:collapse;
+    }
+
+    .page-footer{
+      text-align:center;
+      padding:24px;
+      font-size:18px;
+      line-height:1.8;
+      color:var(--muted);
+    }
+
+    .page-footer p{margin:.4rem 0;color:var(--muted)}
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:4px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:3px;
+      border-radius:2px;
+      background:var(--text);
+    }
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 860px){
+      .hero{padding:24px 20px}
+      .panel,.module-section{padding:18px}
+      .page{width:min(100vw - 14px,1560px)}
+      .hero-grid{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .section-header h2{font-size:28px}
+      .hamburger{display:flex}
+      .sidebar[data-collapsed="true"] .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="eyebrow">Module Académique</p>
+    <h1>📘 Module Académique : Routage Inter-VLAN</h1>
+    <p class="hero-copy">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    <div class="hero-grid">
+      <div class="hero-card"><strong>Analogie</strong><span>Modèle systémique et vision d'ensemble</span></div>
+      <div class="hero-card"><strong>Architecture</strong><span>Fondamentaux et mécanismes détaillés</span></div>
+      <div class="hero-card"><strong>Protocoles</strong><span>Couches, services et erreurs à éviter</span></div>
+      <div class="hero-card"><strong>Objectifs</strong><span>Synthèse, extension et ancrage final</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar-shell" data-collapsed="false">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2 class="side-title" style="margin:0;">Navigation du Module</h2>
+          <div class="hamburger" id="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <nav class="nav">
+          <ul class="nav-menu" id="main-menu">
+
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement Expert</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            
+          </ul>
+          <div style="height:12px;"></div>
+          <ul class="sidebar-nav">
+
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes Détaillés</a></li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches et Services</a></li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension au-delà de NetAcad (500%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Principe du module</h2>
+        <p class="note">Reconstruction visuelle basée sur le modèle du projet, avec conservation du contenu complet et des schémas Mermaid du module source.</p>
+      </section>
+    </aside>
+
+    <main class="main" id="content">
+
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : L'Archipel Logistique Interconnecté</h2>
+                </div>
+                <p>Imaginez un archipel de plusieurs îles industrielles spécialisées (les VLANs). Chaque île produit des marchandises spécifiques dans son port intérieur sécurisé (domaine de broadcast). Pour que l'économie de l'archipel prospère, ces marchandises doivent s'échanger. Cependant, aucun pont direct ne relie les îles entre elles.</p>
+                <div class="analogy-box">
+                    <p><strong>Île Industrielle → VLAN</strong> : Zone de production isolée avec ses propres règles (adressage IP). Les docks de l'île sont les <span class="concept-key">ports d'accès</span> du commutateur.</p>
+                    <p><strong>Cargaison → Paquet IP</strong> : Le contenu à transporter. L'étiquette de destination est l'adresse IP.</p>
+                    <p><strong>Conteneur Maritime → Trame Ethernet</strong> : L'emballage standard pour le transport. L'étiquette sur le conteneur est l'<span class="concept-key">adresse MAC</span>. Le code de l'île d'origine/destination est le <span class="concept-key">tag VLAN (802.1Q)</span>.</p>
+                    <p><strong>Barge de Liaison (Lien Unique) → Router-on-a-Stick</strong> : Une seule barge fait la navette entre chaque île et le HUB. Elle transporte les conteneurs de *toutes* les îles, un à un. <strong>Goulot d'étranglement évident.</strong></p>
+                    <p><strong>Portique de Tri Intelligent (HUB) → Périphérique L3</strong> :
+                        <ul>
+                            <li><strong>Mode "A quai par île" (Routage Legacy)</strong> : Le HUB possède un quai dédié par île. Coûteux en infrastructures, mais débit garanti par quai.</li>
+                            <li><strong>Mode "Terminal à sous-voies" (ROAS)</strong> : Le HUB n'a qu'un seul grand quai. Les barges y accostent. Un système de sous-voies (<span class="concept-key">G0/0.10, .20</span>) à l'intérieur du terminal trie les conteneurs par code île (tag VLAN).</li>
+                            <li><strong>Mode "Centre de Tri Automatique Intégré" (Commutateur Multicouche)</strong> : Le HUB n'existe plus en tant qu'entité séparée. Chaque île est équipée d'un <strong>portique intelligent intégré (SVI)</strong> qui connaît instantanément la destination de chaque conteneur et l'envoie via un réseau de convoyeurs souterrains ultra-rapides (ASIC) directement vers l'île destinataire. <strong>Performance maximale, coût d'infrastructure élevé.</strong></li>
+                        </ul>
+                    </p>
+                    <p><strong>Canal de Contrôle HUB-Îles → Protocoles de Découverte/Gestion</strong> : Système radio qui permet au HUB de savoir quelles îles sont actives et quelles marchandises elles attendent (ARP, Tables de Routage).</p>
+                    <p><strong>Erreur de Code Île (Mauvaise encapsulation 802.1Q)</strong> : Un conteneur étiqueté "Île Aciérie (VLAN 10)" est envoyé sur le convoyeur de "l'Île Agro-alimentaire (VLAN 20)". La cargaison est perdue.</p>
+                </div>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global du Système : L'Écosystème de Segmentation et d'Interconnexion</h2>
+                </div>
+                <p>Le routage inter-VLAN n'est pas une fonction isolée, mais un <strong>système métabolique</strong> dans l'organisme réseau. Il transforme un amas de segments indépendants (VLANs) en un tissu interconnecté capable d'échanges complexes.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph "Couche 2 : Ségrégation (Le Terrain)"
+        A[VLAN 10<br/>Domaine Broadcast<br/>192.168.10.0/24] -- Port Accès --> SW[Commutateur L2<br/>Table MAC par VLAN];
+        B[VLAN 20<br/>Domaine Broadcast<br/>192.168.20.0/24] -- Port Accès --> SW;
+    end
+
+    subgraph "Couche 3 : Interconnexion (Le Cerveau & Le Système Sanguin)"
+        SW -- Tag 802.1Q VLAN 10 --> L3[Processeur de Routage L3];
+        SW -- Tag 802.1Q VLAN 20 --> L3;
+
+        L3 -- Décision via --> RT[Table de Routage<br/>- 192.168.10.0/24 → Vlanif10<br/>- 192.168.20.0/24 → Vlanif20];
+        L3 -- Résolution d'adjacence --> ARP[Table ARP<br/>- IP ↔ MAC de Passerelle];
+
+        L3 -- Nouvelle Trame pour VLAN 20 --> SW;
+    end
+
+    SW -- Trame VLAN 20 --> B;
+
+    C[Client VLAN10<br/>IP: 192.168.10.5<br/>GW: 192.168.10.1] --> A;
+    D[Client VLAN20<br/>IP: 192.168.20.5<br/>GW: 192.168.20.1] --> B;
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style L3 fill:#fff3e0
+    style RT fill:#f1f8e9
+                    </div>
+                </div>
+                <h3>Causalités Fondamentales du Système :</h3>
+                <ol>
+                    <li><strong>Si</strong> un hôte veut parler à une IP hors de son sous-réseau, <strong>alors</strong> il envoie la trame à l'adresse MAC de sa <span class="concept-key">passerelle par défaut</span>.</li>
+                    <li><strong>Si</strong> la passerelle est une interface L3 active (<code>up/up</code>), <strong>alors</strong> elle dépouille la trame, consulte sa <span class="concept-key">table de routage</span>.</li>
+                    <li><strong>Si</strong> une route existe vers le réseau de destination, <strong>alors</strong> le processeur L3 cherche l'adresse MAC de l'hôte cible (ARP).</li>
+                    <li><strong>Si</strong> l'adresse MAC cible est connue, <strong>alors</strong> le paquet est ré-encapsulé dans une <span class="concept-key">nouvelle trame</span> pour le VLAN de destination et injecté dans le système.</li>
+                    <li><strong>Si</strong> une de ces conditions échoue (VLAN inexistant, SVI down, pas de route, échec ARP), <strong>alors</strong> l'échange est rompu. La panne est systémique, pas aléatoire.</li>
+                </ol>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale : La Fonction Critique de Passerelle</h2>
+                </div>
+                <p>Le routage inter-VLAN est la <strong>fonction de passerelle par défaut matérialisée et multipliée</strong>. Il se situe au point de rupture entre deux paradigmes :</p>
+                <ul>
+                    <li><strong>Le paradigme de la commutation (L2)</strong> : "Je connais cette adresse MAC locale, je l'envoie directement." (Forwarding basé sur la table CAM/MAC).</li>
+                    <li><strong>Le paradigme du routage (L3)</strong> : "Cette adresse IP n'est pas locale, je l'envoie à mon routeur pour qu'il trouve le chemin." (Forwarding basé sur la table de routage).</li>
+                </ul>
+
+                <h3>Positionnement dans la pile protocolaire :</h3>
+                <ul>
+                    <li><strong>Modèle OSI</strong> : Il opère à la <span class="concept-key">couche 3 (Réseau)</span>, mais son *trigger* est un échec à la <span class="concept-key">couche 2 (Liaison)</span>. Il consomme des trames L2 (Ethernet + 802.1Q) et produit de nouvelles trames L2.</li>
+                    <li><strong>Modèle TCP/IP</strong> : C'est une fonction du <span class="concept-key">couche Internet (IP)</span>. L'interface de passerelle (SVI, sous-interface) est une entité IP à part entière.</li>
+                    <li><strong>Frontières</strong> : Son domaine s'arrête là où commence le routage IP général. Il ne s'occupe pas des routes vers Internet (BGP) ou des protocoles de routage dynamique complexes (OSPF, EIGRP), bien qu'il puisse les supporter.</li>
+                </ul>
+
+                <h3>Relations systémiques critiques :</h3>
+                <ul>
+                    <li><strong>Avec STP (Spanning Tree)</strong> : Une boucle L2 peut rendre un VLAN inaccessible, mettant <em>down</em> son SVI. Le routage L3 dépend de la stabilité L2.</li>
+                    <li><strong>Avec DHCP</strong> : Les passerelles SVI sont souvent les relais DHCP (<code>ip helper-address</code>) pour les clients de leurs VLANs.</li>
+                    <li><strong>Avec la sécurité (ACLs)</strong> : Les SVI et sous-interfaces sont les points d'application privilégiés des ACLs pour filtrer le trafic <strong>Est-Ouest</strong> (inter-VLAN).</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détaillés : La Danse des Trames et des Paquets</h2>
+                </div>
+                <p><strong>Séquence détaillée d'un échange inter-VLAN (VLAN 10 → VLAN 20) :</strong></p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph "Étape 1 : Émission Hôte Source (L2 Decision)"
+        A[PC1: 192.168.10.5] -- "Dest IP 192.168.20.5<br/>hors de mon sous-réseau" --> B["Envoi à la GW MAC<br/>(ARP pour 192.168.10.1)"];
+    end
+
+    subgraph "Étape 2 : Commutation vers la Passerelle (L2 Forwarding)"
+        B --> C[Comm. L2<br/>Port Accès VLAN10];
+        C -- "Trame untagged<br/>Port → MAC de GW" --> D["Vers Port Trunk /<br/>Port Routé"];
+    end
+
+    subgraph "Étape 3 : Traitement Couche 3 (Routing Decision & Rewrite)"
+        D -- "Trame arrive sur<br/>Interface L3 (SVI10/.10)" --> E[Processeur L3];
+        E -- "Dépouillage L2,<br/>Extraction Paquet IP" --> F{"Lookup Table<br/>de Routage"};
+        F -- "Réseau 192.168.20.0/24<br/>→ SVI20 /.20" --> G;
+        G["Ré-encapsulation L2:<br/>Src MAC: MAC de SVI20<br/>Dst MAC: MAC de PC2 (ARP)<br/>Tag: VLAN 20"] --> H;
+    end
+
+    subgraph "Étape 4 : Réinjection et Livraison (L2 Forwarding à nouveau)"
+        H[Nouvelle Trame Tagged VLAN20] --> I[Comm. L2];
+        I -- "Commutation vers<br/>Port Accès de PC2" --> J[PC2: 192.168.20.5];
+    end
+
+    style A fill:#bbdefb
+    style J fill:#d1c4e9
+    style E fill:#ffecb3
+                    </div>
+                </div>
+
+                <h3>Points d'échec critiques (Conditions de validité) :</h3>
+                <ol>
+                    <li><strong>VLAN inexistant sur le commutateur</strong> : La trame de PC1 est dropée par le commutateur avant même d'atteindre la passerelle.</li>
+                    <li><strong>SVI ou sous-interface <code>administratively down</code></strong> : La passerelle est "fermée". Le trafic L2 arrive, mais l'entité L3 ne le traite pas.</li>
+                    <li><strong>Absence de route dans la table de routage</strong> : "Network not in table". Le processeur L3 ne sait pas où envoyer le paquet, il le drop.</li>
+                    <li><strong>Échec de résolution ARP pour l'hôte cible</strong> : Le processeur L3 sait vers quel réseau router, mais ne connaît pas l'adresse MAC précise de l'hôte dans ce VLAN. Il envoie une requête ARP et peut <em>temporellement</em> dropper le paquet.</li>
+                    <li><strong>Lien Trunk mal configuré (VLANs non autorisés)</strong> : La trame tagged est filtrée par le commutateur avant d'atteindre le routeur (ROAS) ou après en être sortie.</li>
+                </ol>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+
+                <h3>A. Les Trois Archétypes Matériels (Couches 1-3)</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    subgraph "Routage Legacy"
+        L1[VLAN10] -- Accès --> P1[Port Physique G0/0];
+        L2[VLAN20] -- Accès --> P2[Port Physique G0/1];
+        P1 & P2 --> R[Routeur];
+        style R fill:#ffccbc
+    end
+
+    subgraph "Router-on-a-Stick (ROAS)"
+        L3[VLAN10] -- Accès --> SW1[Commutateur L2];
+        L4[VLAN20] -- Accès --> SW1;
+        SW1 -- Trunk (VLAN10,20) --> P3[Port Unique G0/0];
+        P3 --> SR[Routeur];
+        SR -.-> SI1[Sous-Interface .10];
+        SR -.-> SI2[Sous-Interface .20];
+        style SR fill:#c8e6c9
+        style SI1 stroke-dasharray: 5 5
+        style SI2 stroke-dasharray: 5 5
+    end
+
+    subgraph "Commutateur Multicouche (L3 Switch)"
+        L5[VLAN10] -- Accès --> SW2[Commutateur L3];
+        L6[VLAN20] -- Accès --> SW2;
+        SW2 -.-> SVI1[Interface Virtuelle Vlan10];
+        SW2 -.-> SVI2[Interface Virtuelle Vlan20];
+        SVI1 -- Routage via ASIC --> SVI2;
+        style SW2 fill:#bbdefb
+        style SVI1 stroke-dasharray: 5 5
+        style SVI2 stroke-dasharray: 5 5
+    end
+                    </div>
+                </div>
+                <p><strong>Comparatif des Archétypes :</strong></p>
+                <ul>
+                    <li><span class="concept-key">Routage Legacy (Physique)</span> : 1 VLAN = 1 Lien Physique. Simplicité, débit dédié, mais <strong>non évolutif</strong>.</li>
+                    <li><span class="concept-key">Router-on-a-Stick (ROAS)</span> : N VLANs = 1 Lien (Trunk) + N Sous-Interfaces. Économie de ports, mais <strong>goulot d'étranglement</strong> sur le lien partagé.</li>
+                    <li><span class="concept-key">Commutateur Multicouche (L3 Switch)</span> : Routage interne via <strong>SVI (Switched Virtual Interface)</strong> par VLAN ou <strong>Ports Routés</strong> (<code>no switchport</code>). Performance (ASIC) et évolutivité maximales, mais <strong>coût</strong> plus élevé.</li>
+                </ul>
+
+                <h3>B. Le Protocole Clé : IEEE 802.1Q (Couche 2)</h3>
+                <ul>
+                    <li><strong>Objectif</strong> : Transporter l'appartenance à un VLAN sur un lien unique (trunk).</li>
+                    <li><strong>Mécanisme</strong> : Insère un <span class="concept-key">tag de 4 octets</span> entre l'adresse MAC source et le champ Type/Length de la trame Ethernet.</li>
+                    <li><strong>Champ critique : VID (VLAN Identifier)</strong> : <strong>12 bits identifiant le VLAN (1-4094)</strong>. C'est ce numéro référencé dans <code>encapsulation dot1Q &lt;vid&gt;</code>.</li>
+                    <li><strong>VLAN Natif (Native VLAN)</strong> : VLAN dont le trafic traverse le trunk <strong>sans tag</strong>. Configuré avec le mot-clé <code>native</code>. <span class="concept-key">Erreur de sécurité classique</span> : mismatch de VLAN natif entre les deux extrémités du trunk.</li>
+                </ul>
+
+                <h3>C. Les Services de Découverte et de Maintenance (Couches 2-3)</h3>
+                <ul>
+                    <li><span class="concept-key">ARP (Address Resolution Protocol)</span> : <strong>Absolument critique</strong>. La passerelle doit faire du <strong>proxy ARP</strong> pour les hôtes d'autres VLANs. <code>show arp</code> est un outil de diagnostic vital.</li>
+                    <li><span class="concept-key">Table de Routage</span> : Doit contenir les réseaux directement connectés de chaque SVI/sous-interface. Une route statique ou dynamique n'est <strong>pas</strong> nécessaire pour le routage inter-VLAN de base.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Erreurs Conceptuelles Majeures (Illusions Cognitives)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 1 : "Le routage inter-VLAN, c'est juste configurer des IP sur différentes interfaces."</h4>
+                    <p><strong>Racine de l'illusion</strong> : Confusion entre <em>interfaces réseau IP</em> et <em>interfaces de routage inter-VLAN</em>.</p>
+                    <p><strong>Explication</strong> : L'essence est la <span class="concept-key">mapping 1:1 entre une entité L3 (SVI/sous-interface) et un domaine de broadcast L2 (VLAN ID)</span>. L'IP est une conséquence, pas la définition.</p>
+                    <p><strong>Conséquence de l'erreur</strong> : Tentative de configurer deux SVIs pour le même VLAN, ou d'assigner une IP à un port d'accès L2.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 2 : "Une SVI <code>interface Vlan10</code> est juste un alias pour un groupe de ports."</h4>
+                    <p><strong>Racine de l'illusion</strong> : Pensée trop "commutatrice". On voit le VLAN comme un ensemble de ports.</p>
+                    <p><strong>Explication</strong> : Une <span class="concept-key">SVI est une entité de couche 3 autonome</span>. Son état <code>up/up</code> dépend que 1) le VLAN existe, et 2) <strong>au moins un port L2 dans ce VLAN est <code>up/up</code></strong>. C'est un point de terminaison de routage qui <em>dépend</em> de la santé L2 sous-jacente.</p>
+                    <p><strong>Conséquence de l'erreur</strong> : Ne pas comprendre pourquoi une SVI reste <code>down/down</code> alors que le VLAN est configuré.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 3 : "<code>no switchport</code> rend un port 'plus intelligent' pour faire du trunking avancé."</h4>
+                    <p><strong>Racine de l'illusion</strong> : Association du mot "switch" à VLAN/trunk. <code>no switchport</code> semble désactiver une limitation.</p>
+                    <p><strong>Explication</strong> : <code>no switchport</code> effectue une <span class="concept-key">métamorphose de couche</span>. Le port passe du monde <strong>L2</strong> (commutation, VLANs) au monde <strong>L3</strong> (routage, adresse IP directe). Il devient une interface de routeur. Il ne comprend plus les tags 802.1Q.</p>
+                    <p><strong>Conséquence de l'erreur</strong> : Erreur de syntaxe en essayant de configurer <code>encapsulation dot1Q</code> sur un port en <code>no switchport</code>.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 4 : "Le goulot d'étranglement de ROAS, c'est le CPU du routeur."</h4>
+                    <p><strong>Racine de l'illusion</strong> : On sait que le routage est CPU-intensive sur les routeurs logiciels.</p>
+                    <p><strong>Explication</strong> : Le vrai goulot d'étranglement est <span class="concept-key">la bande passante du lien physique unique</span>. Même avec un CPU rapide, si le lien trunk est 1 Gbps, la somme de tout le trafic inter-VLAN ne peut dépasser 1 Gbps. C'est une limite <strong>physique</strong>.</p>
+                    <p><strong>Conséquence de l'erreur</strong> : Croire qu'améliorer le routeur résoudra les problèmes de performance. Il faut augmenter la bande passante du lien (LAG) ou passer à un commutateur L3.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert : La Pensée Systémique Appliquée</h2>
+                </div>
+                <p>Un expert ne voit pas des commandes, il voit des <strong>flux, des états et des dépendances</strong>.</p>
+
+                <h3>1. La Méthode Diagnostique "Causal Stack" :</h3>
+                <ol>
+                    <li><strong>Niveau 0 (Physique)</strong> : Le câble est branché ? Les LEDs sont vertes ? <code>show interfaces status</code></li>
+                    <li><strong>Niveau 1 (Connexion L2 - VLAN)</strong> : Le port est-il dans le bon mode (accès/trunk) ? Le VLAN existe-t-il ? <code>show interfaces switchport</code>, <code>show vlan</code></li>
+                    <li><strong>Niveau 2 (Connexion L3 - Passerelle)</strong> : L'interface L3 (SVI/.10) est-elle <code>up/up</code> ? A-t-elle une IP ? <code>show ip interface brief</code>, <code>show interfaces vlan 10</code></li>
+                    <li><strong>Niveau 3 (État du Réseau - Routes)</strong> : La route vers le réseau distant est-elle dans la table ? <code>show ip route</code></li>
+                    <li><strong>Niveau 4 (Résolution des Adresses - ARP)</strong> : La passerelle connaît-elle l'adresse MAC de l'hôte destination ? <code>show arp</code></li>
+                    <li><strong>Niveau 5 (Sécurité - ACLs/Firewall)</strong> : Une ACL bloque-t-elle le trafic ? <code>show access-lists</code>, <code>show run interface vlan 10</code></li>
+                </ol>
+                <p><strong>Règle d'or</strong> : Ne passez pas au niveau N+1 tant que le niveau N n'est pas validé.</p>
+
+                <h3>2. Pensée "Coût/Bénéfice Architectural" :</h3>
+                <p><strong>Scénario</strong> : "Nous avons 10 VLANs avec un trafic inter-VLAN modéré (web, email)."</p>
+                <ul>
+                    <li><strong>ROAS</strong> : Bénéfice (coût bas, configuration simple). Coût (limite future, goulot d'étranglement latent). <strong>Verdict</strong> : Acceptable pour le présent, risque futur.</li>
+                    <li><strong>Commutateur L3</strong> : Bénéfice (performance, évolutivité, gestion centralisée). Coût (investissement initial). <strong>Verdict</strong> : Décision stratégique pour l'avenir.</li>
+                </ul>
+                <p>L'expert quantifie le trafic, anticipe la croissance, et choisit en connaissance de cause.</p>
+
+                <h3>3. Compréhension des "Modes d'Échec" :</h3>
+                <ul>
+                    <li>Une <strong>panne de STP</strong> peut isoler un VLAN et faire tomber sa SVI.</li>
+                    <li>Une <strong>ACL mal appliquée sur une SVI</strong> bloquera tout le trafic inter-VLAN pour ce VLAN.</li>
+                    <li><strong>L'asymétrie de routage</strong> (un flux qui part par un chemin et revient par un autre où le VLAN n'existe pas) casse la communication.</li>
+                </ul>
+                <p>L'expert pense toujours en <strong>boucles de trafic complètes (aller-retour)</strong>, pas en chemins unidirectionnels.</p>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>Les 5 Lois Immuables du Routage Inter-VLAN :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de la Matérialisation de la Passerelle</strong> : "Un VLAN sans interface L3 active est une île sans port. Il peut communiquer en interne, mais jamais avec le monde extérieur."</p>
+                    <p>2. <strong>Loi de la Dépendance Ascendante</strong> : "La couche 3 repose sur la couche 2. Une SVI <code>down</code> est souvent le symptôme d'un problème de VLAN ou de port <code>down</code>."</p>
+                    <p>3. <strong>Loi de la Conservation de la Bande Passante (ROAS)</strong> : "La somme des débits inter-VLAN ne peut excéder la capacité du lien trunk. C'est une loi physique, pas configurable."</p>
+                    <p>4. <strong>Loi de l'Équivalence Logique</strong> : "Aux yeux du paquet IP, une SVI, une sous-interface et une interface physique sont toutes des *passerelles*. La différence est de performance et d'échelle, pas de logique."</p>
+                    <p>5. <strong>Loi du Diagnostic Séquentiel</strong> : "Du câble à la politique, parcourez les couches dans l'ordre. Le temps perdu à sauter des étapes est toujours supérieur au temps de les vérifier."</p>
+                </div>
+
+                <h3>Équations Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>Communication Inter-VLAN = (VLAN_A actif) + (Passerelle_A `up/up`) + (Route vers VLAN_B) + (Passerelle_B `up/up`) + (VLAN_B actif)</strong></p>
+                    <p><strong>Performance = Bande Passante Disponible / Nombre de Sauts L3</strong></p>
+                    <p><strong>Sécurité Inter-VLAN = Contrôle aux Passerelles (ACLs sur SVI) + Bonne Hygiène L2 (VLAN Natif sécurisé)</strong></p>
+                </div>
+
+                <h3>Retour à l'Analogie (L'Archipel) :</h3>
+                <div class="analogy-box">
+                    <p>Pour dépanner, demandez-vous : La cargaison (paquet) quitte-t-elle bien l'île source (VLAN actif, port accès) ? La barge/convoyeur (trunk/ASIC) fonctionne-t-il ? Le centre de tri (périphérique L3) reçoit-il la cargaison (SVI/interface `up`) ? Connaît-il la destination (table de routage) ? A-t-il un moyen de l'acheminer (ARP, lien sortant) ? L'île destination l'accepte-t-elle (VLAN actif, port accès) ?</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension au-delà de NetAcad (500%+) : Le Monde Réel de l'Ingénierie Réseau</h2>
+                </div>
+
+                <h3>1. VLAN de Management et Routage Hiérarchique :</h3>
+                <p>Dans un réseau d'entreprise, le routage inter-VLAN n'est pas plat. Un <span class="concept-key">VLAN de Management (ex: VLAN 999)</span> existe pour les périphériques réseau. Les SVIs des VLAN utilisateurs font souvent du <strong>routage hiérarchique</strong> : leur passerelle par défaut pointe vers une <strong>SVI centrale sur un commutateur cœur (core switch)</strong>, créant une topologie en <strong>couches (Core-Distribution-Access)</strong>.</p>
+
+                <h3>2. First-Hop Redundancy Protocol (FHRP) : HSRP, VRRP, GLBP :</h3>
+                <p>Une seule passerelle SVI est un <strong>Single Point of Failure</strong>. Les FHRP permettent à deux commutateurs multicouches de simuler une <span class="concept-key">passerelle virtuelle unique</span>. Les hôtes configurent cette IP virtuelle comme GW. Le routage inter-VLAN devient <strong>haute disponibilité</strong>.</p>
+
+                <h3>3. Routage Inter-VLAN Distribué (Cisco Catalyst avec StackWise/VDL) :</h3>
+                <p>Dans un châssis ou un stack, le routage peut être <strong>distribué</strong> sur toutes les cartes de ligne. La carte d'entrée fait elle-même le lookup et réinjecte le trafic, éliminant tout goulot central et scalant linéairement.</p>
+
+                <h3>4. Micro-Segmentation et Sécurité Zero-Trust :</h3>
+                <p>Tendance moderne : <strong>micro-segmentation</strong> (un VLAN par application). Le routage inter-VLAN devient le <span class="concept-key">choke point</span> parfait pour appliquer une politique <strong>Zero-Trust</strong>. Des ACLs granulaires ou un <strong>firewall interne</strong> inspectent <strong>tout</strong> le trafic Est-Ouest. L'administrateur expert ne voit plus le routage comme une simple connectivité, mais comme l'<strong>épine dorsale de la politique de sécurité interne</strong>.</p>
+
+                <h3>5. Automatisation et Infrastructure as Code (IaC) :</h3>
+                <p>L'expert moderne utilise <strong>Ansible, Terraform, Python</strong> pour générer de façon idempotente la configuration des SVI, vérifier la cohérence, et rendre le réseau prévisible, reproductible et documenté. Le routage inter-VLAN devient une <strong>déclaration d'état</strong> dans un fichier YAML/JSON.</p>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>Ce module a transformé un ensemble de QCM en une <strong>cartographie complète de l'écosystème du routage inter-VLAN</strong>, de ses mécanismes atomiques à ses implications architecturales et sécuritaires les plus avancées.</p>
+                    <p>Vous ne savez pas seulement "configurer ROAS", vous comprenez <strong>pourquoi, quand et à quel prix</strong> le choisir, et comment le faire évoluer vers des architectures d'entreprise robustes, sécurisées et automatisées.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je maîtrise les trois archétypes matériels et leurs compromis performance/coût/évolutivité. »</li>
+                        <li>« Je peux tracer et expliquer la séquence complète de ré-encapsulation L2/L3 d'un paquet inter-VLAN. »</li>
+                        <li>« Je diagnostique une panne avec la méthode "Causal Stack", du câble à la politique de sécurité. »</li>
+                        <li>« Je comprends les dépendances critiques entre STP, les VLANs, les SVIs et le routage. »</li>
+                        <li>« Je conçois des solutions de routage inter-VLAN en pensant à la haute disponibilité (FHRP) et à la sécurité (micro-segmentation). »</li>
+                        <li>« Je vois le routage inter-VLAN comme un service fondamental, pivot de la sécurité Est-Ouest et de l'automatisation réseau. »</li>
+                        <li>« Je pense en systèmes et en causalité, pas en configurations isolées. »</li>
+                    </ul>
+                </div>
+            </section>
+        
+      <section class="panel">
+        <footer class="page-footer">
+
+        <p>Module Académique Routage Inter-VLAN — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar-shell');
+      const navLinks = document.querySelectorAll('.nav a');
+      const sections = document.querySelectorAll('.module-section');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function () {
+          sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+        });
+      }
+
+      function setActiveSection() {
+        let current = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 140;
+          const height = section.offsetHeight;
+          if (window.scrollY >= top && window.scrollY < top + height) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'active-section');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active', 'active-section');
+          }
+        });
+      }
+
+      setActiveSection();
+      window.addEventListener('scroll', setActiveSection);
+
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(el => el.removeAttribute('data-processed'));
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
+        const target = diagram.querySelector('.mermaid');
+        if (!target || diagram.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        let scale = 1;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        diagram.insertBefore(toolbar, target);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          const button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          const action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+

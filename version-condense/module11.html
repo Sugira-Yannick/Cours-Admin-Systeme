@@ -1,0 +1,829 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Académique : Sécurité de la Couche 2 - L'Art de la Défense du Commutateur</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0c1722;
+      --panel:#12212b;
+      --panel2:#162934;
+      --line:rgba(121,221,210,.18);
+      --line-strong:rgba(121,221,210,.42);
+      --text:#eef7fa;
+      --muted:#a7bec6;
+      --accent:#72dfd2;
+      --accent2:#f4cb7e;
+      --shadow:0 28px 70px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --color-primary:#eef7fa;
+      --color-secondary:#d8e8ee;
+      --color-accent:#72dfd2;
+      --color-law:#ff8c8c;
+      --color-illusion:#f4cb7e;
+      --color-background:#071018;
+      --color-surface:#12212b;
+      --color-border:rgba(121,221,210,.24);
+      --font-heading:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+      --font-body:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      color:var(--text);
+      font-family:var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      scroll-behavior:smooth;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+
+    .page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,.panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:34px 34px 28px;min-height:260px}
+
+    .hero::before,
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .eyebrow{
+      margin:0 0 14px;
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(36px,5vw,68px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .hero-copy{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:21px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card strong{display:block;font-size:18px;line-height:1.2;margin-bottom:6px}
+    .hero-card span{color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      gap:18px;
+      grid-template-columns:320px minmax(0,1fr);
+      align-items:start;
+    }
+
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .main{display:grid;gap:18px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .note{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+    .nav a{
+      display:block;
+      margin-bottom:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.02);
+      transition:.22s ease;
+    }
+
+    .nav a:hover,
+    .nav a.active,
+    .nav a.active-section{
+      transform:translateX(4px);
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.08);
+    }
+
+    .nav ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .nav ul ul{
+      margin:0 0 12px 14px !important;
+      padding-left:10px;
+      border-left:1px solid var(--line);
+    }
+
+    .nav ul ul a{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .module-section{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin:0;
+      scroll-margin-top:20px;
+    }
+
+    .module-section::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.08), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.06), transparent 36%);
+    }
+
+    .module-section > *{position:relative;z-index:1}
+
+    .section-header{
+      margin-bottom:1.6rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--line);
+    }
+
+    .section-header h2{
+      margin:0;
+      font-family:var(--font-heading);
+      font-size:34px;
+      letter-spacing:-.04em;
+      color:var(--text);
+    }
+
+    .section-tag{
+      display:inline-block;
+      background:linear-gradient(135deg,var(--accent),#8ff4e8);
+      color:#07212a;
+      font-size:.78rem;
+      font-weight:800;
+      padding:.35rem .85rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    h3,h4{
+      font-family:var(--font-heading);
+      color:var(--text);
+      letter-spacing:-.03em;
+    }
+
+    h3{font-size:1.55rem;margin-top:2rem;margin-bottom:1rem}
+    h4{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.8rem}
+
+    p,ul,ol{margin-bottom:1.2rem}
+    ul,ol{padding-left:1.4rem}
+    li{margin-bottom:.5rem}
+    p,li,td,th{color:var(--text);line-height:1.8}
+
+    .analogy-box,.law-box,.illusion-box,.equation-box{
+      border-left:4px solid var(--accent);
+      padding:1.5rem;
+      margin:2rem 0;
+      border-radius:0 10px 10px 0;
+      background:rgba(114,223,210,.06);
+    }
+
+    .law-box{border-left-color:#ff8c8c;background:rgba(197,48,48,.10)}
+    .illusion-box{border-left-color:var(--accent2);background:rgba(244,203,126,.10)}
+    .equation-box{
+      text-align:center;
+      font-size:1.1rem;
+      border:1px dashed var(--line);
+      border-left-width:1px;
+      border-radius:18px;
+    }
+
+    .concept-key{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .mermaid-diagram{
+      margin:2rem 0;
+      padding:1rem;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--line);
+      background:rgba(18,33,43,.9);
+      color:var(--text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    .cognitive-objectives{
+      background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+      padding:2rem;
+      border-radius:18px;
+      margin:2rem 0;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .cognitive-objectives,
+    .cognitive-objectives p,
+    .cognitive-objectives li,
+    .cognitive-objectives h3{
+      color:#fff;
+    }
+
+    iframe,canvas,img,svg{max-width:100%}
+
+    pre{
+      overflow:auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    code{
+      color:#d9fff8;
+      word-break:break-word;
+    }
+
+    table{
+      width:100%;
+      display:block;
+      overflow:auto;
+      border-collapse:collapse;
+    }
+
+    .page-footer{
+      text-align:center;
+      padding:24px;
+      font-size:18px;
+      line-height:1.8;
+      color:var(--muted);
+    }
+
+    .page-footer p{margin:.4rem 0;color:var(--muted)}
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:4px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:3px;
+      border-radius:2px;
+      background:var(--text);
+    }
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 860px){
+      .hero{padding:24px 20px}
+      .panel,.module-section{padding:18px}
+      .page{width:min(100vw - 14px,1560px)}
+      .hero-grid{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .section-header h2{font-size:28px}
+      .hamburger{display:flex}
+      .sidebar[data-collapsed="true"] .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="eyebrow">Module Académique</p>
+    <h1>📘 Module Académique : Sécurité de la Couche 2 - L'Art de la Défense du Commutateur</h1>
+    <p class="hero-copy">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un administrateur réseau d'exception (Niveau Élite)</p>
+    <div class="hero-grid">
+      <div class="hero-card"><strong>Analogie</strong><span>Modèle systémique et vision d'ensemble</span></div>
+      <div class="hero-card"><strong>Architecture</strong><span>Fondamentaux et mécanismes détaillés</span></div>
+      <div class="hero-card"><strong>Protocoles</strong><span>Couches, services et erreurs à éviter</span></div>
+      <div class="hero-card"><strong>Objectifs</strong><span>Synthèse, extension et ancrage final</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar-shell" data-collapsed="false">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2 class="side-title" style="margin:0;">Navigation du Module</h2>
+          <div class="hamburger" id="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <nav class="nav">
+          <ul class="nav-menu" id="main-menu">
+
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            
+          </ul>
+          <div style="height:12px;"></div>
+          <ul class="sidebar-nav">
+
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes Détailés</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#cycle-port">Cycle d'un Port Sécurisé</a></li>
+                        <li><a href="#flux-validation">Flux de Validation DHCP/DAI</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches et Services</a></li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension Au-delà de NetAcad</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Principe du module</h2>
+        <p class="note">Reconstruction visuelle basée sur le modèle du projet, avec conservation du contenu complet et des schémas Mermaid du module source.</p>
+      </section>
+    </aside>
+
+    <main class="main" id="content">
+
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : L’Aéroport Sécurisé</h2>
+                </div>
+                <p>Imaginez un <strong>commutateur réseau moderne comme un aéroport international de haute sécurité</strong>.</p>
+                <div class="analogy-box">
+                    <p><strong>Les Ports (Interfaces) du Commutateur =</strong> Les différentes portes d’embarquement et points d’accès (portes passagers, portes fret, portes VIP, portes de maintenance).</p>
+                    <p><strong>Les Trames Ethernet (avec adresses MAC) =</strong> Les voyageurs (personnes) et leurs bagages (données).</p>
+                    <p><strong>Le VLAN Natif =</strong> Le terminal principal utilisé pour le transit interne du personnel et du matériel non étiqueté.</p>
+                    <p><strong>Le Plan de Bridging (Table MAC) =</strong> Le tableau central de gestion des vols qui associe chaque voyageur (MAC) à sa porte d’embarquement (Port).</p>
+                    <p><strong>Les Protocoles de Signalisation (DTP, STP) =</strong> Les systèmes de communication interne de l’aéroport (haut-parleurs, radio).</p>
+                    <p><strong>L’Administrateur Réseau =</strong> Le chef de la sécurité de l’aéroport.</p>
+                </div>
+                <h4>Pourquoi cette analogie ?</h4>
+                <p>Elle permet de conceptualiser chaque mécanisme de sécurité non comme une commande isolée, mais comme une <span class="concept-key">mesure systémique visant à contrôler les flux, authentifier les entités et verrouiller les accès non utilisés</span>. Une défaillance dans un protocole (comme DTP) devient une brèche dans la communication radio, exploitée pour accéder à des zones restreintes (VLAN hopping).</p>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global du Système</h2>
+                </div>
+                <p>La sécurité de la couche 2 (L2) protège <strong>l’infrastructure de commutation elle-même</strong>, qui est le fondement de tout réseau local. Ses mécanismes forment un système défensif en couches. Une faille dans une couche peut rendre inefficaces les protections des autres.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Menaces Couche 2] --> B{Système de Sécurité du Commutateur};
+
+    B --> C[**Contrôle d'Accès**<br/>Ports & MACs];
+    B --> D[**Isolation VLAN**<br/>Trunks & Domaines];
+    B --> E[**Protection des Services**<br/>DHCP & ARP];
+    B --> F[**Sécurisation STP**<br/>Boucles & Topologie];
+
+    C --> C1[Port Security<br/>Shutdown Ports Inutilisés];
+    D --> D1[VLAN Natif Dédié<br/>DTP Désactivé];
+    E --> E1[DHCP Snooping];
+    E1 --> E2[DAI - Dynamic ARP Inspection];
+    F --> F1[PortFast sur Hôtes];
+
+    C1 --> G[Table MAC Saine];
+    D1 --> H[Domaines VLAN Étancher];
+    E2 --> I[Tables ARP Valides];
+    F1 --> J[Convergence STP Rapide & Sûre];
+
+    G & H & I & J --> K[**Réseau Couche 2 Fiable et Résilient**];
+
+    L[Attaque MAC Flooding] -.->|Contrecarrée par| C1;
+    M[Attaque VLAN Hopping] -.->|Contrecarrée par| D1;
+    N[Attaque Rogue DHCP / ARP Spoofing] -.->|Contrecarrée par| E1 & E2;
+                    </div>
+                </div>
+                <p><strong>Loi systémique</strong> : Une faille dans une couche (ex : un port trunk non autorisé) peut rendre inefficaces les protections des autres couches (ex : DAI basé sur DHCP Snooping).</p>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p>La sécurité de la couche 2 opère principalement aux <strong>niveaux 1 et 2 du modèle OSI</strong> (Physique, Liaison de données) et correspond à la couche <strong>Accès Réseau du modèle TCP/IP</strong>. Son rôle est fondamental : elle est le <strong>gardien de l’intégrité du domaine de broadcast local</strong>. Si la couche 2 est compromise, les attaques de couches supérieures (usurpation, interception, déni de service) deviennent triviales.</p>
+                <p><strong>Frontières du domaine</strong> : Elle commence au port physique du commutateur et s’étend à la logique de commutation (table MAC) et aux protocoles de signalisation VLAN (802.1Q, DTP) et de bouclage (STP). Elle interagit étroitement avec la couche 3 (IP) en protégeant les protocoles de service (DHCP, ARP) qui en dépendent.</p>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes Détailés</h2>
+                </div>
+
+                <h3 id="cycle-port">A. Cycle de Vie d'un Port Sécurisé</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    A[État Initial<br/>Port actif (no shutdown)] --> B[Apprentissage & Validation<br/>MACs apprises, Sticky converti];
+    B --> C[Surveillance<br/>Comparaison à la politique];
+    C --> D{Violation ?};
+    D -->|Non| E[Port opérationnel];
+    D -->|Oui| F[Action (shutdown, restrict, protect)];
+    F --> G[État err-disabled<br/>si action = shutdown];
+    G --> H[Intervention Admin<br/>shutdown/no shutdown];
+    H --> A;
+                    </div>
+                </div>
+                <p><strong>Séquence Logique</strong> : Un port configuré avec des mécanismes comme Port Security suit un cycle : Activation -> Apprentissage -> Surveillance -> Décision (Violation/Acceptation) -> Action -> Récupération (si nécessaire).</p>
+                <p><strong>Précondition Critique</strong> : La configuration initiale (nombre max de MAC, violation, sticky) doit précéder la mise en service du port.</p>
+
+                <h3 id="flux-validation">B. Flux de Validation d'une Trame avec DHCP Snooping & DAI</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Trame ARP<br/>arrive sur un port client] --> B{Filtrage par Port<br/>Port est-il untrusted ?};
+    B -->|Oui| C[Vérifier DHCP Snooping Binding Table];
+    C --> D{IP/MAC source<br/>correspondent à une entrée valide ?};
+    D -->|Non| E[Trame DROPPÉE<br/>Usurpation détectée];
+    D -->|Oui| F[Validation supplémentaire<br/>ip arp inspection validate dst-mac ?];
+    F -->|Non| G[Trame ACCEPTÉE];
+    F -->|Oui| H{Comparer MAC Destination Ethernet<br/>et MAC Cible ARP};
+    H -->|Correspond| G;
+    H -->|Ne correspond pas| E;
+    B -->|Non (Port Trusted)| G;
+                    </div>
+                </div>
+                <p><strong>Séquence Logique</strong> : Pour une trame ARP, le commutateur applique d'abord la politique de port (trusted/untrusted). Si untrusted, il valide le contenu ARP contre la table de liaison DHCP Snooping (source de vérité). Une validation optionnelle (`dst-mac`) offre une couche de sécurité supplémentaire.</p>
+                <p><strong>Précondition Absolue</strong> : <span class="concept-key">DHCP Snooping doit être actif et sa table de liaison peuplée</span> pour que DAI fonctionne correctement. Sans cela, DAI n'a pas de référence pour valider les associations IP-MAC.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+                <h3>VLAN Natif (Native VLAN - 802.1Q)</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Gérer le trafic non étiqueté sur un trunk (Liaison de données - 2). Héritage de compatibilité.</li>
+                    <li><strong>Comportement Normal</strong> : Sur un lien trunk, tout trafic appartenant au VLAN natif est envoyé sans étiquette 802.1Q.</li>
+                    <li><strong>Erreur Conceptuelle Fréquente</strong> : Penser qu'il est sécuritaire d'utiliser le VLAN 1 (par défaut) ou un VLAN de gestion comme VLAN natif. C'est un risque majeur.</li>
+                    <li><strong>Bonne Pratique</strong> : Assigner le VLAN natif à un <span class="concept-key">VLAN factice, non routé et inutilisé</span> par les utilisateurs. Cela isole le trafic non étiqueté dans un cul-de-sac réseau.</li>
+                </ul>
+
+                <h3>Dynamic Trunking Protocol (DTP)</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Négocier automatiquement l'état (access/trunk) et l'encapsulation (ISL/802.1Q) d'un lien entre équipements Cisco (Liaison de données - 2).</li>
+                    <li><strong>Comportement Normal</strong> : Échange de messages pour converger vers un mode opérationnel commun.</li>
+                    <li><strong>Interaction et Risque</strong> : L'automatisation est une faille potentielle exploitée pour des attaques de <span class="concept-key">VLAN Hopping</span>.</li>
+                    <li><strong>Bonne Pratique</strong> : <span class="concept-key">Désactiver DTP</span> (`switchport nonegotiate`) sur tout port qui doit être statiquement configuré en <strong>trunk</strong> ou en <strong>access</strong>. La configuration manuelle prévaut.</li>
+                </ul>
+
+                <h3>Spanning-Tree PortFast</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Accélérer la convergence du protocole STP (Liaison de données - 2) sur les ports connectés à des hôtes terminaux.</li>
+                    <li><strong>Mécanisme</strong> : Permet à un port de passer directement de l'état `blocking` à `forwarding`, en court-circuitant les états `listening` et `learning`.</li>
+                    <li><strong>Condition de Validité Absolue</strong> : <span class="concept-key">Uniquement sur les ports connectés à un seul hôte terminal</span>. Jamais sur un lien entre commutateurs.</li>
+                    <li><strong>Conséquence d'un Mauvais Usage</strong> : Peut provoquer instantanément des <span class="concept-key">boucles de couche 2</span>.</li>
+                </ul>
+
+                <h3>DHCP Snooping</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Sécuriser le processus DHCP (Application - 7, mais inspection au niveau Liaison/Réseau).</li>
+                    <li><strong>Sémantique des Ports</strong> :
+                        <ul>
+                            <li><strong>Port de Confiance (Trusted)</strong> : Connexion au serveur DHCP légitime. Autorise tous les messages DHCP.</li>
+                            <li><strong>Port Non-Confiance (Untrusted)</strong> : Connexion aux clients. Bloque les messages de type serveur entrants (`DHCPOFFER`, `DHCPACK`, etc.).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Séquence d'Activation</strong> : 1) Activation globale (`ip dhcp snooping`), 2) Application aux VLANs, 3) Définition des ports de confiance.</li>
+                </ul>
+
+                <h3>Dynamic ARP Inspection (DAI)</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Prévenir l'empoisonnement du cache ARP (Liaison de données - 2 / Réseau - 3).</li>
+                    <li><strong>Dépendance Critique</strong> : S'appuie sur la <span class="concept-key">table de liaison du DHCP Snooping</span> comme source de vérité.</li>
+                    <li><strong>Validation</strong> : Vérifie la cohérence des adresses IP et MAC dans les paquets ARP. La commande `ip arp inspection validate dst-mac` ajoute une couche de contrôle.</li>
+                    <li><strong>Sémantique des Ports</strong> : Les ports menant aux infrastructures (routeurs, serveurs) doivent être configurés comme <span class="concept-key">de confiance (`ip arp inspection trust`)</span>.</li>
+                </ul>
+
+                <h3>Port Security</h3>
+                <ul>
+                    <li><strong>Objectif & Couche</strong> : Contrôler les adresses MAC autorisées sur un port (Liaison de données - 2).</li>
+                    <li><strong>Modes d'Apprentissage</strong> :
+                        <ul>
+                            <li><strong>Statique</strong> : Adresses MAC configurées manuellement.</li>
+                            <li><strong>Dynamique</strong> : Apprentissage automatique jusqu'à une limite.</li>
+                            <li><strong>Sticky (Collant)</strong> : Hybride. Les MAC apprises dynamiquement sont <span class="concept-key">automatiquement converties en entrées de configuration statiques et ajoutées à la configuration en cours (running-config) en RAM</span>. Elles deviennent persistantes uniquement si sauvegardées en NVRAM.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Actions en cas de Violation</strong> : `shutdown` (err-disabled, recommandé), `restrict` (bloque et log), `protect` (bloque silencieusement).</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Erreurs Conceptuelles Majeures (Issues des Réponses Fausses)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 1 : "Un port inactif est un port sûr"</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : Un port physique accessible mais non configuré n'attire pas l'attention. On pense qu'il n'y a pas de risque puisqu'il n'est pas utilisé.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : Un port activé (`no shutdown`) avec une configuration par défaut (souvent en VLAN 1, avec DTP actif) est une <span class="concept-key">porte d'entrée parfaite pour un attaquant</span>. Il peut y brancher un appareil, négocier un trunk (VLAN Hopping) ou lancer une attaque.</p>
+                    <p><strong>Raisonnement correct</strong> : La sécurité commence par la réduction de la surface d'attaque. <span class="concept-key">Tout port non utilisé doit être désactivé administrativement (`shutdown`)</span>. C'est la mesure de sécurité la plus simple et la plus efficace.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 2 : "PortFast est une optimisation générale pour STP"</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : PortFast accélère STP, donc l'activer partout améliore les performances du réseau.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : PortFast supprime le délai de convergence de STP <span class="concept-key">uniquement parce qu'on suppose qu'aucune boucle ne peut être créée derrière ce port</span>. L'activer sur un lien entre commutateurs viole cette hypothèse fondamentale et peut <span class="concept-key">causer des boucles temporaires catastrophiques</span>.</p>
+                    <p><strong>Raisonnement correct</strong> : PortFast est une <span class="concept-key">fonction de politique d'accès</span>, pas une optimisation de protocole. Elle doit être appliquée avec discernement : <span class="concept-key">seulement sur les ports d'accès terminaux</span>.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion 3 : "Sécuriser un port, c'est juste limiter les MACs"</h4>
+                    <p><strong>Pourquoi elle semble plausible</strong> : Configurer Port Security avec une limite de MACs semble protéger complètement le point d'accès.</p>
+                    <p><strong>Pourquoi elle est incomplète</strong> : Cette vision ignore les vecteurs d'attaque qui n'impliquent pas un grand nombre de MACs, comme l'usurpation d'une MAC légitime ou les attaques au niveau des protocoles de service (DHCP, ARP). Port Security seule ne protège pas contre un serveur DHCP pirate ou une attaque ARP.</p>
+                    <p><strong>Raisonnement correct</strong> : La sécurité d'un port d'accès est un <span class="concept-key">paquet de mesures</span> : Port Security + Désactivation de DTP + DHCP Snooping + DAI. C'est la combinaison qui crée une défense en profondeur.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+                <p>L'expert ne pense pas en commandes, mais en <strong>systèmes, causalités et intentions malveillantes</strong>.</p>
+                <ol>
+                    <li><strong>Penser en "State Machine"</strong> : Pour chaque port, visualisez son état possible (`up/down`, `access/trunk`, `trusted/untrusted`, `err-disabled`). Une configuration change un état, ce qui influence le traitement des trames.</li>
+                    <li><strong>Anticiper les Effets Cachés</strong> : Activer DHCP Snooping est nécessaire pour DAI. Désactiver DTP sur un trunk nécessite de configurer manuellement `switchport mode trunk`. Activer PortFast appelle l'activation de BPDU Guard comme filet de sécurité.</li>
+                    <li><strong>Comprendre l'Arbre de Dépendance</strong> :
+                        <ul>
+                            <li><strong>DAI</strong> ➔ Dépend de <strong>DHCP Snooping Binding Table</strong>.</li>
+                            <li><strong>DHCP Snooping Binding Table</strong> ➔ Se remplit via des échanges DHCP légitimes depuis des ports `untrusted` vers des ports `trusted`.</li>
+                            <li>Un <strong>port trusté pour DAI/DHCP</strong> doit être physiquement sécurisé et configuré statiquement.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Diagnostiquer par Couches</strong> : Un hôte ne peut pas obtenir d'IP ? Ne sautez pas sur le serveur DHCP. Vérifiez la couche 2 : Port `err-disabled` ? Violation de Port Security ? DHCP Snooping bloque-t-il les messages sur un port non configuré comme `trusted` vers le serveur ?</li>
+                    <li><strong>Prioriser la Simplicité Robuste</strong> : Une configuration manuelle et explicite (`switchport mode access`) est presque toujours plus sûre qu'une configuration automatique et négociée. Le `shutdown` des ports inutilisés est la politique "zéro trust" la plus élémentaire.</li>
+                </ol>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>Lois Conceptuelles :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi du VLAN Natif</strong> : "Le natif est un no man's land. Donne-lui un VLAN qui ne mène nulle part."</p>
+                    <p>2. <strong>Loi de la Sécurité des Ports</strong> : "Ce qui n'est pas utilisé doit être éteint. Ce qui est utilisé doit être strictement contrôlé."</p>
+                    <p>3. <strong>Loi de la Confiance Explicite</strong> : "Dans la guerre des protocoles (DHCP, ARP), la confiance ne se négocie pas, elle se configure manuellement vers l'infrastructure centrale."</p>
+                    <p>4. <strong>Loi de PortFast</strong> : "PortFast est comme une voie prioritaire. Réservée aux résidents (hôtes), interdite aux camions (switches)."</p>
+                </div>
+
+                <h3>Équations Mentales :</h3>
+                <div class="equation-box">
+                    <p><strong>Sécurité d'Accès = (mode access + DTP off) + (PortSecurity | BPDU Guard) + (DHCPSnooping + DAI)</strong></p>
+                    <p><strong>Récupération err-disabled = Intervention Manuelle (shutdown / no shutdown)</strong></p>
+                    <p><strong>Source de Vérité ARP = Table de Liaison DHCP Snooping</strong></p>
+                </div>
+
+                <h3>Rappels via l'Analogie Centrale (Aéroport) :</h3>
+                <div class="analogy-box">
+                    <p><strong>Un port non utilisé et activé</strong>, c'est comme une porte de maintenance grande ouverte la nuit. <span class="concept-key">Fermez-la (`shutdown`)</span>.</p>
+                    <p><strong>Laisser DTP activé partout</strong>, c'est comme laisser les clés de toutes les portes de l'aéroport sur un tableau accessible. <span class="concept-key">Désactivez la négociation inutile (`switchport nonegotiate`)</span>.</p>
+                    <p><strong>Ne pas configurer de ports de confiance pour DHCP Snooping/DAI</strong>, c'est comme interdire à la tour de contrôle de communiquer avec les avions. <span class="concept-key">Déclarez explicitement les liens de confiance (`ip dhcp snooping trust`, `ip arp inspection trust`)</span>.</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Au-delà de NetAcad (200%+)</h2>
+                </div>
+                <ul>
+                    <li><strong>802.1X (Authentication Port-Based)</strong> : Le standard industriel pour un contrôle d'accès <span class="concept-key">pré-attachement</span>. Avant même qu'une trame data ne passe, le client doit s'authentifier auprès d'un serveur RADIUS. Beaucoup plus robuste que la simple filtration MAC.</li>
+                    <li><strong>Storm Control</strong> : Mécanisme pour limiter le taux de trafic de broadcast, multicast ou unicast sur un port, atténuant les tempêtes de paquets.</li>
+                    <li><strong>Root Guard / BPDU Guard</strong> : Protections STP avancées. Root Guard empêche un commutateur indésirable de devenir root. BPDU Guard arrête un port PortFast s'il reçoit une BPDU.</li>
+                    <li><strong>Private VLANs (PVLAN)</strong> : Technique avancée d'isolation au sein d'un même VLAN (sous-VLAN), permettant par exemple d'isoler tous les clients d'un hotspot Wi-Fi les uns des autres.</li>
+                    <li><strong>Vendor-Neutral Vision</strong> : Les concepts (sécurité de port, inspection DHCP/ARP, désactivation des protocoles de négociation non essentiels) sont universels et s'appliquent, sous des noms parfois différents, aux équipements d'autres constructeurs.</li>
+                    <li><strong>Lien avec la Sécurité des Couches Supérieures</strong> : Une couche 2 sécurisée est le prérequis pour des politiques de sécurité IP (ACL, firewall) efficaces. Si un attaquant peut usurper une IP ou devenir un "homme du milieu", les firewalls de couche 3/4 peuvent être contournés. <span class="concept-key">La défense en profondeur commence à la prise murale.</span></li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous ne voyez plus des commandes isolées mais un <span class="concept-key">système défensif intégré</span>. Vous comprenez que la sécurité L2 n'est pas une option mais le <strong>fondement de l'intégrité réseau</strong>. Vous pouvez expliquer l'impact d'une mauvaise configuration du VLAN natif ou de DTP sur la sécurité globale. Vous raisonnez en termes de dépendances (DAI ➔ DHCP Snooping) et de compromis (sécurité vs facilité d'administration).</p>
+                    <p>Vous êtes capable de concevoir une politique de sécurité de port d'accès complète et de dépanner un réseau où les clients n'obtiennent pas d'adresse IP en raisonnant de la couche physique jusqu'aux tables de liaison logicielles. Votre approche est méthodique, fondée sur la compréhension profonde des mécanismes, et non sur la mémorisation par cœur.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense en systèmes et en causalités, pas en commandes »</li>
+                        <li>« Je comprends pourquoi chaque mécanisme existe et comment ils interagissent »</li>
+                        <li>« Je peux concevoir et sécuriser une infrastructure de commutation d'entreprise »</li>
+                        <li>« Je dépanne la couche 2 avec une méthodologie infaillible »</li>
+                        <li>« Mon niveau de maîtrise dépasse largement celui d'une certification basique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        
+      <section class="panel">
+        <footer class="page-footer">
+
+        <p>Module Académique Sécurité Couche 2 — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar-shell');
+      const navLinks = document.querySelectorAll('.nav a');
+      const sections = document.querySelectorAll('.module-section');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function () {
+          sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+        });
+      }
+
+      function setActiveSection() {
+        let current = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 140;
+          const height = section.offsetHeight;
+          if (window.scrollY >= top && window.scrollY < top + height) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'active-section');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active', 'active-section');
+          }
+        });
+      }
+
+      setActiveSection();
+      window.addEventListener('scroll', setActiveSection);
+
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(el => el.removeAttribute('data-processed'));
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
+        const target = diagram.querySelector('.mermaid');
+        if (!target || diagram.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        let scale = 1;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        diagram.insertBefore(toolbar, target);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          const button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          const action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
