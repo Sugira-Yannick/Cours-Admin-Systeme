@@ -1,0 +1,932 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Académique : Architecture Réseau Globale - Du Bit Physique à l'Application</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0c1722;
+      --panel:#12212b;
+      --panel2:#162934;
+      --line:rgba(121,221,210,.18);
+      --line-strong:rgba(121,221,210,.42);
+      --text:#eef7fa;
+      --muted:#a7bec6;
+      --accent:#72dfd2;
+      --accent2:#f4cb7e;
+      --shadow:0 28px 70px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --color-primary:#eef7fa;
+      --color-secondary:#d8e8ee;
+      --color-accent:#72dfd2;
+      --color-law:#ff8c8c;
+      --color-illusion:#f4cb7e;
+      --color-background:#071018;
+      --color-surface:#12212b;
+      --color-border:rgba(121,221,210,.24);
+      --font-heading:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+      --font-body:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      color:var(--text);
+      font-family:var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      scroll-behavior:smooth;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+
+    .page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,.panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:34px 34px 28px;min-height:260px}
+
+    .hero::before,
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .eyebrow{
+      margin:0 0 14px;
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(36px,5vw,68px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .hero-copy{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:21px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card strong{display:block;font-size:18px;line-height:1.2;margin-bottom:6px}
+    .hero-card span{color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      gap:18px;
+      grid-template-columns:320px minmax(0,1fr);
+      align-items:start;
+    }
+
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .main{display:grid;gap:18px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .note{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+    .nav a{
+      display:block;
+      margin-bottom:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.02);
+      transition:.22s ease;
+    }
+
+    .nav a:hover,
+    .nav a.active,
+    .nav a.active-section{
+      transform:translateX(4px);
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.08);
+    }
+
+    .nav ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .nav ul ul{
+      margin:0 0 12px 14px !important;
+      padding-left:10px;
+      border-left:1px solid var(--line);
+    }
+
+    .nav ul ul a{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .module-section{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin:0;
+      scroll-margin-top:20px;
+    }
+
+    .module-section::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.08), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.06), transparent 36%);
+    }
+
+    .module-section > *{position:relative;z-index:1}
+
+    .section-header{
+      margin-bottom:1.6rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--line);
+    }
+
+    .section-header h2{
+      margin:0;
+      font-family:var(--font-heading);
+      font-size:34px;
+      letter-spacing:-.04em;
+      color:var(--text);
+    }
+
+    .section-tag{
+      display:inline-block;
+      background:linear-gradient(135deg,var(--accent),#8ff4e8);
+      color:#07212a;
+      font-size:.78rem;
+      font-weight:800;
+      padding:.35rem .85rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    h3,h4{
+      font-family:var(--font-heading);
+      color:var(--text);
+      letter-spacing:-.03em;
+    }
+
+    h3{font-size:1.55rem;margin-top:2rem;margin-bottom:1rem}
+    h4{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.8rem}
+
+    p,ul,ol{margin-bottom:1.2rem}
+    ul,ol{padding-left:1.4rem}
+    li{margin-bottom:.5rem}
+    p,li,td,th{color:var(--text);line-height:1.8}
+
+    .analogy-box,.law-box,.illusion-box,.equation-box{
+      border-left:4px solid var(--accent);
+      padding:1.5rem;
+      margin:2rem 0;
+      border-radius:0 10px 10px 0;
+      background:rgba(114,223,210,.06);
+    }
+
+    .law-box{border-left-color:#ff8c8c;background:rgba(197,48,48,.10)}
+    .illusion-box{border-left-color:var(--accent2);background:rgba(244,203,126,.10)}
+    .equation-box{
+      text-align:center;
+      font-size:1.1rem;
+      border:1px dashed var(--line);
+      border-left-width:1px;
+      border-radius:18px;
+    }
+
+    .concept-key{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .mermaid-diagram{
+      margin:2rem 0;
+      padding:1rem;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--line);
+      background:rgba(18,33,43,.9);
+      color:var(--text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    .cognitive-objectives{
+      background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+      padding:2rem;
+      border-radius:18px;
+      margin:2rem 0;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .cognitive-objectives,
+    .cognitive-objectives p,
+    .cognitive-objectives li,
+    .cognitive-objectives h3{
+      color:#fff;
+    }
+
+    iframe,canvas,img,svg{max-width:100%}
+
+    pre{
+      overflow:auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    code{
+      color:#d9fff8;
+      word-break:break-word;
+    }
+
+    table{
+      width:100%;
+      display:block;
+      overflow:auto;
+      border-collapse:collapse;
+    }
+
+    .page-footer{
+      text-align:center;
+      padding:24px;
+      font-size:18px;
+      line-height:1.8;
+      color:var(--muted);
+    }
+
+    .page-footer p{margin:.4rem 0;color:var(--muted)}
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:4px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:3px;
+      border-radius:2px;
+      background:var(--text);
+    }
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 860px){
+      .hero{padding:24px 20px}
+      .panel,.module-section{padding:18px}
+      .page{width:min(100vw - 14px,1560px)}
+      .hero-grid{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .section-header h2{font-size:28px}
+      .hamburger{display:flex}
+      .sidebar[data-collapsed="true"] .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="eyebrow">Module Académique</p>
+    <h1>📘 Module Académique : Architecture Réseau Globale - Du Bit Physique à l'Application</h1>
+    <p class="hero-copy">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un architecte réseau d'exception (Niveau 500%+)</p>
+    <div class="hero-grid">
+      <div class="hero-card"><strong>Analogie</strong><span>Modèle systémique et vision d'ensemble</span></div>
+      <div class="hero-card"><strong>Architecture</strong><span>Fondamentaux et mécanismes détaillés</span></div>
+      <div class="hero-card"><strong>Protocoles</strong><span>Couches, services et erreurs à éviter</span></div>
+      <div class="hero-card"><strong>Objectifs</strong><span>Synthèse, extension et ancrage final</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar-shell" data-collapsed="false">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2 class="side-title" style="margin:0;">Navigation du Module</h2>
+          <div class="hamburger" id="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <nav class="nav">
+          <ul class="nav-menu" id="main-menu">
+
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            
+          </ul>
+          <div style="height:12px;"></div>
+          <ul class="sidebar-nav">
+
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Essentielle</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#mecanisme-encapsulation">Encapsulation</a></li>
+                        <li><a href="#mecanisme-routage">Routage Global</a></li>
+                        <li><a href="#mecanisme-tcp">Contrôle TCP</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a></li>
+                <li><a href="#illusions">4️⃣ Illusions Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Architecte Réseau</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Ultra-Mémorisable</a></li>
+                <li><a href="#extension">7️⃣ Extension Contrôlée (500%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Principe du module</h2>
+        <p class="note">Reconstruction visuelle basée sur le modèle du projet, avec conservation du contenu complet et des schémas Mermaid du module source.</p>
+      </section>
+    </aside>
+
+    <main class="main" id="content">
+
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Analogie Centrale</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Système Postal International Quantique</h2>
+                </div>
+                <p>Imaginez Internet comme un système postal international qui fonctionne à la vitesse de la lumière, où chaque lettre se transforme automatiquement selon les frontières qu'elle traverse.</p>
+                <div class="analogy-box">
+                    <p><strong>Le Contenu de la Lettre (Couche 7 - Application)</strong> : L'intention humaine - "Je veux voir une page web", "Envoyer un email".</p>
+                    <p><strong>La Langue et le Code Secret (Couche 6 - Présentation)</strong> : Traduction en format machine (JSON/XML) + chiffrement TLS. Comme mettre la lettre dans une enveloppe blindée avec un code.</p>
+                    <p><strong>La Conversation Structurée (Couche 5 - Session)</strong> : Règles de dialogue - "On parle de 14h à 14h30, numéro de session #1234".</p>
+                    <p><strong>Le Service de Livraison (Couche 4 - Transport)</strong> : TCP (colis avec suivi) vs UDP (lettre normale). Numéros de port pour identifier le destinataire dans l'immeuble.</p>
+                    <p><strong>Le Système d'Adressage Global (Couche 3 - Réseau)</strong> : Adresses IP comme codes postaux internationaux. Les routeurs sont les bureaux de tri qui lisent uniquement cette enveloppe externe.</p>
+                    <p><strong>Le Transport Local (Couche 2 - Liaison)</strong> : Camions postaux avec plaques d'immatriculation (MAC). Chaque tronçon a son propre type de véhicule (Ethernet, Wi-Fi, Fibre).</p>
+                    <p><strong>Les Routes et Câbles (Couche 1 - Physique)</strong> : Les routes physiques, les câbles sous-marins, les ondes radio - l'infrastructure qui transporte réellement les bits.</p>
+                </div>
+                <h4>Mapping Explicite</h4>
+                <ul>
+                    <li><span class="concept-key">Lettre perdue sans accusé de réception</span> → Paquet UDP non livré.</li>
+                    <li><span class="concept-key">Colis avec suivi retransmis automatiquement</span> → Retransmission TCP.</li>
+                    <li><span class="concept-key">Bureau de tri qui change l'enveloppe externe</span> → Réencapsulation au routeur.</li>
+                    <li><span class="concept-key">Route alternative en cas d'accident</span> → Reconvergence BGP/OSPF.</li>
+                    <li><span class="concept-key">Douane qui ouvre et vérifie le contenu</span> → Pare-feu applicatif (Layer 7).</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global (Architecture en Couches Quantique)</h2>
+                </div>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Intention Humaine] --> B[Application: HTTP/SMTP/DNS];
+    B --> C[Présentation: TLS/JSON/MPEG];
+    C --> D[Session: Gestion Dialogue];
+    D --> E{Transport: TCP/UDP};
+    E --> F[Réseau: IP + Routage BGP];
+    F --> G{Liaison: Ethernet/Wi-Fi/PPP};
+    G --> H[Physique: Bits → Énergie];
+    
+    H --> I[Voyage à travers Internet];
+    
+    I --> J[Physique: Énergie → Bits];
+    J --> K[Liaison: Vérification CRC];
+    K --> L[Réseau: Décision de routage];
+    L --> M[Transport: Réassemblage];
+    M --> N[Session: Rétablissement contexte];
+    N --> O[Présentation: Déchiffrement];
+    O --> P[Application: Action];
+    
+    style A fill:#e1f5fe
+    style P fill:#e1f5fe
+    style H fill:#ffecb3
+    style I fill:#ffecb3
+                    </div>
+                </div>
+                <p>Ce diagramme montre la <span class="concept-key">transformation fondamentale</span> : l'intention humaine devient de l'énergie physique, voyage, puis redevient de l'information compréhensible. Chaque couche ajoute/retire son en-tête spécifique.</p>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondamentaux</span>
+                    <h2>1️⃣ Architecture Conceptuelle Essentielle</h2>
+                </div>
+                <p>Internet est un <span class="concept-key">système de systèmes</span> : environ 70,000 réseaux autonomes (AS) interconnectés par des accords de peering et de transit. Chaque AS annonce via BGP qu'il peut atteindre certains préfixes IP. La confiance est le fondement : personne ne vérifie si un AS dit vrai quand il annonce "je sais atteindre X.Y.Z.0/24".</p>
+                
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TB
+    subgraph "Hiérarchie Internet Réelle"
+        T1[Tier 1: Échange gratuit<br/>Entre eux seulement] -->|Settlement-free| T2[Tier 2: Fournisseurs régionaux];
+        T2 -->|Paie pour transit| T3[Tier 3: Votre FAI];
+        T3 -->|Abonnement| U[Vous];
+        
+        C[Contenu: Google/Netflix] -->|CDN| P[Points de présence];
+        P --> T2;
+    end
+    
+    subgraph "Économie Cachée"
+        E1[Transit: $ par Mbps] --> E2[Peering: Échange gratuit];
+        E2 --> E3[CDN: Réduit coûts transit];
+    end
+                    </div>
+                </div>
+                
+                <p>Le modèle OSI est une <span class="concept-key">abstraction théorique</span> ; TCP/IP est l'implémentation réelle. La beauté : chaque couche ignore les détails des autres. HTTP ne sait pas qu'il voyage sur Wi-Fi ou fibre. Cette abstraction permet l'évolution : IPv6 peut remplacer IPv4 sans toucher aux applications.</p>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Causal</span>
+                    <h2>2️⃣ Mécanismes Internes (Avec Diagrammes)</h2>
+                </div>
+
+                <h3 id="mecanisme-encapsulation">A. Mécanisme d'Encapsulation/Réencapsulation</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    A[Donnée Application] --> B[+ En-tête TCP/UDP = Segment];
+    B --> C[+ En-tête IP = Paquet];
+    C --> D[+ En-tête Liaison = Trame];
+    D --> E[+ Signaux physiques = Bits];
+    
+    F[Poupées Russes:<br/>HTTP dans TLS dans TCP<br/>dans IP dans Ethernet<br/>dans signaux] --> G[Chaque routeur:<br/>Décapsule jusqu'à IP<br/>Réencapsule pour<br/>prochain saut];
+                    </div>
+                </div>
+                <p><strong>Explication</strong> : Chaque couche ajoute son en-tête (header) comme une enveloppe. Un routeur ne regarde que jusqu'à la couche 3 (IP), change l'en-tête MAC (couche 2) pour le prochain saut, mais laisse l'en-tête IP intact. C'est pourquoi on dit "IP end-to-end, MAC hop-by-hop".</p>
+
+                <h3 id="mecanisme-routage">B. Mécanisme de Routage Global (BGP)</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TB
+    A[Votre FAI AS64512] -->|Annonce: "J'ai 91.168.0.0/16"| B[Fournisseur Tier 2];
+    B -->|Annonce à tous: "Je sais<br/>atteindre 91.168.0.0/16<br/>via AS64512"| C[Tout Internet];
+    
+    D[Google AS15169] -->|Annonce: "J'ai 142.250.0.0/15"| E[Tier 1];
+    E -->|Propagation mondiale| F[Tous les AS];
+    
+    G[Route choisie =<br/>plus court AS-PATH<br/>+ politiques locales] --> H[Internet =<br/>70,000 AS qui<br/>se font confiance];
+                    </div>
+                </div>
+                <p><strong>Le paradoxe BGP</strong> : Le protocole le plus critique d'Internet fonctionne sur la confiance. Un AS mal configuré peut "détourner" des préfixes IP mondialement (comme le Pakistan avec YouTube en 2008). La sécurité (RPKI, BGPsec) est très lente à se déployer.</p>
+
+                <h3 id="mecanisme-tcp">C. Mécanisme TCP : La Fiabilité Construite</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    subgraph "Poignée de main TCP"
+        A[Client: SYN<br/>Seq=100] --> B[Serveur: SYN-ACK<br/>Seq=300, Ack=101];
+        B --> C[Client: ACK<br/>Ack=301];
+    end
+    
+    subgraph "Transfert de données"
+        D[Client: Data<br/>Seq=101, Len=1000] --> E[Serveur: ACK<br/>Ack=1101];
+        F[Perte détectée par timeout] --> G[Retransmission<br/>sans attendre];
+    end
+    
+    subgraph "Contrôle de flux"
+        H[Fenêtre glissante =<br/>quantité de données<br/>non acquittées autorisées] --> I[Évitement congestion:<br/>Slow Start,<br/>Congestion Avoidance];
+    end
+                    </div>
+                </div>
+                <p><strong>La magie de TCP</strong> : Crée un canal fiable sur un réseau non fiable. Chaque octet est numéroté. Les acquittements (ACK) confirment la réception. Les timeouts déclenchent les retransmissions. Le contrôle de congestion adapte dynamiquement le débit pour ne pas saturer le réseau.</p>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Éléments du Système</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Essentiels)</h2>
+                </div>
+                
+                <h3>Couche 1 - Physique : La Transformation Énergie↔Bits</h3>
+                <ul>
+                    <li><span class="concept-key">Ethernet (802.3)</span> : Câble cuivre → variations de voltage (0=-1V, 1=+1V). Débits : 10Mbps à 400Gbps.</li>
+                    <li><span class="concept-key">Wi-Fi (802.11)</span> : Ondes radio → modulation QAM. 2.4 GHz (portée) vs 5 GHz (débit). CSMA/CA : écouter avant de parler.</li>
+                    <li><span class="concept-key">Fibre optique</span> : Verre ultra-pur → impulsions lumineuses. SMF (longue distance) vs MMF (datacenters).</li>
+                </ul>
+                
+                <h3>Couche 2 - Liaison : Le Voisinage Local</h3>
+                <ul>
+                    <li><span class="concept-key">Ethernet II</span> : Format de trame standard. Adresses MAC 48 bits (OUI + série).</li>
+                    <li><span class="concept-key">802.1Q (VLAN)</span> : Segmentation logique dans un switch physique. Tag 4 bytes inséré dans la trame.</li>
+                    <li><span class="concept-key">ARP</span> : "Qui a l'IP X?" → Réponse avec MAC. Table ARP limitée en temps.</li>
+                </ul>
+                
+                <h3>Couche 3 - Réseau : L'Adressage Global</h3>
+                <ul>
+                    <li><span class="concept-key">IPv4</span> : 32 bits, 4.3 milliards d'adresses. Épuisées → NAT/PAT.</li>
+                    <li><span class="concept-key">IPv6</span> : 128 bits, 3.4×10³⁸ adresses. Pas besoin de NAT.</li>
+                    <li><span class="concept-key">ICMP</span> : Messages de contrôle (ping, traceroute).</li>
+                    <li><span class="concept-key">BGP/OSPF</span> : Routage externe/interne.</li>
+                </ul>
+                
+                <h3>Couche 4 - Transport : Le Service de Livraison</h3>
+                <ul>
+                    <li><span class="concept-key">TCP</span> : Orienté connexion, fiable, contrôle de flux. Ports 1-65535.</li>
+                    <li><span class="concept-key">UDP</span> : Sans connexion, "best effort". Pour DNS, VoIP, jeux.</li>
+                    <li><span class="concept-key">Ports connus</span> : 80 (HTTP), 443 (HTTPS), 53 (DNS), 25 (SMTP).</li>
+                </ul>
+                
+                <h3>Couche 5-7 - Application : Les Services Utilisateurs</h3>
+                <ul>
+                    <li><span class="concept-key">DNS</span> : Base de données distribuée hiérarchique. Racine → TLD → Authoritative.</li>
+                    <li><span class="concept-key">HTTP/HTTPS</span> : Web + TLS. HTTP/2 multiplexe, HTTP/3 (QUIC) sur UDP.</li>
+                    <li><span class="concept-key">TLS 1.3</span> : Chiffrement + authentification. Diffie-Hellman pour échange de clés.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges à Éviter</span>
+                    <h2>4️⃣ Illusions Conceptuelles Majeures</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>1. "Internet est dans le cloud - c'est immatériel"</h4>
+                    <p><strong>Pourquoi elle semble vraie</strong> : L'expérience utilisateur est virtuelle, tout semble instantané et sans support physique.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : Internet est extrêmement physique : 400+ câbles sous-marins, datacenters consommant l'électricité de petites villes, fibres optiques dans les tranchées. Votre email traverse l'Atlantique par des câbles au fond de l'océan.</p>
+                    <p><strong>Raisonnement correct</strong> : Internet est une <span class="concept-key">infrastructure physique globale</span> qui transforme l'électricité en information. Latence minimum Paris-NY = 28ms (vitesse lumière dans la fibre).</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>2. "Une adresse IP identifie UN appareil"</h4>
+                    <p><strong>Pourquoi elle semble vraie</strong> : Chaque appareil a "son" IP dans les paramètres réseau.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : NAT (Network Address Translation) signifie que des milliers d'appareils partagent une IP publique. Votre IP "192.168.1.100" n'existe que localement. L'Internet voit l'IP de votre box, pas la vôtre.</p>
+                    <p><strong>Raisonnement correct</strong> : Une IP publique identifie une <span class="concept-key">interface réseau à un endroit donné</span>, pas nécessairement un appareil spécifique. IPv6 résout ceci mais est lent à être adopté.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>3. "HTTPS signifie que le site est légitime"</h4>
+                    <p><strong>Pourquoi elle semble vraie</strong> : Le cadenas vert donne un sentiment de sécurité.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : HTTPS garantit seulement que la connexion est chiffrée entre vous et le serveur. Un site de phishing peut aussi avoir un certificat TLS valide (Domain Validation seulement).</p>
+                    <p><strong>Raisonnement correct</strong> : HTTPS protège la <span class="concept-key">confidentialité et l'intégrité</span> des données en transit. L'authenticité du site nécessite de vérifier le certificat (Extended Validation) et le nom de domaine.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>4. "Plus de bande passante = Internet plus rapide"</h4>
+                    <p><strong>Pourquoi elle semble vraie</strong> : La logique commerciale et les tests de vitesse.</p>
+                    <p><strong>Pourquoi elle est fausse</strong> : La latence (ping) est souvent plus importante que le débit pour l'expérience utilisateur. 100 Mbps avec 10ms de latence est mieux que 1 Gbps avec 100ms pour le web, jeux, VoIP.</p>
+                    <p><strong>Raisonnement correct</strong> : Bande passante = <span class="concept-key">largeur de l'autoroute</span>. Latence = <span class="concept-key">temps pour traverser l'autoroute</span>. Les deux comptent, mais pour l'interactivité, la latence prime.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Architecte Réseau Élite</h2>
+                </div>
+                
+                <h3>Penser en Systèmes, pas en Composants</h3>
+                <ul>
+                    <li><span class="concept-key">L'effet papillon réseau</span> : Un changement de routage BGP au Japon peut affecter le trafic en Europe. Un DDoS contre un fournisseur DNS peut casser Internet pour des millions.</li>
+                    <li><span class="concept-key">Traceroute mental</span> : Visualisez le chemin : Votre PC → Box → FAI → Tier 2 → Tier 1 → Tier 2 destination → FAI destination → Serveur. Chaque → est une décapsulation/réencapsulation.</li>
+                </ul>
+                
+                <h3>Diagnostiquer par Couches (Méthode OSI)</h3>
+                <ol>
+                    <li><strong>Physique (1)</strong> : Le câble est-il branché ? Les LEDs clignotent-elles ? Signal Wi-Fi présent ?</li>
+                    <li><strong>Liaison (2)</strong> : Adresse MAC correcte ? VLAN configuré ? Table CAM/ARP complète ?</li>
+                    <li><strong>Réseau (3)</strong> : IP correcte/masque/passerelle ? Route présente dans la table ? Ping vers la passerelle ?</li>
+                    <li><strong>Transport (4)</strong> : Port écouté sur le serveur ? Pare-feu bloque-t-il ? TCP SYN atteint-il ?</li>
+                    <li><strong>Application (5-7)</strong> : DNS résout-il ? Certificat TLS valide ? Service fonctionne-t-il ?</li>
+                </ol>
+                
+                <h3>Comprendre les Compromis Fondamentaux</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph LR
+    A[Compromis Réseau] --> B[TCP vs UDP];
+    A --> C[IPv4 vs IPv6];
+    A --> D[Centralisé vs Distribué];
+    A --> E[Fiabilité vs Performance];
+    
+    B --> F[Fiable/Lent vs Rapide/Non fiable];
+    C --> G[Compatibilité vs Évolutivité];
+    D --> H[Contrôle vs Résilience];
+    E --> I[Retransmissions vs Latence];
+                    </div>
+                </div>
+                
+                <h3>Anticiper les Échecs</h3>
+                <ul>
+                    <li><span class="concept-key">Single Point of Failure (SPOF)</span> : Identifiez-le dans chaque design. Internet lui-même est conçu sans SPOF (d'où sa résilience).</li>
+                    <li><span class="concept-key">Scaling</span> : Qu'arrive-t-il à 10x plus d'utilisateurs ? 100x ? Le design tient-il ?</li>
+                    <li><span class="concept-key">Sécurité par conception</span> : Pas en supplément. Chiffrement partout (TLS 1.3). Authentification forte. Moindre privilège.</li>
+                </ul>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Ultra-Mémorisable</h2>
+                </div>
+
+                <h3>Lois Mentales Fondamentales :</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de l'Encapsulation</strong> : Chaque couche ajoute son en-tête, comme des poupées russes. Le routeur ne déballe que jusqu'à la couche 3, change l'enveloppe MAC, et renvoie.</p>
+                    <p>2. <strong>Loi de l'Abstraction</strong> : Une couche ne connaît QUE sa couche adjacente. HTTP ignore s'il est sur Wi-Fi ou fibre. C'est cette ignorance qui permet l'évolution.</p>
+                    <p>3. <strong>Loi du Milieu Hostile</strong> : Internet est bâti sur un réseau non fiable (perte de paquets, délais variables). TCP construit la fiabilité par-dessus. UDP assume l'instabilité.</p>
+                    <p>4. <strong>Loi de l'Économie des Réseaux</strong> : Internet fonctionne par accords de peering (gratuit si échange équilibré) et de transit (payant). Les CDN réduisent les coûts.</p>
+                    <p>5. <strong>Loi de la Confiance</strong> : BGP, DNS, le routage global - tout repose sur la confiance que les autres réseaux disent la vérité. C'est à la fois la force et la faiblesse.</p>
+                </div>
+
+                <h3>Équations Conceptuelles :</h3>
+                <div class="equation-box">
+                    <p><strong>Internet = 70,000 AS × Accords de confiance × Protocoles standardisés</strong></p>
+                    <p><strong>Communication = Intention → Encapsulation × 7 → Énergie → Décapsulation × 7 → Action</strong></p>
+                    <p><strong>Fiabilité = TCP = Numérotation + Acquittements + Timeouts + Contrôle Congestion</strong></p>
+                    <p><strong>Sécurité moderne = Chiffrement (TLS) partout + Authentification forte + Moindre privilège</strong></p>
+                </div>
+
+                <h3>Rappel de l'Analogie :</h3>
+                <div class="analogy-box">
+                    <p>Vous êtes l'ingénieur en chef du système postal quantique mondial. Vous devez garantir que chaque lettre (paquet) :</p>
+                    <ol>
+                        <li>Peut être adressée n'importe où dans le monde (IP)</li>
+                        <li>Arrive intacte et en ordre si nécessaire (TCP)</li>
+                        <li>Est lisible seulement par le destinataire (TLS)</li>
+                        <li>Trouve son chemin même si une route est coupée (BGP)</li>
+                        <li>Est livrée à la vitesse de la lumière malgré les transformations d'enveloppes</li>
+                    </ol>
+                    <p>Et tout cela avec des milliers de compagnies postales indépendantes (AS) qui doivent coopérer sans se faire nécessairement confiance.</p>
+                </div>
+
+                <h3>Mémo Technique :</h3>
+                <ul>
+                    <li><span class="concept-key">PDU par couche</span> : Bits → Trames → Paquets → Segments → Données</li>
+                    <li><span class="concept-key">Adresses par couche</span> : MAC (L2) → IP (L3) → Port (L4)</li>
+                    <li><span class="concept-key">MTU typique</span> : 1500 bytes (Ethernet) - 20(IP) - 20(TCP) = 1460 bytes de données utiles max</li>
+                    <li><span class="concept-key">Ports essentiels</span> : 80(HTTP), 443(HTTPS), 53(DNS), 22(SSH), 25(SMTP)</li>
+                    <li><span class="concept-key">Latence physique minimum</span> : Paris-NY = 28ms, Paris-Sydney = 81ms (vitesse lumière dans fibre)</li>
+                </ul>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Contrôlée (Au-delà de la Formation Standard - 500%+)</h2>
+                </div>
+                
+                <h3>L'Internet Géopolitique : La Fracture en Cours</h3>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TB
+    subgraph "Vers un 'Splinternet'?"
+        US[Internet US<br/>Big Tech<br/>Patriot Act] -->|Concurrence| EU[Internet UE<br/>GDPR<br/>Souveraineté];
+        US -->|Conflit| CN[Internet Chinois<br/>Grand Firewall<br/>Autosuffisance];
+        EU -->|Tensions| RU[Internet Russe<br/>RuNet isolé<br/>Souverain];
+    end
+    
+    subgraph "Infrastructure Critique"
+        C1[Câbles sous-marins<br/>Google/Facebook/Microsoft] --> C2[Points d'échange (IXP)<br/>Lieux stratégiques];
+        C2 --> C3[Serveurs racine DNS<br/>12 organisations<br/>Majorité aux USA];
+    end
+                    </div>
+                </div>
+                <p>Nous évoluons vers plusieurs Internets parallèles avec interconnexions contrôlées. La propriété des infrastructures (câbles sous-marins par les GAFAM) crée une nouvelle forme de pouvoir.</p>
+                
+                <h3>L'Avenir : Internet 2030+</h3>
+                <ul>
+                    <li><span class="concept-key">QUIC (HTTP/3)</span> : HTTP sur UDP avec fiabilité intégrée. Réduction de la latence de connexion TLS. Déjà ~30% du trafic web.</li>
+                    <li><span class="concept-key">IPv6 Adoption</span> : ~40% globalement, 70%+ en Inde. Élimine le NAT, restaure le modèle end-to-end original.</li>
+                    <li><span class="concept-key">Zero Trust Networking</span> : Plus de "confiance implicite" à l'intérieur du réseau. Authentification et chiffrement même entre services internes.</li>
+                    <li><span class="concept-key">Réseaux Maillés (Mesh) et Satellites</span> : Starlink (42,000 satellites prévus) offre 20ms de latence partout. Internet sans FAI terrestre.</li>
+                    <li><span class="concept-key">Quantum Networking</span> : Distribution de clés quantiques (QKD) pour une sécurité mathématiquement prouvée. Internet quantique avec intrication pour communications instantanées (théorique).</li>
+                </ul>
+                
+                <h3>Les Limites Physiques Fondamentales</h3>
+                <div class="analogy-box">
+                    <p><strong>La vitesse de la lumière n'est pas une suggestion</strong> : C'est la limite absolue. Aucune optimisation ne peut réduire le ping Paris-Sydney en dessous de 81ms. La latence définit l'expérience utilisateur plus que le débit.</p>
+                    <p><strong>La loi de la conservation de la complexité</strong> : La complexité ne disparaît pas, elle se déplace. Simplifier l'interface utilisateur (Cloud, SaaS) déplace la complexité vers les datacenters et le réseau.</p>
+                </div>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Architecte Réseau 500%+</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous ne voyez plus Internet comme un service, mais comme une <span class="concept-key">architecture philosophique et technique</span>. Vous comprenez simultanément :</p>
+                    <ul>
+                        <li>Les bits voyageant à la vitesse de la lumière dans la fibre</li>
+                        <li>Les accords économiques entre 70,000 réseaux autonomes</li>
+                        <li>Les protocoles qui transforment l'intention humaine en énergie et vice-versa</li>
+                        <li>Les compromis fondamentaux (fiabilité vs performance, centralisation vs résilience)</li>
+                        <li>Les enjeux géopolitiques de l'infrastructure physique</li>
+                    </ul>
+                    <p>Vous pouvez expliquer à un enfant de 10 ans, un ministre, et un ingénieur senior comment fonctionne Internet, avec une profondeur adaptée à chaque public.</p>
+                    
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je vois les bits, les câbles, les accords économiques et la politique simultanément »</li>
+                        <li>« Je peux tracer mentalement le chemin d'un paquet de mon clavier à l'autre bout du monde »</li>
+                        <li>« Je comprends pourquoi ça fonctionne ET pourquoi ça casse, à toutes les couches »</li>
+                        <li>« Je conçois des systèmes réseau en anticipant les échecs et la croissance »</li>
+                        <li>« Mon niveau de compréhension dépasse 500% d'une formation réseau standard »</li>
+                        <li>« Je ne suis plus un utilisateur d'Internet, je suis un citoyen éclairé du monde numérique »</li>
+                        <li>« Quand quelqu'un dit "Internet ne marche pas", je sais exactement où regarder et pourquoi »</li>
+                    </ul>
+                    
+                    <br>
+                    <p><strong>Votre nouveau superpouvoir</strong> : Vous ne "surfez" plus sur Internet. Vous dansez avec sa complexité, vous comprenez ses limitations physiques fondamentales, et vous pouvez expliquer sa magie tout en connaissant ses fragilités. Vous êtes désormais parmi le 1% qui comprend vraiment comment le monde numérique fonctionne.</p>
+                </div>
+            </section>
+        
+      <section class="panel">
+        <footer class="page-footer">
+
+        <p>Module Académique Architecture Réseau Globale — Reconstruction pour la Maîtrise Expert 500%+</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar-shell');
+      const navLinks = document.querySelectorAll('.nav a');
+      const sections = document.querySelectorAll('.module-section');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function () {
+          sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+        });
+      }
+
+      function setActiveSection() {
+        let current = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 140;
+          const height = section.offsetHeight;
+          if (window.scrollY >= top && window.scrollY < top + height) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'active-section');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active', 'active-section');
+          }
+        });
+      }
+
+      setActiveSection();
+      window.addEventListener('scroll', setActiveSection);
+
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(el => el.removeAttribute('data-processed'));
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
+        const target = diagram.querySelector('.mermaid');
+        if (!target || diagram.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        let scale = 1;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        diagram.insertBefore(toolbar, target);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          const button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          const action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,972 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module-Kit de Maîtrise - Concepts du Routage</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-orange: #fd7e14;
+            --primary-green: #28a745;
+            --primary-blue: #007bff;
+            --primary-purple: #6f42c1;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #343a40;
+            --text-color: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #ffffff;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .module-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-blue);
+        }
+        
+        h1 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: var(--primary-blue);
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-blue);
+        }
+        
+        h3 {
+            color: var(--dark-gray);
+            margin: 20px 0 10px 0;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Style pour les différents types de sections */
+        .analogy-section {
+            border-left: 5px solid var(--primary-purple);
+        }
+        
+        .core-section {
+            border-left: 5px solid var(--primary-red);
+        }
+        
+        .security-section {
+            border-left: 5px solid var(--primary-red);
+        }
+        
+        .exam-section {
+            border-left: 5px solid var(--primary-orange);
+        }
+        
+        .lab-section {
+            border-left: 5px solid var(--primary-blue);
+        }
+        
+        .troubleshooting-section {
+            border-left: 5px solid var(--primary-green);
+        }
+        
+        .connections-section {
+            border-left: 5px solid var(--primary-purple);
+        }
+        
+        .validation-section {
+            border-left: 5px solid var(--dark-gray);
+        }
+        
+        .microkit-section {
+            border-left: 5px solid #17a2b8;
+        }
+        
+        /* Code de couleurs pour les priorités */
+        .priority-red {
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+        
+        .priority-orange {
+            color: var(--primary-orange);
+            font-style: italic;
+        }
+        
+        .priority-green {
+            color: var(--primary-green);
+        }
+        
+        .priority-blue {
+            color: var(--primary-blue);
+        }
+        
+        .priority-purple {
+            color: var(--primary-purple);
+        }
+        
+        /* Boîtes colorées */
+        .red-box {
+            background-color: #f8d7da;
+            border-left: 5px solid var(--primary-red);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .orange-box {
+            background-color: #fff3cd;
+            border-left: 5px solid var(--primary-orange);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .green-box {
+            background-color: #d4edda;
+            border-left: 5px solid var(--primary-green);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .blue-box {
+            background-color: #d1ecf1;
+            border-left: 5px solid var(--primary-blue);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .purple-box {
+            background-color: #e2d9f3;
+            border-left: 5px solid var(--primary-purple);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        /* Blocs de code */
+        .code-block {
+            background-color: #f5f5f5;
+            border-left: 4px solid var(--primary-blue);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .cisco-command {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+        
+        .comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        /* Analogie */
+        .analogy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .analogy-item {
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.08);
+            border-top: 3px solid var(--primary-purple);
+        }
+        
+        /* Lois immuables */
+        .law-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-red);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Lab niveaux */
+        .lab-level {
+            margin-bottom: 30px;
+        }
+        
+        .lab-level h4 {
+            background-color: var(--medium-gray);
+            padding: 10px 15px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            margin-bottom: 0;
+        }
+        
+        /* Micro-kit */
+        .microkit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .microkit-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.08);
+        }
+        
+        .command-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .command-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-gray);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Diagrammes Mermaid */
+        .mermaid-container {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        
+        /* Connexions */
+        .connection-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+        }
+        
+        .connection-module {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .connection-arrow {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .analogy-grid, .microkit-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .connection-flow {
+                flex-direction: column;
+            }
+            
+            .connection-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+        
+        /* Pour l'impression */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                max-width: 100%;
+                padding: 0;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --model-bg:#071018;
+      --model-bg2:#0c1722;
+      --model-panel:#12212b;
+      --model-line:rgba(121,221,210,.18);
+      --model-line-strong:rgba(121,221,210,.42);
+      --model-text:#eef7fa;
+      --model-muted:#a7bec6;
+      --model-accent:#72dfd2;
+      --model-accent2:#f4cb7e;
+      --model-shadow:0 28px 70px rgba(0,0,0,.34);
+      --model-radius-xl:30px;
+      --model-radius-lg:22px;
+      --model-radius-md:16px;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      color:var(--model-text);
+      font-family:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    .model-page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .model-hero,
+    .model-panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--model-line);
+      border-radius:var(--model-radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--model-shadow);
+    }
+
+    .model-hero::before,
+    .model-panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .model-hero > *,
+    .model-panel > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .model-hero{
+      padding:34px 34px 28px;
+      min-height:240px;
+    }
+
+    .model-eyebrow{
+      margin:0 0 14px;
+      color:var(--model-accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    .model-title{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(34px,5vw,64px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .model-subtitle{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:20px;
+      line-height:1.7;
+      color:var(--model-muted);
+    }
+
+    .model-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .model-card{
+      border:1px solid var(--model-line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .model-card strong{
+      display:block;
+      font-size:18px;
+      line-height:1.2;
+      margin-bottom:6px;
+      color:var(--model-text);
+    }
+
+    .model-card span{
+      color:var(--model-muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .model-panel{
+      padding:26px;
+    }
+
+    .model-source{
+      color:var(--model-text);
+    }
+
+    .model-source iframe,
+    .model-source img,
+    .model-source svg,
+    .model-source canvas{
+      max-width:100%;
+    }
+
+    .model-source pre{
+      overflow:auto;
+      max-width:100%;
+    }
+
+    .model-source table{
+      max-width:100%;
+    }
+
+    .model-source .mermaid-diagram,
+    .model-source .diagram-container{
+      overflow-x:auto;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--model-line);
+      background:rgba(18,33,43,.9);
+      color:var(--model-text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--model-line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    @media (max-width: 960px){
+      .model-page{
+        width:min(100vw - 14px,1560px);
+      }
+
+      .model-hero,
+      .model-panel{
+        padding:20px;
+      }
+
+      .model-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="model-page">
+    <section class="model-hero">
+      <p class="model-eyebrow">Version Filtre</p>
+      <h1 class="model-title"><i class="fas fa-route"></i> Module-Kit de Maîtrise</h1>
+      <p class="model-subtitle">Le contenu complet du module source est réintégré dans un habillage modernisé, avec scripts et styles utiles conservés.</p>
+      <div class="model-grid">
+        <div class="model-card"><strong>Contenu source</strong><span>Le texte et les structures utiles du document d'origine sont conservés dans cette reconstruction.</span></div>
+        <div class="model-card"><strong>Rendu</strong><span>Habillage moderne inspire du modele principal, sans supprimer les blocs specifiques du document initial.</span></div>
+        <div class="model-card"><strong>Focus</strong><span>Module-Kit de Maîtrise</span></div>
+      </div>
+    </section>
+
+    <section class="model-panel">
+      <div class="model-source">
+
+    <!-- En-tête -->
+    <div class="module-header">
+        <h1><i class="fas fa-route"></i> Module-Kit de Maîtrise</h1>
+        <p class="priority-blue">Concepts du Routage Cisco - Version HTML</p>
+    </div>
+
+    <!-- 📍 ANALOGIE SYSTÉMIQUE -->
+    <div class="section analogy-section">
+        <h2><i class="fas fa-brain priority-purple"></i> 📍 Analogie Systémique</h2>
+        
+        <div class="purple-box">
+            <p><span class="priority-purple"><strong>Thème central :</strong></span> "Le Routage comme Système Postal Intelligent"</p>
+            <p><span class="priority-purple"><strong>Métaphore :</strong></span> Un grand centre de tri postal avec des facteurs experts, des cartes routières dynamiques et des règles de priorité.</p>
+        </div>
+        
+        <div class="analogy-grid">
+            <div class="analogy-item">
+                <h4><i class="fas fa-building priority-purple"></i> Centre de tri (Routeur)</h4>
+                <p>Analyse les adresses de destination sur chaque paquet (courrier).</p>
+            </div>
+            
+            <div class="analogy-item">
+                <h4><i class="fas fa-map priority-purple"></i> Carte des routes (Table de routage)</h4>
+                <p>Contient tous les chemins connus vers différents quartiers (réseaux).</p>
+            </div>
+            
+            <div class="analogy-item">
+                <h4><i class="fas fa-truck priority-purple"></i> Facteurs (Interfaces)</h4>
+                <p>Transportent le paquet encapsulé dans le bon véhicule (trame L2).</p>
+            </div>
+            
+            <div class="analogy-item">
+                <h4><i class="fas fa-flag-checkered priority-purple"></i> Règles de priorité (AD & Métrique)</h4>
+                <p>Déterminent quel itinéraire est le plus fiable et le plus court.</p>
+            </div>
+        </div>
+        
+        <div class="red-box">
+            <p><span class="priority-red">⚠️ Risque analogique :</span> Un facteur mal formé qui envoie tout le courrier par la même route lente, ou pire, à la mauvaise adresse (détournement de trafic).</p>
+        </div>
+    </div>
+
+    <!-- 🧠 MODÈLE MENTAL -->
+    <div class="section">
+        <h2><i class="fas fa-sitemap priority-purple"></i> 🧠 Modèle Mental</h2>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+flowchart TD
+    A[Paquet IP arrive sur l'interface] --> B{Consultation Table de Routage}
+    B --> C[Trouver la correspondance la plus longue<br/>Préfixe/Longueur]
+    C --> D{Avec correspondance ?}
+    D -- Non --> E[Supprimer le paquet]
+    D -- Oui --> F{Destination sur réseau direct ?}
+    F -- Oui --> G[Encapsuler pour le réseau local<br/>ARP/ND → Interface de sortie]
+    F -- Non --> H[Route vers saut suivant<br/>Encapsulation L2 adaptée → Interface de sortie]
+    G --> I[Paquet transmis]
+    H --> I
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚡ NOYAU DUR -->
+    <div class="section core-section">
+        <h2><i class="fas fa-gem priority-red"></i> ⚡ Noyau Dur (Les Lois Immuables)</h2>
+        
+        <div class="law-item">
+            <h3><span class="priority-red">! Loi #1 : La Décision est Locale</span></h3>
+            <p>Un routeur ne décide du prochain saut que d'après SA propre table de routage. Il ne connaît pas le chemin complet.</p>
+            <div class="code-block">
+                <span class="cisco-command">R1# show ip route</span> <span class="comment">// Montre seulement le prochain saut ('via')</span>
+            </div>
+        </div>
+        
+        <div class="law-item">
+            <h3><span class="priority-red">! Loi #2 : La Longueur du Préfixe l'Emporte (Longest Match)</span></h3>
+            <p>Pour choisir une route, le routeur compare le plus grand nombre de bits possible.</p>
+            <div class="code-block">
+                <span class="cisco-command">Paquet pour 172.16.0.10</span><br>
+                <span class="cisco-command">Route 1: 172.16.0.0/12</span> ← Moins spécifique<br>
+                <span class="cisco-command">Route 2: 172.16.0.0/26</span> ← <strong>CHOISIE (Longest Match)</strong>
+            </div>
+        </div>
+        
+        <div class="law-item">
+            <h3><span class="priority-red">! Loi #3 : La Fiabilité Prime (Administrative Distance)</span></h3>
+            <p>Si plusieurs sources apprennent la même route, celle avec la plus faible AD est installée.</p>
+            <div class="code-block">
+                <span class="cisco-command">Connecté directement: AD=0</span> ← Toujours préféré<br>
+                <span class="cisco-command">Statique: AD=1</span> ← Préféré à OSPF<br>
+                <span class="cisco-command">OSPF: AD=110</span> ← Installé seulement si pas de route avec AD plus faible
+            </div>
+        </div>
+        
+        <div class="law-item">
+            <h3><span class="priority-red">! Loi #4 : Route Par Défaut = "Tout-Autre"</span></h3>
+            <p>La route <code>0.0.0.0/0</code> ou <code>::/0</code> correspond à TOUTE adresse non trouvée par une correspondance plus spécifique.</p>
+        </div>
+        
+        <div class="law-item">
+            <h3><span class="priority-red">! Loi #5 : Interface Active Requise</span></h3>
+            <p>Une route connectée directement n'apparaît que si l'interface est <code>up/up</code> avec une adresse IP configurée.</p>
+        </div>
+    </div>
+
+    <!-- 🔐 PROFONDEUR SÉCURITÉ & MÉTIER -->
+    <div class="section security-section">
+        <h2><i class="fas fa-shield-alt priority-red"></i> 🔐 Profondeur Sécurité & Métier</h2>
+        
+        <div class="red-box">
+            <h3><span class="priority-red">🚨 RISQUE PRINCIPAL</span></h3>
+            <p><strong>Risque Principal :</strong> Détournement de trafic ou coupure de service via l'empoisonnement de la table de routage.</p>
+            
+            <p><span class="priority-red">→ Attaque Type :</span> Route Injection / BGP Hijacking.</p>
+            
+            <p><span class="priority-red">→ Détection :</span></p>
+            <div class="code-block">
+<span class="cisco-command">R1# show ip route | begin Gateway</span><br>
+<span class="cisco-command">R1# show logging | include %ROUTING-</span>
+            </div>
+            
+            <p><span class="priority-red">→ Mitigation Immédiate :</span></p>
+            <div class="code-block">
+<span class="comment">! Supprimer la route non autorisée</span><br>
+<span class="cisco-command">R1(config)# no ip route &lt;malicious-network&gt; &lt;mask&gt; &lt;next-hop&gt;</span><br><br>
+<span class="comment">! Authentifier les sessions de routage</span><br>
+<span class="cisco-command">R1(config-router)# area 0 authentication message-digest</span>
+            </div>
+            
+            <p><span class="priority-red">→ Intégration Entreprise :</span> Intégrer les logs de routage dans le SIEM. Utiliser Ansible pour auditer les tables de routage.</p>
+        </div>
+    </div>
+
+    <!-- 📚 PROFONDEUR EXAMEN CCNA -->
+    <div class="section exam-section">
+        <h2><i class="fas fa-graduation-cap priority-orange"></i> 📚 Profondeur Examen CCNA</h2>
+        
+        <div class="orange-box">
+            <h3><span class="priority-orange">⚠️ Pièges Fréquents</span></h3>
+            <p><span class="priority-orange">? Détail Oublié #1 :</span> La correspondance la plus longue s'applique AUX BITS, pas aux segments décimaux.</p>
+            <p><span class="priority-orange">? Piège Fréquent #2 :</span> Confondre <code>C</code> (Connected) et <code>L</code> (Local).</p>
+            <p><span class="priority-orange">? Détail Numérique #3 :</span> AD par défaut : Connecté=0, Statique=1, EIGRP=90, OSPF=110, RIP=120.</p>
+        </div>
+        
+        <div class="orange-box">
+            <h3><span class="priority-orange">Question Type CCNA</span></h3>
+            <p><em>"Le routeur R1 a : <code>O 192.168.1.0/24 [110/50] via 10.1.1.2</code> et <code>S 192.168.1.0/24 [1/0] via 10.1.1.3</code>. Quel chemin sera utilisé ?"</em></p>
+            <p><span class="priority-green">+ Réponse :</span> La route statique (AD=1) car son AD est inférieure à OSPF (AD=110).</p>
+        </div>
+    </div>
+
+    <!-- ⚙️ LAB COMPLET -->
+    <div class="section lab-section">
+        <h2><i class="fas fa-flask priority-blue"></i> ⚙️ Lab Complet : De la Configuration à l'Automatisation</h2>
+        
+        <div class="lab-level">
+            <h4><i class="fas fa-user-graduate"></i> Niveau 1 (CCNA) : Configuration Fondamentale</h4>
+            <div class="code-block">
+<span class="comment">! Configuration d'interface</span><br>
+<span class="cisco-command">R1(config)# interface GigabitEthernet0/0/0</span><br>
+<span class="cisco-command">R1(config-if)# ip address 10.0.1.1 255.255.255.0</span><br>
+<span class="cisco-command">R1(config-if)# no shutdown</span>
+            </div>
+            <p class="priority-green"><span class="priority-green">+ Vérification :</span> <code>show ip route 10.0.1.0</code></p>
+        </div>
+        
+        <div class="lab-level">
+            <h4><i class="fas fa-user-shield"></i> Niveau 2 (Production) : Hardening</h4>
+            <div class="code-block">
+<span class="comment">! Route statique flottante (backup)</span><br>
+<span class="cisco-command">R1(config)# ip route 0.0.0.0 0.0.0.0 10.0.3.2</span><br>
+<span class="cisco-command">R1(config)# ip route 0.0.0.0 0.0.0.0 10.0.4.2 250</span>
+            </div>
+            <p class="priority-orange"><span class="priority-orange">? Risque si omis :</span> Pas de récupération automatique.</p>
+        </div>
+        
+        <div class="lab-level">
+            <h4><i class="fas fa-robot"></i> Niveau 3 (Expert/Automatisation) : Script</h4>
+            <div class="code-block">
+<span class="comment"># Script Python pour auditer les tables de routage</span><br>
+<span class="keyword">from</span> netmiko <span class="keyword">import</span> ConnectHandler<br>
+<span class="keyword">import</span> json<br><br>
+<span class="function">def</span> audit_routes(device):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connection = ConnectHandler(**device)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output = connection.send_command(<span class="string">'show ip route | json'</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> json.loads(output)
+            </div>
+            <p class="priority-green"><span class="priority-green">+ Avantage :</span> Audit centralisé, détection de dérive.</p>
+        </div>
+    </div>
+
+    <!-- 🚨 SCÉNARIO DE DÉPANNAGE -->
+    <div class="section troubleshooting-section">
+        <h2><i class="fas fa-tools priority-green"></i> 🚨 Scénario de Dépannage Avancé</h2>
+        
+        <div class="red-box">
+            <h3><span class="priority-red">Symptôme Complexe</span></h3>
+            <p>Les utilisateurs du réseau <code>10.0.1.0/24</code> ne peuvent plus joindre <code>10.0.5.10</code>, mais autres destinations OK.</p>
+        </div>
+        
+        <div class="green-box">
+            <h3><span class="priority-green">Processus de Diagnostic</span></h3>
+            <ol>
+                <li><span class="priority-green">+ Sur R1 :</span> <code>traceroute 10.0.5.10</code></li>
+                <li><span class="priority-green">+ Sur R2 :</span> <code>show ip route 10.0.5.10</code></li>
+                <li><span class="priority-green">+ Vérifier OSPF :</span> <code>show ip ospf neighbor</code></li>
+            </ol>
+        </div>
+        
+        <div class="blue-box">
+            <h3><span class="priority-blue">Fix et Rollback</span></h3>
+            <div class="code-block">
+<span class="cisco-command">R2(config)# interface Serial0/1/0</span><br>
+<span class="cisco-command">R2(config-if)# no shutdown</span><br>
+<span class="comment">! Vérification</span><br>
+<span class="cisco-command">R2# show ip ospf neighbor</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔗 CONNECTIONS SYSTÉMIQUES -->
+    <div class="section connections-section">
+        <h2><i class="fas fa-project-diagram priority-purple"></i> 🔗 Connexions Systémiques</h2>
+        
+        <div class="connection-flow">
+            <div class="connection-module">
+                <h4>← Module Précédent</h4>
+                <p><strong>Adressage IP</strong></p>
+                <p>Prérequis : découpage en sous-réseaux pour comprendre "Longest Match".</p>
+            </div>
+            
+            <div class="connection-arrow"><i class="fas fa-arrow-right"></i></div>
+            
+            <div class="connection-module" style="border: 2px solid var(--primary-blue);">
+                <h4>Module Actuel</h4>
+                <p><strong>Concepts du Routage</strong></p>
+                <p>Comprendre COMMENT le routeur prend ses décisions.</p>
+            </div>
+            
+            <div class="connection-arrow"><i class="fas fa-arrow-right"></i></div>
+            
+            <div class="connection-module">
+                <h4>→ Module Suivant</h4>
+                <p><strong>Routage Statique/OSPF</strong></p>
+                <p>Pré-requis absolu avant configuration.</p>
+            </div>
+        </div>
+        
+        <div class="purple-box">
+            <p><span class="priority-purple">🔄 Écosystème Réel :</span> Interaction avec Firewall, SD-WAN, SIEM, serveurs DHCP.</p>
+        </div>
+    </div>
+
+    <!-- ❓ VALIDATION PAR EXERCICE MENTAL -->
+    <div class="section validation-section">
+        <h2><i class="fas fa-check-circle"></i> ❓ Validation par Exercice Mental</h2>
+        
+        <div class="orange-box">
+            <h3><span class="priority-orange">Question de Concept</span></h3>
+            <p><em>"En utilisant l'analogie postale, que fait un facteur avec une lettre pour une adresse dont seul le code postal est connu ?"</em></p>
+            <p><span class="priority-green">+ Réponse :</span> Utilise la route du code postal (/24) pour envoyer au centre de tri local.</p>
+        </div>
+        
+        <div class="orange-box">
+            <h3><span class="priority-orange">Question de Piège</span></h3>
+            <p><em>"<code>S* 0.0.0.0/0 [1/0] via 192.168.1.254</code> : que signifie le 0 dans la métrique ?"</em></p>
+            <p><span class="priority-green">+ Réponse :</span> Les routes statiques n'ont pas de métrique calculée, donc toujours 0.</p>
+        </div>
+        
+        <div class="red-box">
+            <h3><span class="priority-red">Question de Crise</span></h3>
+            <p><em>"3h du matin, plus d'Internet, mais réseau local OK. Première commande ? Hypothèse ? Plan ?"</em></p>
+            <p><span class="priority-green">+ Première commande :</span> <code>show ip route 0.0.0.0</code></p>
+            <p><span class="priority-green">+ Hypothèse :</span> Route par défaut disparue ou lien FAI down.</p>
+            <p><span class="priority-green">+ Plan :</span> 1) Vérifier route/lien 2) Contacter FAI 3) Activer route de secours.</p>
+        </div>
+    </div>
+
+    <!-- 🧩 MICRO-KIT ESSENTIEL -->
+    <div class="section microkit-section">
+        <h2><i class="fas fa-file-alt"></i> 🧩 Micro-Kit Essentiel (Synthèse 1 Page A4)</h2>
+        
+        <div class="microkit-grid">
+            <div class="microkit-card">
+                <h4><i class="fas fa-gem priority-red"></i> 5 Lois Immuables</h4>
+                <ol>
+                    <li>Décision locale</li>
+                    <li>Longest Match gagne</li>
+                    <li>Plus faible AD installée</li>
+                    <li>Route par défaut = 0.0.0.0/0</li>
+                    <li>Interface up/up requise</li>
+                </ol>
+            </div>
+            
+            <div class="microkit-card">
+                <h4><i class="fas fa-terminal priority-blue"></i> 6 Commandes CLI</h4>
+                <ul class="command-list">
+                    <li>show ip route</li>
+                    <li>show ip route &lt;réseau&gt;</li>
+                    <li>show ip interface brief</li>
+                    <li>traceroute</li>
+                    <li>show ip ospf neighbor</li>
+                    <li>debug ip routing</li>
+                </ul>
+            </div>
+            
+            <div class="microkit-card">
+                <h4><i class="fas fa-exclamation-triangle priority-orange"></i> 3 Pièges CCNA</h4>
+                <ol>
+                    <li>Confondre C et L</li>
+                    <li>Métrique avant AD (inverse!)</li>
+                    <li>Oublier 0.0.0.0/0 = dernière option</li>
+                </ol>
+            </div>
+            
+            <div class="microkit-card">
+                <h4><i class="fas fa-tools priority-green"></i> Dépannage 3 Étapes</h4>
+                <ol>
+                    <li>VÉRIFIER LA TABLE</li>
+                    <li>TRACER LE CHEMIN</li>
+                    <li>INSPECTER LE SAUT</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+flowchart TD
+    P[Paquet reçu] --> T{Table de Routage}
+    T --> LM[Longest Match]
+    LM --> NM{Correspondance?}
+    NM -- Non --> D[Drop]
+    NM -- Oui --> DC{Destination Connectée?}
+    DC -- Oui --> ARP[ARP/ND → Sortie]
+    DC -- Non --> NH[Saut Suivant → Sortie]
+    ARP --> X[Transmettre]
+    NH --> X
+            </div>
+        </div>
+        
+        <div class="red-box">
+            <h4><i class="fas fa-shield-alt priority-red"></i> 1 Risque Sécurité + Mitigation</h4>
+            <p><strong>Risque :</strong> Injection de fausses routes</p>
+            <p><strong>Mitigation :</strong> Authentification des protocoles de routage</p>
+        </div>
+        
+        <div class="blue-box" style="text-align: center; margin-top: 20px;">
+            <h4><i class="fas fa-calculator priority-blue"></i> Équation Mentale</h4>
+            <p style="font-family: monospace; font-size: 1.1rem;">
+                ROUTING = LONGEST_MATCH(Dest_IP, RIB)<br>
+                où RIB = SORT_BY_AD(ALL_ROUTES)
+            </p>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--medium-gray); color: #666;">
+	<button onclick="window.print()" style="padding: 10px 20px; background-color: var(--primary-blue); color: white; border: none; border-radius: var(--border-radius); cursor: pointer;">
+                <i class="fas fa-print"></i> Imprimer le Micro-Kit A4
+            </button>
+        <p>Module-Kit de Maîtrise - Concepts du Routage Cisco</p>
+        <p class="no-print" style="margin-top: 10px;"></p>
+		<p>@2025</p>
+    </footer>
+
+    <script>
+        // Initialisation de Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+        
+        // Ré-initialiser Mermaid après chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            mermaid.init();
+        });
+    </script>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(function (el) {
+          el.removeAttribute('data-processed');
+        });
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid, .mermaid-diagram .diagram-container, .diagram-container .mermaid').forEach(function (target) {
+        if (!target.classList.contains('mermaid')) return;
+        var parent = target.closest('.mermaid-diagram') || target.parentElement;
+        if (!parent || parent.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        var scale = 1;
+        var toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        parent.insertBefore(toolbar, parent.firstChild);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          var button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          var action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,852 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 16 : La Mécanique Déterministe du Routage - Fondements, Sémantique et Dépannage des Routes Statiques</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:false, theme:'neutral', securityLevel:'loose', flowchart:{htmlLabels:true}});</script>
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0c1722;
+      --panel:#12212b;
+      --panel2:#162934;
+      --line:rgba(121,221,210,.18);
+      --line-strong:rgba(121,221,210,.42);
+      --text:#eef7fa;
+      --muted:#a7bec6;
+      --accent:#72dfd2;
+      --accent2:#f4cb7e;
+      --shadow:0 28px 70px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --color-primary:#eef7fa;
+      --color-secondary:#d8e8ee;
+      --color-accent:#72dfd2;
+      --color-law:#ff8c8c;
+      --color-illusion:#f4cb7e;
+      --color-background:#071018;
+      --color-surface:#12212b;
+      --color-border:rgba(121,221,210,.24);
+      --font-heading:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+      --font-body:"Aptos","Segoe UI","Trebuchet MS",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      color:var(--text);
+      font-family:var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(114,223,210,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(244,203,126,.10), transparent 24%),
+        linear-gradient(155deg,#051019 0%,#091521 46%,#061019 100%);
+      scroll-behavior:smooth;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+
+    .page{
+      width:min(1560px,calc(100vw - 28px));
+      margin:14px auto 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,.panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:34px 34px 28px;min-height:260px}
+
+    .hero::before,
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.10), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.08), transparent 36%);
+    }
+
+    .eyebrow{
+      margin:0 0 14px;
+      color:var(--accent);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      max-width:1080px;
+      font-size:clamp(36px,5vw,68px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+
+    .hero-copy{
+      margin:18px 0 0;
+      max-width:1080px;
+      font-size:21px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      margin-top:22px;
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card strong{display:block;font-size:18px;line-height:1.2;margin-bottom:6px}
+    .hero-card span{color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      gap:18px;
+      grid-template-columns:320px minmax(0,1fr);
+      align-items:start;
+    }
+
+    .sidebar{position:sticky;top:14px;display:grid;gap:18px}
+    .panel{padding:22px}
+    .main{display:grid;gap:18px}
+    .side-title{margin:0 0 14px;font-size:20px;letter-spacing:-.03em}
+    .note{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+    .nav a{
+      display:block;
+      margin-bottom:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.02);
+      transition:.22s ease;
+    }
+
+    .nav a:hover,
+    .nav a.active,
+    .nav a.active-section{
+      transform:translateX(4px);
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.08);
+    }
+
+    .nav ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    .nav ul ul{
+      margin:0 0 12px 14px !important;
+      padding-left:10px;
+      border-left:1px solid var(--line);
+    }
+
+    .nav ul ul a{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .module-section{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      background:linear-gradient(180deg,rgba(18,33,43,.95),rgba(12,24,33,.96));
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin:0;
+      scroll-margin-top:20px;
+    }
+
+    .module-section::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(114,223,210,.08), transparent 38%),
+        linear-gradient(320deg, rgba(244,203,126,.06), transparent 36%);
+    }
+
+    .module-section > *{position:relative;z-index:1}
+
+    .section-header{
+      margin-bottom:1.6rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--line);
+    }
+
+    .section-header h2{
+      margin:0;
+      font-family:var(--font-heading);
+      font-size:34px;
+      letter-spacing:-.04em;
+      color:var(--text);
+    }
+
+    .section-tag{
+      display:inline-block;
+      background:linear-gradient(135deg,var(--accent),#8ff4e8);
+      color:#07212a;
+      font-size:.78rem;
+      font-weight:800;
+      padding:.35rem .85rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    h3,h4{
+      font-family:var(--font-heading);
+      color:var(--text);
+      letter-spacing:-.03em;
+    }
+
+    h3{font-size:1.55rem;margin-top:2rem;margin-bottom:1rem}
+    h4{font-size:1.1rem;margin-top:1.4rem;margin-bottom:.8rem}
+
+    p,ul,ol{margin-bottom:1.2rem}
+    ul,ol{padding-left:1.4rem}
+    li{margin-bottom:.5rem}
+    p,li,td,th{color:var(--text);line-height:1.8}
+
+    .analogy-box,.law-box,.illusion-box,.equation-box{
+      border-left:4px solid var(--accent);
+      padding:1.5rem;
+      margin:2rem 0;
+      border-radius:0 10px 10px 0;
+      background:rgba(114,223,210,.06);
+    }
+
+    .law-box{border-left-color:#ff8c8c;background:rgba(197,48,48,.10)}
+    .illusion-box{border-left-color:var(--accent2);background:rgba(244,203,126,.10)}
+    .equation-box{
+      text-align:center;
+      font-size:1.1rem;
+      border:1px dashed var(--line);
+      border-left-width:1px;
+      border-radius:18px;
+    }
+
+    .concept-key{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .mermaid-diagram{
+      margin:2rem 0;
+      padding:1rem;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .mermaid-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mermaid-btn{
+      border:1px solid var(--line);
+      background:rgba(18,33,43,.9);
+      color:var(--text);
+      border-radius:10px;
+      padding:6px 10px;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .mermaid-btn:hover{
+      border-color:var(--line-strong);
+      background:rgba(114,223,210,.12);
+    }
+
+    .mermaid-stage{
+      transform-origin:top center;
+      transition:transform .18s ease;
+    }
+
+    .cognitive-objectives{
+      background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+      padding:2rem;
+      border-radius:18px;
+      margin:2rem 0;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .cognitive-objectives,
+    .cognitive-objectives p,
+    .cognitive-objectives li,
+    .cognitive-objectives h3{
+      color:#fff;
+    }
+
+    iframe,canvas,img,svg{max-width:100%}
+
+    pre{
+      overflow:auto;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    code{
+      color:#d9fff8;
+      word-break:break-word;
+    }
+
+    table{
+      width:100%;
+      display:block;
+      overflow:auto;
+      border-collapse:collapse;
+    }
+
+    .page-footer{
+      text-align:center;
+      padding:24px;
+      font-size:18px;
+      line-height:1.8;
+      color:var(--muted);
+    }
+
+    .page-footer p{margin:.4rem 0;color:var(--muted)}
+
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:4px;
+      cursor:pointer;
+    }
+
+    .hamburger span{
+      width:25px;
+      height:3px;
+      border-radius:2px;
+      background:var(--text);
+    }
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 860px){
+      .hero{padding:24px 20px}
+      .panel,.module-section{padding:18px}
+      .page{width:min(100vw - 14px,1560px)}
+      .hero-grid{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .section-header h2{font-size:28px}
+      .hamburger{display:flex}
+      .sidebar[data-collapsed="true"] .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="eyebrow">Module Académique</p>
+    <h1>📘 Module 16 : La Mécanique Déterministe du Routage - Fondements, Sémantique et Dépannage des Routes Statiques</h1>
+    <p class="hero-copy">Reconstruction académique ultra-approfondie orientée maîtrise — Formation d'un architecte réseau d'exception (Niveau Élite)</p>
+    <div class="hero-grid">
+      <div class="hero-card"><strong>Analogie</strong><span>Modèle systémique et vision d'ensemble</span></div>
+      <div class="hero-card"><strong>Architecture</strong><span>Fondamentaux et mécanismes détaillés</span></div>
+      <div class="hero-card"><strong>Protocoles</strong><span>Couches, services et erreurs à éviter</span></div>
+      <div class="hero-card"><strong>Objectifs</strong><span>Synthèse, extension et ancrage final</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar-shell" data-collapsed="false">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h2 class="side-title" style="margin:0;">Navigation du Module</h2>
+          <div class="hamburger" id="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <nav class="nav">
+          <ul class="nav-menu" id="main-menu">
+
+                <li><a href="#analogie" class="active">Analogie Maître</a></li>
+                <li><a href="#modele-mental">Modèle Mental</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#mecanismes">Mécanismes</a></li>
+                <li><a href="#protocoles">Protocoles & Services</a></li>
+                <li><a href="#illusions">Illusions Conceptuelles</a></li>
+                <li><a href="#raisonnement">Raisonnement Expert</a></li>
+                <li><a href="#synthese">Synthèse</a></li>
+                <li><a href="#extension">Extension</a></li>
+                <li><a href="#objectifs">Objectifs</a></li>
+            
+          </ul>
+          <div style="height:12px;"></div>
+          <ul class="sidebar-nav">
+
+                <li><a href="#analogie" class="active-section">🧠 Analogie Systémique Maître</a></li>
+                <li><a href="#modele-mental">🧩 Modèle Mental Global</a></li>
+                <li><a href="#architecture">1️⃣ Architecture Conceptuelle Fondamentale</a></li>
+                <li><a href="#mecanismes">2️⃣ Mécanismes Internes Détaillés</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#sequence-canonique">Séquence Canonique</a></li>
+                        <li><a href="#cycle-de-vie">Cycle de Vie d'une Route</a></li>
+                    </ul>
+                </li>
+                <li><a href="#protocoles">3️⃣ Protocoles, Couches & Services</a>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li><a href="#types-routes">Types de Routes Statiques</a></li>
+                        <li><a href="#commandes-diagnostic">Commandes de Diagnostic</a></li>
+                    </ul>
+                </li>
+                <li><a href="#illusions">4️⃣ Erreurs Conceptuelles Majeures</a></li>
+                <li><a href="#raisonnement">5️⃣ Raisonnement d'Administrateur Réseau Expert</a></li>
+                <li><a href="#synthese">6️⃣ Synthèse Mémorisable Long Terme</a></li>
+                <li><a href="#extension">7️⃣ Extension Au-Delà de NetAcad (200%+)</a></li>
+                <li><a href="#objectifs">🎯 Objectifs Cognitifs Finaux</a></li>
+            
+          </ul>
+        </nav>
+      </section>
+      <section class="panel">
+        <h2 class="side-title">Principe du module</h2>
+        <p class="note">Reconstruction visuelle basée sur le modèle du projet, avec conservation du contenu complet et des schémas Mermaid du module source.</p>
+      </section>
+    </aside>
+
+    <main class="main" id="content">
+
+            <!-- Section Analogie -->
+            <section id="analogie" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fondation Cognitive</span>
+                    <h2>🧠 Analogie Systémique Maître : Le Système de Tri Postal à Instructions Figées</h2>
+                </div>
+                <p>Imaginez un réseau de centres de tri postal interconnectés. Chaque centre (routeur) reçoit des colis (paquets) portant une adresse de ville et de rue (adresse IP). Le fonctionnement interne repose sur des <strong>fiches de routage manuscrites et immuables</strong> (routes statiques) accrochées au mur, et un processus mécanique strict.</p>
+                <div class="analogy-box">
+                    <p><strong>Le Colis (Paquet IP - Couche 3)</strong> : La boîte elle-même. L'étiquette finale « Destination : 10.1.1.1 » <strong>ne change jamais</strong> du départ à l'arrivée. C'est l'adresse IP source et destination.</p>
+                    <p><strong>Le Bon de Transport (Trame - Couche 2)</strong> : Un formulaire attaché au colis pour un <strong>trajet spécifique entre deux centres adjacents</strong>. Il indique « À transporter au centre de tri de Lyon » (MAC du next-hop). Ce formulaire est <strong>déchiré et remplacé</strong> à chaque centre de tri traversé.</p>
+                    <p><strong>La Fiche de Routage Murale (Route Statique)</strong> : Une instruction du type : « Pour les colis destinés au code postal 192.168.1.0/24, utilisez le convoyeur bleu (interface Serial0/0/1) » ou « ... envoyez-les au centre de tri de l'adresse 10.0.0.2 (next-hop) ». Cette fiche est <strong>figée</strong>.</p>
+                    <p><strong>Le Convoyeur (Interface Réseau)</strong> : Un mécanisme physique. S'il est en panne (`interface down`), toute fiche qui y fait référence devient <strong>instantanément inopérante</strong>, même si elle est toujours accrochée au mur.</p>
+                    <p><strong>Le Cri dans l'Entrepôt (Requête ARP - Adresse MAC Broadcast)</strong> : Lorsque la fiche dit « envoyez au centre 10.0.0.2 », mais que l'opérateur ne sait pas sur quel quai de chargement ce centre se trouve (adresse MAC inconnue), il <strong>crie</strong> (broadcast) dans l'entrepôt : « Le centre 10.0.0.2, signalez-vous ! ». Cette technique (`FF:FF:FF:FF:FF:FF`) n'est utilisée <strong>que pour cette demande de localisation interne</strong>, jamais pour expédier le colis lui-même.</p>
+                    <p><strong>L'Absence de Fiche et l'Impassé (Pas de Route)</strong> : Un colis pour une destination sans fiche correspondante et sans instruction « divers » (pas de route par défaut) est <strong>mis au rebut</strong> (supprimé).</p>
+                </div>
+                <h4>Mapping Cognitif :</h4>
+                <ul>
+                    <li><span class="concept-key">Changement de Bon de Transport = Ré-encapsulation L2</span> à chaque saut.</li>
+                    <li><span class="concept-key">Fiche pointant vers un Convoyeur en Panne</span> = Route statique non installée car l'interface est down.</li>
+                    <li><span class="concept-key">Devoir Crier pour localiser le centre</span> = Processus ARP avant tout envoi.</li>
+                    <li><span class="concept-key">Fiche « Pour toute destination inconnue, envoyez à Paris »</span> = Route par défaut (0.0.0.0/0).</li>
+                </ul>
+            </section>
+
+            <!-- Section Modèle Mental -->
+            <section id="modele-mental" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Schéma Directeur</span>
+                    <h2>🧩 Modèle Mental Global du Système : Automate à États Finis Déterministe</h2>
+                </div>
+                <p>Le routage statique est un <strong>automate à états finis déterministe</strong> où la connectivité résulte de l'interaction entre une <strong>intention de configuration</strong> et l'<strong>état physique dynamique</strong> des interfaces. Le diagramme ci-dessous modélise la logique de décision et les points de défaillance critiques.</p>
+                <div class="mermaid-diagram">
+                    <div class="mermaid">
+graph TD
+    A[Paquet IP Reçu sur Interface] --> B{État de l'Interface d'Entrée?};
+    B -->|UP| C[Désencapsulation L2<br/>Extraction Paquet IP];
+    B -->|DOWN| D[Paquet Ignoré];
+
+    C --> E[Consultation Table de Routage<br/>Longest Prefix Match];
+    E --> F{Route Trouvée?};
+
+    F -->|Non| G{Route par Défaut<br/>0.0.0.0/0 Existante?};
+    G -->|Non| H[Paquet Supprimé<br/>ICMP: Host Unreachable];
+    G -->|Oui| I[Route Sélectionnée: S*];
+
+    F -->|Oui| I;
+
+    I --> J{Type de Route Sélectionnée?};
+    J -->|Directement Connectée C| K[Forwarding Direct sur le LAN<br/>Résolution ARP pour l'Hôte Final];
+    J -->|Statique avec Next-Hop IP| L[Vérifier Accessibilité du Next-Hop];
+    J -->|Statique avec Interface Seule| M[Vérifier État de l'Interface de Sortie];
+
+    L --> N{Next-Hop Joignable?<br/>(Route C Existante?)};
+    N -->|Non| O[Route NON Installée/Inactive];
+    N -->|Oui| P[Résolution ARP pour le Next-Hop];
+    M --> Q{Interface de Sortie UP/UP?};
+    Q -->|Non| O;
+    Q -->|Oui| P;
+
+    P --> R{Résolution ARP Réussie?};
+    R -->|Non| S[Paquet en Attente puis Supprimé];
+    R -->|Oui| T[Encapsulation dans Nouvelle Trame L2<br/>MAC Dest = Next-Hop/Interface];
+
+    T --> U[Transmission sur le Support Physique];
+    K --> U;
+    O --> H;
+                    </div>
+                </div>
+                <p><strong>Lecture du Modèle :</strong> Le système est un enchaînement de <strong>portes logiques</strong>. Une défaillance à n'importe quelle étape (interface down, next-hop injoignable, échec ARP) interrompt le processus. La <strong>« Route Statique »</strong> n'est qu'un embranchement dans ce flux. Son efficacité dépend entièrement de la validation des conditions en aval.</p>
+            </section>
+
+            <!-- Section Architecture -->
+            <section id="architecture" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Cadre Théorique</span>
+                    <h2>1️⃣ Architecture Conceptuelle Fondamentale</h2>
+                </div>
+                <p>Le routage statique est un service de <strong>couche 3 (réseau)</strong> qui implémente une <strong>fonction de transfert déterministe</strong>. Contrairement aux protocoles dynamiques, il ne construit pas une *représentation apprise* de la topologie, mais applique une *représentation prescrite* par l'administrateur.</p>
+                
+                <h3>Rôle et Positionnement :</h3>
+                <ul>
+                    <li><strong>Dans OSI/TCP-IP :</strong> Il est le processus central de la couche réseau sur un routeur. Il s'appuie sur les services de la <strong>couche 2 (liaison)</strong> pour la livraison de trame entre sauts adjacents et fournit ses services à la <strong>couche 4 (transport)</strong> en permettant la connectivité de bout en bout.</li>
+                    <li><strong>Sémantique de Contrôle :</strong> Il offre un contrôle <strong>granulaire, prévisible et à faible overhead</strong> sur le chemin des paquets. Il est privilégié pour les liens de bordure (default route), les chemins de secours (backup), l'ingénierie de trafic simple et les réseaux stub (en impasse).</li>
+                    <li><strong>Relation avec le Routage Dynamique :</strong> Ils coexistent via le concept de <strong>Distance Administrative (AD)</strong>. L'AD est un *poids de crédibilité*. Une route directement connectée (AD=0) et une route statique (AD=1) sont considérées comme plus fiables et prioritaires qu'une route apprise via OSPF (AD=110) ou RIP (AD=120).</li>
+                </ul>
+
+                <h3>Frontières du Domaine :</h3>
+                <ul>
+                    <li><strong>Frontière Inférieure (L2) :</strong> Le routage statique <strong>délègue</strong> la livraison au saut suivant à la couche 2. Il nécessite donc que la connectivité L2 soit établie et que l'adresse L2 du prochain saut soit résolue (ARP/NDP). <strong>Une panne L2 est interprétée comme une indisponibilité de la route.</strong></li>
+                    <li><strong>Frontière Supérieure (Politique) :</strong> Bien que statique, il peut être filtré, modifié ou préempté par des outils de politique de routage (Route-Maps, PBR) qui opèrent à un niveau décisionnel supérieur.</li>
+                </ul>
+            </section>
+
+            <!-- Section Mécanismes -->
+            <section id="mecanismes" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Fonctionnement Granulaire</span>
+                    <h2>2️⃣ Mécanismes Internes Détaillés</h2>
+                </div>
+
+                <h3 id="sequence-canonique">A. L'Algorithme de Forwarding : Une Séquence Canonique Non-Négociable</h3>
+                <p>Le traitement d'un paquet suit un algorithme strict, indépendant de la source de la route (C, S, O, etc.). Comprendre chaque étape est la clé du dépannage.</p>
+                <ol>
+                    <li><strong>Vérification et Acceptation L2 (Input Processing) :</strong> Le contrôleur MAC inspecte l'adresse MAC de destination de la trame entrante. <strong>Règle d'acceptation :</strong> La trame est acceptée si `(MAC_Dest == MAC_Interface) OR (MAC_Dest == Broadcast) OR (MAC_Dest ∈ Groupe_Multicast_Souscrit)`. Sinon, elle est <strong>silencieusement ignorée</strong>.</li>
+                    <li><strong>Désencapsulation et Identification L3 (Decapsulation) :</strong> Le champ <strong>EtherType</strong> (ex: 0x0800 pour IPv4) est lu. L'en-tête et le trailer L2 sont supprimés. Le paquet IP est placé dans le buffer de traitement.</li>
+                    <li><strong>Décision de Routage (Route Lookup) :</strong> L'adresse IP de destination du paquet est utilisée pour une recherche dans la <strong>table de routage (RIB)</strong> via l'algorithme <strong>Longest Prefix Match (LPM)</strong>.</li>
+                    <li><strong>Détermination de la Voie de Sortie (Next-Hop & Interface) :</strong> La route sélectionnée fournit les paramètres de sortie : `{Interface_Sortie, Adresse_IP_Next_Hop}`.</li>
+                    <li><strong>Résolution de l'Adresse du Prochain Saut (Address Resolution) :</strong> Si un next-hop IP est spécifié, le routeur consulte sa <strong>table ARP</strong>. Si l'entrée est absente, il <strong>diffuse une requête ARP</strong> sur l'interface de sortie. Le paquet est <strong>mis en attente (paused)</strong> pendant cette résolution.</li>
+                    <li><strong>Ré-encapsulation (Rewrite - L2 Frame Building) :</strong> Construction d'une <strong>nouvelle trame L2</strong> adaptée au segment de sortie. <strong>Principe Fondamental (Loi de la Ré-encapsulation) :</strong> Le paquet IP (en-tête et données) <strong>reste intégralement inchangé</strong>, sauf le champ TTL décrémenté de 1.</li>
+                    <li><strong>Transmission (Queuing & Transmission) :</strong> La trame est placée dans la file d'attente de l'interface de sortie et transmise sur le support physique.</li>
+                </ol>
+
+                <h3 id="cycle-de-vie">B. Le Cycle de Vie d'une Entrée de Route Statique dans la RIB</h3>
+                <p>Une route statique n'est pas une simple entrée en mémoire ; elle a un cycle de vie avec des transitions d'état conditionnées.</p>
+                <ol>
+                    <li><strong>Configuration (State: Configured) :</strong> La commande `ip route 192.168.1.0 255.255.255.0 10.0.0.1` est entrée.</li>
+                    <li><strong>Validation et Installation Conditionnelle (State: Validating → Installed/Rejected) :</strong> Le routeur exécute des vérifications <strong>synchrones</strong> : l'interface de sortie est-elle `up/up` ? Le next-hop est-il routable ? Si `non`, la route est <strong>rejetée</strong>. Elle n'apparaît <strong>pas</strong> dans `show ip route`.</li>
+                    <li><strong>État Actif (State: Active/Installed) :</strong> Si les vérifications passent, la route est installée dans la RIB avec le code `S`.</li>
+                    <li><strong>Surveillance et Rétraction Dynamique (State: Active → Inactive) :</strong> Si l'interface de sortie passe à `down`, la route est <strong>immédiatement retirée</strong> de la RIB. <strong>La configuration persiste, mais l'état opérationnel est invalidé.</strong></li>
+                    <li><strong>Restauration Dynamique (State: Inactive → Active) :</strong> Si l'interface revient `up`, la route est <strong>réinstallée automatiquement</strong>.</li>
+                    <li><strong>Suppression (State: Deleted) :</strong> Action <strong>exclusivement manuelle</strong> via `no ip route ...`.</li>
+                </ol>
+            </section>
+
+            <!-- Section Protocoles -->
+            <section id="protocoles" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Écosystème Technologique</span>
+                    <h2>3️⃣ Protocoles, Couches et Services (Exhaustif)</h2>
+                </div>
+                
+                <h3>A. La Pile Protocolaire et Ses Points d'Interaction</h3>
+                <ul>
+                    <li><span class="concept-key">Table de Routage (RIB) - Couche 3</span> : Base de décision pour le LPM. Contient les codes : `C` (Connected), `S` (Static), `S*` (Static Default).</li>
+                    <li><span class="concept-key">ICMP (Internet Control Message Protocol) - Couche 3</span> : Signalisation d'erreur. Généré quand un paquet est supprimé (Destination Unreachable).</li>
+                    <li><span class="concept-key">ARP (Address Resolution Protocol) - Couche 2.5</span> : Résolution L3→L2 sur un LAN. <strong>Échec ARP = Blocage du forwarding.</strong></li>
+                    <li><span class="concept-key">En-tête Ethernet - Couche 2</span> : <strong>Dest. MAC (6o): Réécrit.</strong> Pour trafic transit ≠ `FF:FF:FF:FF:FF:FF`. <strong>Src. MAC (6o):</strong> MAC de l'interface sortante. <strong>Type (2o):</strong> 0x0800 (IPv4) guide la désencapsulation.</li>
+                    <li><span class="concept-key">État de l'Interface - Couche 1/2</span> : Condition *sine qua non*. États : `up/up` (opérationnel), `up/down` (problème L1/L2), `down/down` (administrativement désactivée).</li>
+                </ul>
+
+                <h3 id="types-routes">B. Les Trois Types Sémantiques de Routes Statiques IPv4/IPv6</h3>
+                <p>La distinction ne réside pas dans la commande, mais dans la <strong>sémantique opérationnelle</strong> et les <strong>prérequis de validation</strong>.</p>
+                <ol>
+                    <li><strong>Route Statique Récursive (Next-Hop IP Seul) :</strong> Syntaxe : `ip route <réseau> <masque> <next-hop-ip>`. <strong>Condition de Validité :</strong> Il <strong>doit</strong> exister une route dans la RIB (généralement une route `C`) pour atteindre le next-hop.</li>
+                    <li><strong>Route Statique Directement Connectée (Interface de Sortie Seule) :</strong> Syntaxe : `ip route <réseau> <masque> <interface>`. <strong>Condition de Validité :</strong> L'interface spécifiée doit être `up/up`. <strong>Use Case :</strong> <strong>Exclusivement</strong> sur les liens <strong>point-à-point</strong>.</li>
+                    <li><strong>Route Statique Entièrement Spécifiée (Next-Hop IP + Interface) :</strong> Syntaxe : `ip route <réseau> <masque> <interface> <next-hop-ip>`. Combine les deux éléments. <strong>Aucune vérification de routabilité du next-hop n'est effectuée</strong> (contrairement à la route récursive).</li>
+                    <li><strong>Route par Défaut (Default Route) :</strong> Syntaxe IPv4 : `ip route 0.0.0.0 0.0.0.0 <next-hop | interface>`. Syntaxe IPv6 : `ipv6 route ::/0 <next-hop | interface>`. C'est le <strong>réseau de dernier recours</strong>, avec le <strong>préfixe le plus court possible (/0)</strong>.</li>
+                </ol>
+
+                <h3 id="commandes-diagnostic">C. Détail des Commandes de Diagnostic (show, ping, traceroute)</h3>
+                <ul>
+                    <li><span class="concept-key">`show ip route` / `show ipv6 route`</span> : Affiche la <strong>RIB</strong>. Permet de vérifier la <strong>présence</strong> (`S`), l'<strong>état actif</strong>, et le <strong>next-hop/interface</strong> d'une route.</li>
+                    <li><span class="concept-key">`show ip interface brief`</span> : <strong>Première commande de dépannage.</strong> Donne un état agrégé `up/up`, `admin down`, etc., de <strong>toutes</strong> les interfaces.</li>
+                    <li><span class="concept-key">`ping`</span> : Teste la <strong>connectivité de bout en bout</strong> (L3).</li>
+                    <li><span class="concept-key">`traceroute` / `tracert`</span> : Identifie le <strong>saut précis</strong> où le paquet est perdu.</li>
+                    <li><span class="concept-key">`show arp` / `show ipv6 neighbors`</span> : Vérifie la <strong>résolution de couche 2</strong>.</li>
+                </ul>
+            </section>
+
+            <!-- Section Illusions -->
+            <section id="illusions" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Pièges Cognitifs</span>
+                    <h2>4️⃣ Erreurs Conceptuelles Majeures (Issues des Réponses Fausses)</h2>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion A : « L'Adresse MAC de Broadcast est un Mécanisme de Transfert Normal »</h4>
+                    <p><strong>Racine :</strong> Confusion entre <strong>signalisation de contrôle</strong> (ARP, DHCP) et <strong>transfert de données utilisateur</strong>.</p>
+                    <p><strong>Pourquoi c'est faux :</strong> L'adresse `FF:FF:FF:FF:FF:FF` est un outil de <strong>découverte</strong> sur un segment local. Son utilisation pour du trafic transité forcerait <strong>tous les hôtes</strong> du segment à consommer des ressources CPU pour traiter un paquet qui ne leur est pas destiné, causant des duplications massives. Un routeur <strong>n'utilisera cette adresse comme destination MAC que pour émettre des requêtes ARP</strong>, jamais pour forwarder un paquet IP vers un réseau distant.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion B : « Configurer une Route, c'est Établir la Connectivité »</h4>
+                    <p><strong>Racine :</strong> Confusion entre la <strong>syntaxe configurationnelle</strong> et l'<strong>état opérationnel</strong> du système.</p>
+                    <p><strong>Pourquoi c'est faux :</strong> La route n'est opérationnelle que si ses <strong>préconditions matérielles/logiques</strong> sont remplies (interface `up/up`, next-hop routable). Une route statique configurée mais pointant vers une interface `shutdown` est une <strong>instruction fantôme</strong> : elle existe en mémoire, mais est totalement ignorée par le processus de forwarding. Elle n'apparaîtra pas dans `show ip route`.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion C : « Une Route Statique peut Être Supprimée en Modifiant ses Attributs »</h4>
+                    <p><strong>Racine :</strong> Transfert inapproprié des concepts de protocoles dynamiques (métrique) aux routes statiques.</p>
+                    <p><strong>Pourquoi c'est faux :</strong> Les routes statiques sont <strong>axiomatiques</strong>. Elles n'ont pas de métrique comparable, de timer, de relation de voisinage. Les modifier (changer le next-hop, l'AD) crée une <strong>nouvelle</strong> entité configurationnelle, mais ne supprime pas l'ancienne. La <strong>seule</strong> façon de la supprimer est l'ordre <strong>explicite et inversé</strong> `no ip route ...`.</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion D : « Le Masque Wildcard et le Masque de Sous-Réseau sont Équivalents pour le Routage »</h4>
+                    <p><strong>Racine :</strong> Erreur de contexte sémantique. Les deux sont des séries de 32 bits, mais leur logique est inverse.</p>
+                    <p><strong>Pourquoi c'est faux :</strong> <strong>Masque de Sous-Réseau (`255.255.255.0`)</strong> : définit la partie <strong>réseau/hôte</strong>. <strong>Masque Wildcard (`0.0.0.255`)</strong> : définit les bits à <strong>ignorer</strong> pour le filtrage (ACL). En IPv6, cette confusion est éliminée : on utilise <strong>uniquement</strong> la notation CIDR (Longueur de Préfixe, ex: `/64`).</p>
+                </div>
+
+                <div class="illusion-box">
+                    <h4>Illusion E : « Sur un LAN, Spécifier l'Interface de Sortie Suffit (Comme en Point-à-Point) »</h4>
+                    <p><strong>Racine :</strong> Sous-estimation de la complexité des réseaux multi-accès.</p>
+                    <p><strong>Pourquoi c'est problématique :</strong> Sur un LAN Ethernet, l'interface de sortie connecte le routeur à <strong>plusieurs</strong> hôtes potentiels. Sans une IP next-hop, le routeur ne sait pas <strong>qui</strong> sur ce LAN est le prochain routeur. La <strong>bonne pratique</strong> est de toujours spécifier l'<strong>IP du next-hop</strong> sur les LANs.</p>
+                </div>
+            </section>
+
+            <!-- Section Raisonnement -->
+            <section id="raisonnement" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Méthode Expert</span>
+                    <h2>5️⃣ Raisonnement d'Administrateur Réseau Expert</h2>
+                </div>
+
+                <h3>A. La Méthodologie de Dépannage Systémique (Pour « La route est configurée mais le trafic ne passe pas »)</h3>
+                <ol>
+                    <li><strong>Isoler la Couche (The Layer Check) :</strong> Utiliser `traceroute`. S'arrête-t-il au <strong>routeur local</strong> (premier saut) ? → Problème de <strong>couche 3 local ou couche 2 vers le next-hop</strong>.</li>
+                    <li><strong>Vérifier la Décision L3 (The Route Lookup) :</strong> `show ip route <destination_exacte>`. La route (`S`) est-elle <strong>présente</strong> ? Via quel next-hop/interface ?</li>
+                    <li><strong>Vérifier l'État de la Porte de Sortie (The Exit Door) :</strong> `show ip interface brief`. L'interface de sortie est-elle `up/up` ? Si `down/down` ou `up/down`, le problème est <strong>L1/L2 local</strong>.</li>
+                    <li><strong>Vérifier la Résolution L2 (The Next-Hop Resolution) :</strong> `show arp | include <next-hop-ip>`. L'entrée ARP existe-t-elle ? <strong>Si ABSENTE :</strong> le problème est la <strong>connectivité L2 vers le next-hop</strong>.</li>
+                    <li><strong>Vérifier les ACL et Filtres (The Policy Check) :</strong> `show ip interface <interface_sortie>` et regarder les ACL « outbound ».</li>
+                </ol>
+
+                <h3>B. Anticiper les Effets : La Pensée en « Et Si... »</h3>
+                <ul>
+                    <li><strong>« Et si j'ajoute cette route statique plus spécifique ? »</strong> → Elle préempte immédiatement tout le trafic pour ce préfixe, y compris celui qui prenait auparavant la route par défaut.</li>
+                    <li><strong>« Et si l'interface WAN principale tombe ? »</strong> → Toutes les routes statiques pointant vers cette interface (ou vers un next-hop joignable via cette interface) <strong>disparaissent de la RIB</strong>.</li>
+                    <li><strong>« Et si je change l'IP du routeur voisin ? »</strong> → <strong>Toutes les routes statiques pointant vers l'ancienne IP deviennent invalides</strong> et seront retirées de la RIB. C'est une panne silencieuse nécessitant une reconfiguration manuelle.</li>
+                </ul>
+
+                <h3>C. Le Raisonnement par Récursivité</h3>
+                <p>L'erreur classique est d'oublier que `ip route A B C` nécessite `ip route C ? ?`. Il faut toujours se poser la question : <strong>« Comment ce routeur atteint-il l'IP du next-hop ? »</strong>. La réponse doit presque toujours être : <strong>« Via une route directement connectée (`C`) sur le même segment. »</strong> Si cette route `C` est absente, la route statique récursive <strong>ne s'installera jamais</strong>.</p>
+            </section>
+
+            <!-- Section Synthèse -->
+            <section id="synthese" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">À Retenir Absolument</span>
+                    <h2>6️⃣ Synthèse Mémorisable Long Terme</h2>
+                </div>
+
+                <h3>🧠 Équations Mentales (Les Lois du Système)</h3>
+                <div class="equation-box">
+                    <p>1. <strong>Équation d'État d'une Route :</strong> `[Route_Active] = [Config_Présente] ∧ [Interface_Sortie = UP] ∧ ([Next-Hop_Routable] ∨ [Lien_Est_PointÀPoint])`</p>
+                    <p>2. <strong>Équation de Transfert Réussi :</strong> `[Trame_Acceptée] → [LPM_Réussi] → [Résolution_ARP_Réussie] → [Trame_Réécrite] → [Transmission]`</p>
+                    <p>3. <strong>Équation de l'Adressage :</strong> `IP_Dest (Constant) | MAC_Dest (Change à Chaque Saut) | Broadcast_MAC (Uniquement pour ARP/Découverte)`</p>
+                </div>
+
+                <h3>📜 Lois Conceptuelles</h3>
+                <div class="law-box">
+                    <p>1. <strong>Loi de la Ré-encapsulation (Loi de la Réécriture L2) :</strong> « Un routeur change l'enveloppe à chaque saut. L'adresse MAC de destination est toujours celle du prochain périphérique L3 adjacent sur le lien. »</p>
+                    <p>2. <strong>Loi de la Persistance Statique (Loi de l'Inertie Configurationnelle) :</strong> « Une route statique existe jusqu'à ce qu'elle soit explicitement détruite. Elle est aveugle aux changements de topologie en aval de son point de sortie. »</p>
+                    <p>3. <strong>Loi de la Dépendance Ascendante (Loi de la Récursivité) :</strong> « Une route pointant vers une IP next-hop est esclave de la route qui permet d'atteindre cette IP. »</p>
+                    <p>4. <strong>Loi de la Suppression (Loi de l'Action Explicite) :</strong> « Pour supprimer une route statique, il faut annuler sa configuration, pas la modifier. »</p>
+                </div>
+
+                <h3>🚦 Règles de Dépannage Rapide (Heuristiques)</h3>
+                <ul>
+                    <li><strong>Route absente de `show ip route` ?</strong> → <strong>`show ip interface brief`</strong> (99% du temps : interface down).</li>
+                    <li><strong>Ping échoue mais la route est là ?</strong> → <strong>`show arp`</strong> (Résolution L2 échouée).</li>
+                    <li><strong>Traceroute meurt au premier saut ?</strong> → Problème <strong>local</strong> (RIB, Interface, ARP).</li>
+                    <li><strong>Configuration IPv6 ?</strong> → <strong>Préfixe + /longueur</strong>. Point final.</li>
+                </ul>
+
+                <h3>🔗 Retour à l'Analogie (Pour Ancrage)</h3>
+                <div class="analogy-box">
+                    <p>« Le bon de transport change à chaque centre de tri. »<br>
+                    « Une fiche qui dit 'utilisez le convoyeur bleu' est inutile si le convoyeur bleu est en panne. »<br>
+                    « On ne peut pas expédier un colis si on ne sait pas sur quel quai charger le camion pour la prochaine ville. »</p>
+                </div>
+            </section>
+
+            <!-- Section Extension -->
+            <section id="extension" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Perspectives</span>
+                    <h2>7️⃣ Extension Au-Delà de NetAcad (200%+)</h2>
+                </div>
+
+                <h3>A. Concepts Avancés et Implications Architecturale</h3>
+                <ul>
+                    <li><span class="concept-key">RIB vs FIB (Cisco Express Forwarding) :</span> La RIB est la table de contrôle, construite par le processeur. La <strong>FIB (Forwarding Information Base)</strong> est une copie optimisée et pré-calculée utilisée par le plan de données (ASIC) pour un forwarding à la ligne de vitesse. Une route dans la RIB mais pas dans la FIB indique souvent un échec de <strong>résolution adjacente</strong> (ARP échoué).</li>
+                    <li><span class="concept-key">Routes Statiques Flottantes (Floating Static Routes) :</span> Une route statique configurée avec une <strong>Distance Administrative (AD) élevée</strong> (ex: 200). Elle reste inactive tant qu'une route principale (ex: via OSPF, AD 110) est disponible. Dès que la route principale disparaît, la route flottante « remonte » dans la RIB. C'est un mécanisme de <strong>backup simple et robuste</strong>.</li>
+                    <li><span class="concept-key">Null0 comme Trou Noir (Discard Route) :</span> Une route statique pointant vers l'interface `Null0` (ex: `ip route 192.168.1.0 255.255.255.0 Null0`) est un moyen de <strong>sommer (sink)</strong> du trafic indésirable. Utilisé pour la <strong>protection contre les boucles de routage</strong> ou la mitigation d'attaques.</li>
+                    <li><span class="concept-key">Sémantique de l'AD dans les Réseaux Hybrides :</span> Dans un réseau utilisant à la fois OSPF et des routes statiques, comprendre que la route statique (AD=1) sera <strong>toujours</strong> préférée à une route OSPF (AD=110) vers le même réseau.</li>
+                </ul>
+
+                <h3>B. Vision Vendor-Neutral et Évolution</h3>
+                <ul>
+                    <li><span class="concept-key">Modèle Théorique Universel :</span> Les concepts de LPM, ré-encapsulation, récursivité et dépendance à l'état de l'interface sont <strong>indépendants du vendeur</strong>.</li>
+                    <li><span class="concept-key">Automation et Infrastructure as Code (IaC) :</span> Les paradigmes modernes utilisent l'automation (Ansible, Terraform, scripts Python) pour <strong>déployer, valider et auditer</strong> de manière idempotente les tables de routage statique, garantissant leur cohérence.</li>
+                </ul>
+
+                <h3>C. Liens Profonds avec d'Autres Domaines</h3>
+                <ul>
+                    <li><span class="concept-key">Sécurité :</span> Une route statique est un <strong>élément de confiance</strong>. Elle ne peut pas être empoisonnée par un attaquant sur le lien (contrairement à RIP). Cependant, une route par défaut mal configurée peut devenir un <strong>point de défaillance unique</strong>.</li>
+                    <li><span class="concept-key">Qualité de Service (QoS) :</span> Le routage statique permet une <strong>ingénierie de trafic déterministe</strong> en forçant certains flux à emprunter des chemins spécifiques où des politiques QoS sont appliquées.</li>
+                    <li><span class="concept-key">Virtualisation (VRF) :</span> Les routes statiques sont fondamentales dans les VRF (Virtual Routing and Forwarding) pour créer des <strong>tables de routage logiquement séparées</strong>.</li>
+                </ul>
+            </section>
+
+            <!-- Section Objectifs -->
+            <section id="objectifs" class="module-section">
+                <div class="section-header">
+                    <span class="section-tag">Finalité</span>
+                    <h2>🎯 Objectifs Cognitifs Finaux – Administrateur Réseau Élite</h2>
+                </div>
+                <div class="cognitive-objectives">
+                    <p>À la fin de ce module, vous pensez désormais en termes de <span class="concept-key">dépendances systémiques</span> et d'<span class="concept-key">états conditionnels</span>. Vous concevez des chemins de routage en comprenant leur récursivité et leurs points de défaillance uniques. Vous savez que la route statique est un outil de précision architecturale, pas une simple commande de configuration.</p>
+                    <p>Vous pouvez expliquer pourquoi un paquet est perdu en raisonnant de la couche physique de l'interface jusqu'à la résolution ARP, en passant par la logique LPM de la RIB. Votre compréhension des compromis (déterminisme vs adaptabilité, simplicité vs résilience) vous permet de prendre des décisions d'ingénierie réseau éclairées et de dépanner avec une méthodologie infaillible. Vous êtes prêt à architecturer et à maintenir le plan de contrôle d'un réseau d'entreprise.</p>
+                    <br>
+                    <h3>Vous devez pouvoir dire, sans hésitation :</h3>
+                    <ul>
+                        <li>« Je pense comme un architecte et un administrateur réseau senior »</li>
+                        <li>« Je comprends les causes profondes, pas seulement les symptômes »</li>
+                        <li>« Je peux intervenir sur des réseaux complexes avec méthode et confiance »</li>
+                        <li>« Mon niveau dépasse largement celui attendu d'une formation classique »</li>
+                        <li>« Je comprends comment ça fonctionne »</li>
+                        <li>« Je sais expliquer pourquoi ça casse »</li>
+                        <li>« Je peux raisonner sans par cœur »</li>
+                    </ul>
+                </div>
+            </section>
+        
+      <section class="panel">
+        <footer class="page-footer">
+
+        <p>Module 16 : Routage Statique — Reconstruction pour la Maîtrise Expert</p>
+        <p>© Format pédagogique HTML — Contenu figé et validé.</p>
+    
+        </footer>
+      </section>
+    </main>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar-shell');
+      const navLinks = document.querySelectorAll('.nav a');
+      const sections = document.querySelectorAll('.module-section');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function () {
+          sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+        });
+      }
+
+      function setActiveSection() {
+        let current = '';
+        sections.forEach(section => {
+          const top = section.offsetTop - 140;
+          const height = section.offsetHeight;
+          if (window.scrollY >= top && window.scrollY < top + height) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'active-section');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active', 'active-section');
+          }
+        });
+      }
+
+      setActiveSection();
+      window.addEventListener('scroll', setActiveSection);
+
+      if (window.mermaid) {
+        document.querySelectorAll('.mermaid').forEach(el => el.removeAttribute('data-processed'));
+        window.mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
+        const target = diagram.querySelector('.mermaid');
+        if (!target || diagram.querySelector('.mermaid-toolbar')) return;
+
+        target.classList.add('mermaid-stage');
+        let scale = 1;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'mermaid-toolbar';
+        toolbar.innerHTML = '<button type="button" class="mermaid-btn" data-action="out">-</button><button type="button" class="mermaid-btn" data-action="reset">100%</button><button type="button" class="mermaid-btn" data-action="in">+</button>';
+        diagram.insertBefore(toolbar, target);
+
+        function renderScale() {
+          target.style.transform = 'scale(' + scale + ')';
+        }
+
+        toolbar.addEventListener('click', function (event) {
+          const button = event.target.closest('.mermaid-btn');
+          if (!button) return;
+          const action = button.getAttribute('data-action');
+          if (action === 'in') scale = Math.min(scale + 0.1, 2.5);
+          if (action === 'out') scale = Math.max(scale - 0.1, 0.6);
+          if (action === 'reset') scale = 1;
+          renderScale();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
